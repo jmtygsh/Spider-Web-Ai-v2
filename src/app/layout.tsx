@@ -18,8 +18,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
-      <body>{children}</body>
+    <html lang="en" className={`${geist.variable} h-full`}>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
