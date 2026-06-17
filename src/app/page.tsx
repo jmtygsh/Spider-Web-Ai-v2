@@ -65,12 +65,102 @@ const assistantRuntimeAdapter: ChatModelAdapter = {
   },
 };
 
+const actionQueueItems = [
+  { title: "Reply to CEO", detail: "Inbox follow-up pending", priority: "Urgent" },
+  { title: "Schedule Bob", detail: "Find a slot for next week", priority: "Today" },
+  { title: "Follow-up VC", detail: "Send meeting recap", priority: "Pending" },
+  { title: "3 urgent", detail: "New items waiting for action", priority: "Review" },
+];
+
+const calendarItems = [
+  { time: "9:00 AM", title: "Leadership sync", meta: "30 min" },
+  { time: "11:00 AM", title: "Investor call", meta: "45 min" },
+  { time: "1:30 PM", title: "Product review", meta: "60 min" },
+  { time: "4:00 PM", title: "Inbox catch-up", meta: "30 min" },
+];
+
 const ChatPage: FC = () => {
   const runtime = useLocalRuntime(assistantRuntimeAdapter);
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <ChatGPT />
+      <div className="min-h-screen bg-[#eef1f4] text-[#0d0d0d] dark:bg-[#0b0c0f] dark:text-[#ececec]">
+        <div className="mx-auto flex min-h-screen max-w-11/12 flex-col p-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
+
+          {/* left side  */}
+          <aside className="flex flex-col border-l border-t border-b border-black/5 bg-white dark:border-white/10 dark:bg-[#0b0c0f] p-5">
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
+              Executive Copilot
+            </p>
+            <h1 className="mt-3 text-2xl font-semibold">Action Queue</h1>
+            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+              Tasks that need attention from your assistant.
+            </p>
+            <div className="mt-6">
+              {actionQueueItems.map((item) => (
+                <div
+                  key={item.title}
+                  className="py-3 transition-colors "
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                        {item.detail}
+                      </p>
+                    </div>
+                    <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-medium text-[#4b5563] dark:bg-white/10 dark:text-[#d1d5db]">
+                      {item.priority}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+
+
+          </aside>
+
+          <main className="flex min-h-[70vh] min-w-0 flex-col overflow-hidden  border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-[#0b0c0f]">
+
+            <div className="min-h-0 flex-1">
+              <ChatGPT />
+            </div>
+          </main>
+
+          <aside className="flex flex-col border-r border-t border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
+
+            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
+              Calendar
+            </p>
+            <h2 className="mt-3 text-2xl font-semibold">Today</h2>
+            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+              Upcoming events and scheduling context.
+            </p>
+            <div className="mt-6">
+              {calendarItems.map((item) => (
+                <div
+                  key={`${item.time}-${item.title}`}
+                  className="px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="min-w-20 text-sm font-semibold text-[#111827] dark:text-[#f3f4f6]">
+                      {item.time}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                        {item.meta}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+          </aside>
+        </div>
+      </div>
     </AssistantRuntimeProvider>
   );
 };
@@ -79,13 +169,13 @@ export default ChatPage;
 
 const ChatGPT: FC = () => {
   return (
-    <ThreadPrimitive.Root className="flex min-h-screen flex-col items-stretch bg-white px-4 text-[#0d0d0d] dark:bg-black dark:text-[#ececec]">
+    <ThreadPrimitive.Root className="flex h-full min-h-0 flex-col items-stretch bg-transparent px-4 text-[#0d0d0d] dark:text-[#ececec]">
       <AuiIf condition={(s) => s.thread.isEmpty}>
         <EmptyState />
       </AuiIf>
 
       <AuiIf condition={(s) => !s.thread.isEmpty}>
-        <ThreadPrimitive.Viewport className="flex grow flex-col gap-8 overflow-y-scroll pt-16">
+        <ThreadPrimitive.Viewport className="flex min-h-0 grow flex-col gap-8 overflow-y-auto pt-6">
           <ThreadPrimitive.Messages>
             {({ message }) => {
               if (message.composer.isEditing) return <EditComposer />;
@@ -94,7 +184,7 @@ const ChatGPT: FC = () => {
             }}
           </ThreadPrimitive.Messages>
 
-          <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl bg-white pb-2 dark:bg-black">
+          <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl bg-white pb-4 dark:bg-[#111214]">
             <ThreadScrollToBottom />
             <Composer placeholder="Ask anything" />
             <p className="text-center text-xs text-[#5d5d5d] dark:text-[#a8a8a8]">
@@ -109,11 +199,14 @@ const ChatGPT: FC = () => {
 
 const EmptyState: FC = () => {
   return (
-    <div className="flex grow flex-col items-center justify-center px-4">
+    <div className="flex grow flex-col items-center justify-center px-4 py-12">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-stretch gap-6">
         <h1 className="text-center text-2xl font-medium text-[#0d0d0d] sm:text-3xl dark:text-[#ececec]">
           Where should we begin?
         </h1>
+        <p className="text-center text-sm text-[#6b7280] dark:text-[#9ca3af]">
+          Ask your assistant to manage inbox, calendar, and follow-ups from one place.
+        </p>
         <Composer placeholder="Ask anything" />
       </div>
     </div>
