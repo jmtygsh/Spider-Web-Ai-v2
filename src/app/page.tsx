@@ -1,550 +1,762 @@
-"use client";
-
-import { cn } from "@/lib/utils";
 import {
-  ActionBarPrimitive,
-  ActionBarMorePrimitive,
-  AssistantRuntimeProvider,
-  AuiIf,
-  AttachmentPrimitive,
-  BranchPickerPrimitive,
-  ComposerPrimitive,
-  MessagePrimitive,
-  ThreadPrimitive,
-  useLocalRuntime,
-  useAui,
-  useAuiState,
-  type ChatModelAdapter,
-} from "@assistant-ui/react";
-import {
-  ArrowUpIcon,
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  CopyIcon,
-  Cross2Icon,
-  Pencil1Icon,
-  ReloadIcon,
-} from "@radix-ui/react-icons";
-import { useEffect, useState, type FC } from "react";
-import { TooltipIconButton } from "@/components/tooltip-icon-button";
-import { useShallow } from "zustand/shallow";
-import {
-  AudioLines,
-  Download,
-  Mic,
-  MoreHorizontal,
-  PlusIcon,
-  Share,
-  ThumbsDown,
-  ThumbsUp,
-  Volume2,
+  Archive,
+  Calendar,
+  Check,
+  ChevronDown,
+  Flag,
+  Reply,
+  Settings,
+  Sparkles,
+  Image as ImageIcon,
+  Search,
+  ArrowRight,
+  ListTodo,
+  SpellCheck,
+  FileText,
 } from "lucide-react";
-import { MarkdownText } from "@/components/markdown-text";
-import { ToolFallback } from "@/components/tool-fallback";
+import Image from "next/image";
+import Link from "next/link";
 
-const assistantRuntimeAdapter: ChatModelAdapter = {
-  async run({ messages, abortSignal }) {
-    const response = await fetch("/api/chat", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ messages }),
-      signal: abortSignal,
-    });
+import { ElectricBorderFrame } from "@/components/ElectricBorderWire";
+import { Button } from "@/components/ui/button";
 
-    if (!response.ok) {
-      throw new Error(`Chat request failed: ${response.status}`);
-    }
 
-    const data = (await response.json()) as { message?: string };
 
-    return {
-      content: [{ type: "text", text: data.message ?? "" }],
-    };
-  },
-};
+// Purpose:
+// Small inline Gmail icon used in hero and feature sections.
+function GmailLogo({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`${className} fill-primary`} aria-hidden>
+      <path
+        d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 2.18 24 3.434 24 5.457z"
+      />
+    </svg>
+  );
+}
 
-const actionQueueItems = [
-  { title: "Reply to CEO", detail: "Inbox follow-up pending", priority: "Urgent" },
-  { title: "Schedule Bob", detail: "Find a slot for next week", priority: "Today" },
-  { title: "Follow-up VC", detail: "Send meeting recap", priority: "Pending" },
-  { title: "3 urgent", detail: "New items waiting for action", priority: "Review" },
-];
+// Purpose:
+// Small inline Outlook icon shown in the hero "Works with" row.
+function OutlookLogo({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={`${className} fill-accent`} aria-hidden>
+      <path
+        d="M24 7.387v9.226c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 16.613V7.387c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 4.11 24 5.364 24 7.387z"
+      />
+      <rect x="0" y="4" width="10" height="16" rx="1" />
+      <path className="fill-background" d="M5 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />
+    </svg>
+  );
+}
 
-const calendarItems = [
-  { time: "9:00 AM", title: "Leadership sync", meta: "30 min" },
-  { time: "11:00 AM", title: "Investor call", meta: "45 min" },
-  { time: "1:30 PM", title: "Product review", meta: "60 min" },
-  { time: "4:00 PM", title: "Inbox catch-up", meta: "30 min" },
-];
+// Purpose:
+// Small inline Google Calendar icon used in feature illustrations.
+function GoogleCalendarLogo({ className = "h-6 w-6" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+      {/* Background shadow/border effect mimicking the icon */}
+      <rect x="3" y="4" width="18" height="16" rx="2" className="fill-background stroke-border" strokeWidth="2" />
+      <path d="M3 10H21" className="stroke-border" strokeWidth="2" />
+      <rect x="7" y="2" width="2" height="4" rx="1" className="fill-primary" />
+      <rect x="15" y="2" width="2" height="4" rx="1" className="fill-primary" />
+      <text x="12" y="18" className="fill-primary" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">
+        31
+      </text>
+    </svg>
+  );
+}
 
-const ChatPage: FC = () => {
-  const runtime = useLocalRuntime(assistantRuntimeAdapter);
+// Purpose:
+// Subtle grid pattern background for the features bento section.
+function GridBackground() {
+  return (
+    <svg className="absolute inset-0 h-full w-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
+          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid-pattern)" />
+    </svg>
+  );
+}
+
+
+
+// Purpose:
+// Public marketing landing page for Spider Web.
+// Explains the product, social proof, and links to signup.
+export default function Home() {
+  // Short trust bullets shown under the hero headline.
+  const highlights = [
+    "No software to download",
+    "No credit card required",
+  ];
+
+
 
   return (
-    <AssistantRuntimeProvider runtime={runtime}>
-      <div className="min-h-screen bg-[#eef1f4] text-[#0d0d0d] dark:bg-[#0b0c0f] dark:text-[#ececec]">
-        <div className="mx-auto flex min-h-screen max-w-11/12 flex-col p-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
+    <main className="min-h-screen  bg-background">
 
-          {/* left side  */}
-          <aside className="flex flex-col border-l border-t border-b border-black/5 bg-white dark:border-white/10 dark:bg-[#0b0c0f] p-5">
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
-              Executive Copilot
-            </p>
-            <h1 className="mt-3 text-2xl font-semibold">Action Queue</h1>
-            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-              Tasks that need attention from your assistant.
-            </p>
-            <div className="mt-6">
-              {actionQueueItems.map((item) => (
-                <div
-                  key={item.title}
-                  className="py-3 transition-colors "
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-medium">{item.title}</p>
-                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
-                        {item.detail}
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-medium text-[#4b5563] dark:bg-white/10 dark:text-[#d1d5db]">
-                      {item.priority}
-                    </span>
-                  </div>
-                </div>
+      <ElectricBorderFrame className="container mx-auto px-4" bulbCount={11}>
+
+        <div className="flex flex-col justify-center items-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12 h-screen">
+
+
+          {/* Left Column */}
+          <div className="w-full max-w-xl space-y-8">
+            <div className="space-y-5">
+              <h1 className="text-4xl leading-tight font-semibold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
+                Let AI work its magic on your{" "}
+                <span className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+                  email & meetings
+                </span>
+              </h1>
+              <p className="max-w-lg text-lg leading-relaxed text-muted-foreground">
+                Outsource meeting notes, email writing and management to our
+                secure productivity assistants
+              </p>
+            </div>
+
+            <ul className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8">
+              {highlights.map((item) => (
+                <li key={item} className="flex items-center gap-3">
+                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary">
+                    <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />
+                  </span>
+                  <span className="text-base font-medium text-foreground">
+                    {item}
+                  </span>
+                </li>
               ))}
-            </div>
+            </ul>
 
-
-
-          </aside>
-
-          <main className="flex min-h-[70vh] min-w-0 flex-col overflow-hidden  border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-[#0b0c0f]">
-
-            <div className="min-h-0 flex-1">
-              <ChatGPT />
-            </div>
-          </main>
-
-          <aside className="flex flex-col border-r border-t border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
-
-            <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
-              Calendar
-            </p>
-            <h2 className="mt-3 text-2xl font-semibold">Today</h2>
-            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-              Upcoming events and scheduling context.
-            </p>
-            <div className="mt-6">
-              {calendarItems.map((item) => (
-                <div
-                  key={`${item.time}-${item.title}`}
-                  className="px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="min-w-20 text-sm font-semibold text-[#111827] dark:text-[#f3f4f6]">
-                      {item.time}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{item.title}</p>
-                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
-                        {item.meta}
-                      </p>
-                    </div>
-                  </div>
+            <div className="flex items-center gap-4 pt-2">
+              <span className="text-sm font-medium text-muted-foreground">
+                Works with:
+              </span>
+              <div className="flex items-center gap-5">
+                <div className="flex items-center gap-2">
+                  <OutlookLogo />
+                  <span className="text-sm font-medium text-foreground">
+                    Outlook
+                  </span>
                 </div>
-              ))}
+                <div className="flex items-center gap-2">
+                  <GmailLogo />
+                  <span className="text-sm font-medium text-foreground">
+                    Gmail
+                  </span>
+                </div>
+              </div>
             </div>
-
-          </aside>
-        </div>
-      </div>
-    </AssistantRuntimeProvider>
-  );
-};
-
-export default ChatPage;
-
-const ChatGPT: FC = () => {
-  return (
-    <ThreadPrimitive.Root className="flex h-full min-h-0 flex-col items-stretch bg-transparent px-4 text-[#0d0d0d] dark:text-[#ececec]">
-      <AuiIf condition={(s) => s.thread.isEmpty}>
-        <EmptyState />
-      </AuiIf>
-
-      <AuiIf condition={(s) => !s.thread.isEmpty}>
-        <ThreadPrimitive.Viewport className="flex min-h-0 grow flex-col gap-8 overflow-y-auto pt-6">
-          <ThreadPrimitive.Messages>
-            {({ message }) => {
-              if (message.composer.isEditing) return <EditComposer />;
-              if (message.role === "user") return <UserMessage />;
-              return <AssistantMessage />;
-            }}
-          </ThreadPrimitive.Messages>
-
-          <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl bg-white pb-4 dark:bg-[#111214]">
-            <ThreadScrollToBottom />
-            <Composer placeholder="Ask anything" />
-            <p className="text-center text-xs text-[#5d5d5d] dark:text-[#a8a8a8]">
-              SpierWeb can make mistakes. Check important info.
-            </p>
-          </ThreadPrimitive.ViewportFooter>
-        </ThreadPrimitive.Viewport>
-      </AuiIf>
-    </ThreadPrimitive.Root>
-  );
-};
-
-const EmptyState: FC = () => {
-  return (
-    <div className="flex grow flex-col items-center justify-center px-4 py-12">
-      <div className="mx-auto flex w-full max-w-3xl flex-col items-stretch gap-6">
-        <h1 className="text-center text-2xl font-medium text-[#0d0d0d] sm:text-3xl dark:text-[#ececec]">
-          Where should we begin?
-        </h1>
-        <p className="text-center text-sm text-[#6b7280] dark:text-[#9ca3af]">
-          Ask your assistant to manage inbox, calendar, and follow-ups from one place.
-        </p>
-        <Composer placeholder="Ask anything" />
-      </div>
-    </div>
-  );
-};
-
-const Composer: FC<{ placeholder: string }> = ({ placeholder }) => {
-  return (
-    <ComposerPrimitive.Root className="group/composer flex w-full flex-col rounded-[28px] border border-[#e5e5e5] bg-white px-2 py-2 shadow-[0_2px_6px_-2px_rgba(0,0,0,0.05)] focus-within:border-[#d0d0d0] dark:border-transparent dark:bg-[#212121] dark:shadow-none dark:focus-within:border-transparent">
-      <AuiIf condition={(s) => s.composer.attachments.length > 0}>
-        <div className="flex flex-row flex-wrap gap-2 px-1 pt-1 pb-2">
-          <ComposerPrimitive.Attachments
-            components={{ Attachment: ChatGPTAttachmentUI }}
-          />
-        </div>
-      </AuiIf>
-
-      <div className="flex items-end gap-1">
-        <ComposerPrimitive.AddAttachment asChild>
-          <button
-            type="button"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#cdcdcd] dark:hover:bg-white/10 dark:hover:text-white"
-            aria-label="Add attachment"
-          >
-            <PlusIcon size={20} />
-          </button>
-        </ComposerPrimitive.AddAttachment>
-
-        <ComposerPrimitive.Input
-          placeholder={placeholder}
-          rows={1}
-          className="max-h-52 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-[#0d0d0d] outline-none placeholder:text-[#8e8e8e] dark:text-[#ececec] dark:placeholder:text-[#8e8e8e]"
-        />
-
-        <div className="flex shrink-0 items-center gap-1">
-          <ComposerPrimaryAction />
-        </div>
-      </div>
-    </ComposerPrimitive.Root>
-  );
-};
-
-const ComposerPrimaryAction: FC = () => {
-  return (
-    <div className="flex items-center gap-1">
-      <AuiIf condition={(s) => s.thread.isRunning}>
-        <ComposerPrimitive.Cancel className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black">
-          <div className="size-2.5 rounded-[2px] bg-current" />
-        </ComposerPrimitive.Cancel>
-      </AuiIf>
-
-      <AuiIf
-        condition={(s) => !s.thread.isRunning && s.composer.dictation != null}
-      >
-        <ComposerPrimitive.StopDictation
-          className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black"
-          aria-label="Stop dictation"
-        >
-          <div className="size-2.5 animate-pulse rounded-[2px] bg-current" />
-        </ComposerPrimitive.StopDictation>
-      </AuiIf>
-
-      <AuiIf
-        condition={(s) =>
-          !s.thread.isRunning &&
-          s.composer.dictation == null &&
-          !s.composer.isEmpty
-        }
-      >
-        <ComposerPrimitive.Send className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white transition-opacity disabled:opacity-30 dark:bg-white dark:text-black">
-          <ArrowUpIcon className="size-6" />
-        </ComposerPrimitive.Send>
-      </AuiIf>
-
-      <AuiIf
-        condition={(s) =>
-          !s.thread.isRunning &&
-          s.composer.dictation == null &&
-          s.composer.isEmpty
-        }
-      >
-        <ComposerPrimitive.Dictate
-          className="flex size-9 items-center justify-center rounded-full text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#cdcdcd] dark:hover:bg-white/10 dark:hover:text-white"
-          aria-label="Dictate"
-        >
-          <Mic className="size-5" />
-        </ComposerPrimitive.Dictate>
-
-        <button
-          type="button"
-          aria-hidden="true"
-          tabIndex={-1}
-          className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black"
-        >
-          <AudioLines className="size-5" />
-        </button>
-      </AuiIf>
-    </div>
-  );
-};
-
-const ThreadScrollToBottom: FC = () => {
-  return (
-    <ThreadPrimitive.ScrollToBottom asChild>
-      <TooltipIconButton
-        tooltip="Scroll to bottom"
-        className="bg-background absolute -top-10 z-10 self-center rounded-full border p-2 shadow-sm disabled:invisible dark:border-white/15 dark:bg-[#2a2a2a]"
-      >
-        <ChevronDownIcon className="size-5" />
-      </TooltipIconButton>
-    </ThreadPrimitive.ScrollToBottom>
-  );
-};
-
-const UserMessage: FC = () => {
-  return (
-    <MessagePrimitive.Root className="relative mx-auto flex w-full max-w-3xl flex-col items-end gap-1">
-      <div className="flex flex-row flex-wrap justify-end gap-2">
-        <MessagePrimitive.Attachments
-          components={{ Attachment: ChatGPTAttachmentUI }}
-        />
-      </div>
-
-      <div className="flex items-start gap-4">
-        <ActionBarPrimitive.Root
-          hideWhenRunning
-          autohide="not-last"
-          autohideFloat="single-branch"
-          className="mt-2"
-        >
-          <ActionBarPrimitive.Edit asChild>
-            <TooltipIconButton tooltip="Edit" className="text-[#b4b4b4]">
-              <Pencil1Icon className="size-5" />
-            </TooltipIconButton>
-          </ActionBarPrimitive.Edit>
-        </ActionBarPrimitive.Root>
-
-        <div className="bg-secondary text-foreground rounded-3xl px-5 py-2 dark:bg-white/5 dark:text-[#eee]">
-          <MessagePrimitive.Parts />
-        </div>
-      </div>
-
-      <BranchPicker className="mt-2 mr-3" />
-    </MessagePrimitive.Root>
-  );
-};
-
-const EditComposer: FC = () => {
-  return (
-    <ComposerPrimitive.Root className="bg-secondary mx-auto flex w-full max-w-3xl flex-col justify-end gap-1 rounded-3xl dark:bg-white/15">
-      <ComposerPrimitive.Input className="text-foreground flex h-8 w-full resize-none bg-transparent p-5 pb-0 outline-none dark:text-white" />
-
-      <div className="m-3 mt-2 flex items-center justify-center gap-2 self-end">
-        <ComposerPrimitive.Cancel className="bg-background text-foreground hover:bg-muted rounded-full px-3 py-2 text-sm font-semibold dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
-          Cancel
-        </ComposerPrimitive.Cancel>
-        <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-3 py-2 text-sm font-semibold dark:bg-white dark:text-black dark:hover:bg-white/90">
-          Send
-        </ComposerPrimitive.Send>
-      </div>
-    </ComposerPrimitive.Root>
-  );
-};
-
-const assistantActionClassName =
-  "flex size-8 items-center justify-center rounded-md text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#afafaf] dark:hover:bg-white/10 dark:hover:text-white";
-
-const AssistantMessage: FC = () => {
-  return (
-    <MessagePrimitive.Root className="relative mx-auto flex w-full max-w-3xl flex-col">
-      <div className="text-[#0d0d0d] dark:text-[#ececec]">
-        <MessagePrimitive.Parts>
-          {({ part }) => {
-            if (part.type === "text") return <MarkdownText />;
-            if (part.type === "tool-call")
-              return part.toolUI ?? <ToolFallback {...part} />;
-            return null;
-          }}
-        </MessagePrimitive.Parts>
-      </div>
-
-      <div className="-ml-2 flex items-center pt-1">
-        <ActionBarPrimitive.Root
-          hideWhenRunning
-          className="flex items-center gap-0.5"
-        >
-          <ActionBarPrimitive.Copy className={assistantActionClassName}>
-            <AuiIf condition={(s) => s.message.isCopied}>
-              <CheckIcon className="size-5" />
-            </AuiIf>
-            <AuiIf condition={(s) => !s.message.isCopied}>
-              <CopyIcon className="size-5" />
-            </AuiIf>
-          </ActionBarPrimitive.Copy>
-          <ActionBarPrimitive.FeedbackPositive
-            className={assistantActionClassName}
-          >
-            <ThumbsUp className="size-5" />
-          </ActionBarPrimitive.FeedbackPositive>
-          <ActionBarPrimitive.FeedbackNegative
-            className={assistantActionClassName}
-          >
-            <ThumbsDown className="size-5" />
-          </ActionBarPrimitive.FeedbackNegative>
-          <ActionBarPrimitive.Speak className={assistantActionClassName}>
-            <Volume2 className="size-5" />
-          </ActionBarPrimitive.Speak>
-          <button type="button" className={assistantActionClassName}>
-            <Share className="size-5" />
-          </button>
-          <ActionBarPrimitive.Reload className={assistantActionClassName}>
-            <ReloadIcon className="size-5" />
-          </ActionBarPrimitive.Reload>
-          <ActionBarMorePrimitive.Root>
-            <ActionBarMorePrimitive.Trigger asChild>
-              <button
-                type="button"
-                aria-label="More"
-                className={cn(
-                  assistantActionClassName,
-                  "data-[state=open]:bg-[#0d0d0d]/5 dark:data-[state=open]:bg-white/10",
-                )}
-              >
-                <MoreHorizontal className="size-5" />
-              </button>
-            </ActionBarMorePrimitive.Trigger>
-            <ActionBarMorePrimitive.Content
-              side="bottom"
-              align="end"
-              sideOffset={6}
-              className="bg-popover/95 text-popover-foreground data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=open]:animate-in data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=closed]:animate-out data-[side=bottom]:slide-in-from-top-2 z-50 min-w-40 overflow-hidden rounded-xl border p-1.5 shadow-lg backdrop-blur-sm"
-            >
-              <ActionBarPrimitive.ExportMarkdown asChild>
-                <ActionBarMorePrimitive.Item className="text-muted-foreground focus:bg-accent focus:text-accent-foreground flex cursor-pointer items-center gap-2.5 rounded-lg px-3 py-2 text-sm outline-none select-none">
-                  <Download className="size-5" />
-                  Export as Markdown
-                </ActionBarMorePrimitive.Item>
-              </ActionBarPrimitive.ExportMarkdown>
-            </ActionBarMorePrimitive.Content>
-          </ActionBarMorePrimitive.Root>
-        </ActionBarPrimitive.Root>
-        <BranchPicker className="ml-1" />
-      </div>
-    </MessagePrimitive.Root>
-  );
-};
-
-const BranchPicker: FC<{ className?: string }> = ({ className }) => {
-  return (
-    <BranchPickerPrimitive.Root
-      hideWhenSingleBranch
-      className={cn(
-        "text-muted-foreground inline-flex items-center text-sm font-semibold dark:text-[#b4b4b4]",
-        className,
-      )}
-    >
-      <BranchPickerPrimitive.Previous asChild>
-        <TooltipIconButton tooltip="Previous" className="text-[#b4b4b4]">
-          <ChevronLeftIcon className="size-5" />
-        </TooltipIconButton>
-      </BranchPickerPrimitive.Previous>
-      <BranchPickerPrimitive.Number />/<BranchPickerPrimitive.Count />
-      <BranchPickerPrimitive.Next asChild>
-        <TooltipIconButton tooltip="Next" className="text-[#b4b4b4]">
-          <ChevronRightIcon className="size-5" />
-        </TooltipIconButton>
-      </BranchPickerPrimitive.Next>
-    </BranchPickerPrimitive.Root>
-  );
-};
-
-const useFileSrc = (file: File | undefined) => {
-  const [src, setSrc] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (!file) {
-      setSrc(undefined);
-      return;
-    }
-
-    const objectUrl = URL.createObjectURL(file);
-    setSrc(objectUrl);
-
-    return () => {
-      URL.revokeObjectURL(objectUrl);
-    };
-  }, [file]);
-
-  return src;
-};
-
-const useAttachmentSrc = () => {
-  const { file, src } = useAuiState(
-    useShallow((s): { file?: File; src?: string } => {
-      if (s.attachment.type !== "image") return {};
-      if (s.attachment.file) return { file: s.attachment.file };
-      const src = s.attachment.content?.filter((c) => c.type === "image")[0]
-        ?.image;
-      if (!src) return {};
-      return { src };
-    }),
-  );
-
-  return useFileSrc(file) ?? src;
-};
-
-const ChatGPTAttachmentUI: FC = () => {
-  const aui = useAui();
-  const isComposer = aui.attachment.source !== "message";
-  const src = useAttachmentSrc();
-
-  return (
-    <AttachmentPrimitive.Root className="group/attachment relative">
-      <div className="bg-secondary flex items-center gap-2 overflow-hidden rounded-2xl border dark:bg-white/5">
-        <AuiIf condition={(s) => s.attachment.type === "image"}>
-          {src ? (
-            <img
-              className="size-32 rounded-md object-cover"
-              alt="Attachment"
-              src={src}
-            />
-          ) : (
-            <div className="flex h-full w-12 items-center justify-center rounded-md">
-              <AttachmentPrimitive.unstable_Thumb className="text-xs" />
-            </div>
-          )}
-        </AuiIf>
-        <AuiIf condition={(s) => s.attachment.type !== "image"}>
-          <div className="bg-background flex h-full w-12 items-center justify-center rounded-[9px] text-[#6b6b6b] dark:bg-[#3a3a3a] dark:text-[#9a9a9a]">
-            <AttachmentPrimitive.unstable_Thumb className="text-xs" />
           </div>
-        </AuiIf>
-      </div>
-      {isComposer && (
-        <AttachmentPrimitive.Remove className="absolute -top-1.5 -right-1.5 flex size-7 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#6b6b6b] transition-all hover:bg-[#f5f5f5] hover:text-[#0d0d0d] dark:border-[#3a3a3a] dark:bg-[#1a1a1a] dark:text-[#9a9a9a] dark:hover:bg-[#252525] dark:hover:text-white">
-          <Cross2Icon className="size-5" />
-        </AttachmentPrimitive.Remove>
-      )}
-    </AttachmentPrimitive.Root>
+
+          {/* Right Column: Product UI */}
+          <div className="w-full max-w-xl shrink-0 relative overflow-hidden">
+            {/* Background effect */}
+          </div>
+        </div>
+      </ElectricBorderFrame>
+
+
+
+
+      {/* Second Section: Logo Loop */}
+      <section className="w-full border-y border-border/50 bg-muted/5 py-12">
+        <div className="container mx-auto px-4 text-center">
+          <p className="mb-10 text-sm font-medium text-muted-foreground/80">
+            Trusted by 300,000+ teams around the world
+          </p>
+          <div className="relative flex w-full overflow-hidden">
+            {/* Left/Right Gradient Masks for smooth fade out */}
+            <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r from-background to-transparent" />
+            <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l from-background to-transparent" />
+
+            <div className="flex w-max animate-marquee">
+              {/* Render two identical sets of logos for seamless looping */}
+              {[...Array(2)].map((_, i) => (
+                <ul key={i} className="flex w-max items-center justify-around gap-16 px-8">
+
+
+                  <li className="m-0! before:content-none!">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="125" height="28" fill="none" viewBox="0 0 125 28" className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5">
+                      <g clipPath="url(#replit_inline_svg__a)">
+                        <path fill="#94979E" fillRule="evenodd" d="M1.84.016C.825.016 0 .802 0 1.767V7.6C0 8.567.826 9.35 1.84 9.35h10.419v9.333H1.84c-1.015 0-1.84.784-1.84 1.75v5.833c0 .966.825 1.75 1.84 1.75h8.579c1.016 0 1.839-.785 1.839-1.75v-7.579h10.419c1.016 0 1.839-.785 1.839-1.75V11.1c0-.967-.823-1.75-1.84-1.75H12.263V1.766c0-.966-.824-1.75-1.839-1.75zM117.735 4.2c0-.284-.249-.503-.567-.503h-2.333c-.318 0-.566.236-.566.503v3.232h-3.626c-.318 0-.566.237-.566.505v1.665c0 .285.248.505.566.505h3.626v4.95c0 3.786 1.874 5.538 5.908 5.538h3.288c.319 0 .566-.236.566-.504v-1.666c0-.284-.247-.504-.566-.504h-2.759c-2.194 0-2.971-.826-2.971-2.88v-4.915h6.136c.318-.02.567-.255.567-.524V7.937c0-.285-.249-.505-.567-.505h-6.136zM106.414 7.94c0-.284-.247-.504-.565-.504v.003h-7.128c-.319 0-.567.236-.567.505v1.665c0 .284.248.505.567.505h4.226v7.811H98.72c-.317 0-.566.237-.566.505v1.665c0 .285.248.504.567.504h12.027c.318 0 .566-.236.566-.504v-1.665c0-.285-.248-.506-.566-.506h-4.334zm.141-5.084a.553.553 0 0 0-.565-.506h-3.184c-.318 0-.566.237-.566.506v2.137c0 .285.248.504.566.504h3.184c.318 0 .565-.236.565-.504zM91.874 17.923h3.61c.318 0 .566.218.566.505v1.665c0 .269-.247.504-.566.504H83.722c-.318 0-.566-.217-.566-.504v-1.665c0-.269.248-.506.566-.506h4.689V5.028h-4.176c-.318 0-.565-.218-.565-.505V2.856c0-.269.247-.506.565-.506h7.074c.319 0 .567.219.567.506zM73.534 8.04c.67-.607 1.539-.858 2.741-.858 3.521 0 5.573 2.257 5.588 6.851 0 4.597-2.069 6.851-5.5 6.851-1.183 0-1.98-.286-2.635-.857l-.83-.756-.778.169.301 2.003v3.738c0 .27-.247.504-.566.504h-2.336c-.318 0-.565-.218-.565-.504V7.94c0-.269.247-.504.566-.504h1.591c.267 0 .479.166.549.387l.283.975h.76zm-1.132 7.594c0 1.633.972 2.492 2.723 2.492 2.142 0 3.098-1.28 3.114-4.123 0-2.813-.972-4.093-3.114-4.093-1.768 0-2.723.859-2.723 2.492zm-20.18-1.617c0-4.58 2.388-6.835 6.845-6.835 4.581 0 6.792 2.273 6.26 7.342h-9.675c.141 2.71 1.204 3.872 3.431 3.872 1.435 0 2.495-.472 2.867-1.464a.58.58 0 0 1 .529-.338H64.6c.355 0 .637.303.549.623-.583 2.306-2.778 3.652-6.173 3.652-4.386 0-6.756-2.255-6.756-6.851m6.83-4.46c-1.911 0-2.956.925-3.291 2.912h6.333c-.054-1.885-1.008-2.912-3.042-2.912m-14.525-.775.798-.76c.69-.605 1.731-.84 3.057-.822h1.803c.319 0 .566.217.566.505v1.833c0 .27-.247.506-.566.506H47.14c-1.872 0-2.828.807-2.828 2.355v5.523h4.051c.319 0 .567.218.567.504v1.666c0 .269-.247.504-.567.504H37.346c-.318 0-.566-.217-.566-.504v-1.666c0-.268.247-.504.566-.504h3.502v-7.811h-3.006c-.318 0-.567-.219-.567-.506V7.94c0-.269.248-.504.567-.504h5.094c.267 0 .495.15.549.387l.247.96z" clipRule="evenodd"></path>
+                      </g>
+                      <defs>
+                        <clipPath id="replit_inline_svg__a">
+                          <path fill="#fff" d="M0 0h125v28H0z"></path>
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </li>
+
+                  <li className="m-0! before:content-none!">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="135" height="28" fill="none" viewBox="0 0 135 28" className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5">
+                      <g clipPath="url(#outfront7_inline_svg__a)">
+                        <path fill="#94979E" d="m125.069 5.718-1.759 4.007h-5.098v12.668h-4.008V9.748h-4.342v12.645h-4.052l-6.858-9.907v9.907h-4.053V5.74h4.053l6.858 9.574V5.74h19.259zM85.437 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75-8.84-3.919-8.84-8.75c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.605 0 4.743-2.115 4.743-4.698s-2.116-4.698-4.743-4.698c-2.605 0-4.742 2.116-4.742 4.698s2.137 4.698 4.742 4.698m-8.571 3.629h-4.743l-3.607-5.321h-2.137v5.32h-4.053V9.682H52.82v3.317h7.792l-1.735 4.008H52.93l-.111 5.32h-4.053V5.897L47.164 9.68H41.33v12.646h-4.053V9.68h-4.14v5.388c0 5.054-2.873 7.525-7.393 7.525s-7.28-2.494-7.28-7.414V5.65h4.052v9.442c0 2.449 1.247 3.718 3.273 3.718s3.295-1.203 3.295-3.585V5.673h40.923c2.137 0 3.807.602 4.898 1.692.935.935 1.447 2.227 1.447 3.807v.045c0 2.694-1.47 4.386-3.606 5.165zM72.323 11.46c0-1.29-.868-1.959-2.271-1.959h-3.695v3.92h3.74c1.403 0 2.204-.78 2.204-1.938v-.021zM8.913 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75S.073 18.831.073 14c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.604 0 4.743-2.115 4.743-4.698s-2.138-4.698-4.743-4.698S4.171 11.418 4.171 14s2.115 4.698 4.742 4.698"></path>
+                        <mask id="outfront7_inline_svg__b" width="14" height="18" x="120" y="5" maskUnits="userSpaceOnUse" style={{ maskType: 'luminance' }}>
+                          <path fill="#fff" d="m128.195 5.737-7.258 16.675h5.455l7.258-16.676z"></path>
+                        </mask>
+                        <g mask="url(#outfront7_inline_svg__b)">
+                          <path fill="#94979E" d="M112.593 14.08 127.289-.615l14.693 14.695-14.693 14.694z"></path>
+                        </g>
+                      </g>
+                      <defs>
+                        <clipPath id="outfront7_inline_svg__a">
+                          <path fill="#fff" d="M0 0h135v28H0z"></path>
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </li>
+
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="182"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 182 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <mask
+                        id="door-dash_inline_svg__a"
+                        width="181"
+                        height="22"
+                        x="0"
+                        y="3"
+                        maskUnits="userSpaceOnUse"
+                        style={{ maskType: 'luminance' }}
+                      >
+                        <path fill="#fff" d="M.814 3.5h179.55v21H.814z"></path>
+                      </mask>
+                      <g mask="url(#door-dash_inline_svg__a)">
+                        <path fill="#94979E" d="M52.9 9.42v9.176h2.287a4.36 4.36 0 0 0 3.11-1.37A4.6 4.6 0 0 0 59.549 14a4.51 4.51 0 0 0-1.236-3.24 4.28 4.28 0 0 0-3.126-1.341zm2.287-2.877c4.262 0 7.485 3.304 7.485 7.457s-3.223 7.476-7.485 7.476h-5.042a.37.37 0 0 1-.363-.37V6.928a.37.37 0 0 1 .363-.372zm18.47 12.372c1.934.006 3.683-1.185 4.427-3.018a5 5 0 0 0-1.024-5.351A4.69 4.69 0 0 0 71.85 9.47c-1.79.756-2.957 2.544-2.961 4.53 0 2.707 2.133 4.902 4.768 4.915m0-12.71c4.486 0 7.914 3.536 7.914 7.795s-3.428 7.795-7.915 7.795-7.885-3.52-7.885-7.795 3.43-7.795 7.886-7.795m18.81 12.709c2.639-.006 4.773-2.205 4.771-4.912-.004-2.709-2.143-4.901-4.78-4.903-2.64 0-4.781 2.192-4.784 4.9a4.98 4.98 0 0 0 1.403 3.476 4.72 4.72 0 0 0 3.39 1.439m-.001-12.71c4.47 0 7.9 3.52 7.9 7.795s-3.444 7.795-7.9 7.795S84.55 18.276 84.55 14s3.43-7.796 7.915-7.796m18.358 3.215H107.6v3.948h3.224a1.87 1.87 0 0 0 1.385-.527 1.96 1.96 0 0 0 .59-1.392 2 2 0 0 0-.56-1.453 1.89 1.89 0 0 0-1.415-.573zm-6.342-2.49a.36.36 0 0 1 .104-.262.38.38 0 0 1 .258-.112h6.069c2.894 0 4.989 2.176 4.989 4.91.022 1.847-.987 3.544-2.597 4.371l2.799 5.08a.373.373 0 0 1-.131.537.36.36 0 0 1-.197.04h-2.457a.36.36 0 0 1-.329-.2l-2.697-5.026h-2.704v4.826a.367.367 0 0 1-.362.372h-2.367a.366.366 0 0 1-.361-.372zm19.548 2.56v9.176h2.286a4.37 4.37 0 0 0 3.11-1.365 4.6 4.6 0 0 0 1.256-3.223 4.52 4.52 0 0 0-1.233-3.245 4.29 4.29 0 0 0-3.132-1.342zm2.286-2.881c4.261 0 7.484 3.307 7.484 7.47 0 4.162-3.223 7.468-7.484 7.468h-5.028a.364.364 0 0 1-.361-.373V7a.37.37 0 0 1 .361-.373zm16.994 3.65-1.769 4.906h3.534zm-2.807 7.68-1.158 3.266a.36.36 0 0 1-.361.257h-2.512a.36.36 0 0 1-.329-.157.38.38 0 0 1-.032-.37l5.427-14.162a.36.36 0 0 1 .361-.246h2.81a.36.36 0 0 1 .363.246l5.425 14.162a.38.38 0 0 1-.176.494.36.36 0 0 1-.186.031h-2.511a.364.364 0 0 1-.361-.256l-1.158-3.267zm12.906-7.361c0-2.346 1.975-4.373 5.093-4.373a6.36 6.36 0 0 1 4.525 1.748.4.4 0 0 1 .109.198.38.38 0 0 1-.109.348l-1.391 1.417a.36.36 0 0 1-.396.081.4.4 0 0 1-.118-.08 3.6 3.6 0 0 0-2.413-.977c-1.247 0-2.17.743-2.17 1.601 0 2.772 7.372 1.172 7.372 6.506-.003 2.704-1.993 4.748-5.513 4.748a7.3 7.3 0 0 1-5.259-2.167.37.37 0 0 1-.117-.273.38.38 0 0 1 .117-.273l1.346-1.382a.37.37 0 0 1 .263-.115.36.36 0 0 1 .262.115 4.6 4.6 0 0 0 3.179 1.33c1.559 0 2.586-.853 2.586-1.923 0-2.773-7.368-1.173-7.368-6.508m23.873-3.689v5.605h-6.241V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.367a.37.37 0 0 0-.258.11.36.36 0 0 0-.103.261v14.16a.37.37 0 0 0 .361.372h2.367a.37.37 0 0 0 .361-.372v-5.693h6.236v5.693a.37.37 0 0 0 .362.372h2.366a.37.37 0 0 0 .361-.372V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.366a.37.37 0 0 0-.357.37M36.498 8.43c-1.643-3.045-4.856-4.94-8.348-4.929H1.722a.91.91 0 0 0-.834.558.89.89 0 0 0 .196.975l5.757 5.716a2.73 2.73 0 0 0 1.922.79h18.631c1.327-.014 2.413 1.04 2.427 2.349s-1.05 2.383-2.379 2.397H14.597a.91.91 0 0 0-.837.554.89.89 0 0 0 .194.979l5.761 5.72a2.73 2.73 0 0 0 1.922.79h5.81c7.558 0 13.273-7.98 9.05-15.902"></path>
+                      </g>
+                    </svg>
+                  </li>
+
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="101"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 101 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <g clipPath="url(#bcg_inline_svg__a)">
+                        <mask
+                          id="bcg_inline_svg__b"
+                          width="102"
+                          height="28"
+                          x="0"
+                          y="0"
+                          maskUnits="userSpaceOnUse"
+                          style={{ maskType: "luminance" }}
+                        >
+                          <path fill="#fff" d="M.43 0H101.43v28H.431z"></path>
+                        </mask>
+                        <g mask="url(#bcg_inline_svg__b)">
+                          <path
+                            fill="#94979E"
+                            fillRule="evenodd"
+                            d="M52.27 13.105c.016.284.032.585.032.886 0 2.895-1.12 5.522-2.961 7.396-1.84 1.908-4.401 3.08-7.296 3.08-1.874 0-3.63-.452-5.12-1.24a9.96 9.96 0 0 1-3.68-3.28 10.5 10.5 0 0 1-3.716 3.298c-1.49.786-3.213 1.22-5.087 1.22-1.606 0-3.096-.333-4.434-.936a10.5 10.5 0 0 1-3.48-2.543 6 6 0 0 1-2.276 2.209c-.97.535-2.142.853-3.447.853H.431V3.9h9.42c1.506 0 2.844.402 3.9 1.105 1.053.686 1.822 1.673 2.191 2.828a10.7 10.7 0 0 1 3.68-3.163 10.7 10.7 0 0 1 4.97-1.205c1.172 0 2.293.15 3.314.452a9.6 9.6 0 0 1 2.794 1.34l-1.104 1.74-1.105 1.74a5.9 5.9 0 0 0-1.79-.92 7.7 7.7 0 0 0-2.125-.336c-1.84.017-3.48.77-4.669 1.958s-1.924 2.794-1.924 4.518c0 1.757.736 3.38 1.924 4.568 1.205 1.188 2.845 1.94 4.67 1.94a6.4 6.4 0 0 0 2.475-.484c.77-.318 1.456-.803 2.092-1.44 1.36-1.344 1.705-2.995 2.085-4.81q.068-.328.14-.66c.436-2.06 1.071-4.318 3.297-6.544A10.2 10.2 0 0 1 37.98 4.32c1.255-.519 2.677-.803 4.25-.803 1.172 0 2.293.15 3.313.468a9.5 9.5 0 0 1 2.81 1.355l-1.086 1.74-1.088 1.74a6.2 6.2 0 0 0-1.807-.953 6.5 6.5 0 0 0-2.159-.35c-1.773 0-3.38.735-4.534 1.906a6.4 6.4 0 0 0-1.874 4.535c0 1.79.703 3.414 1.857 4.602 1.155 1.188 2.728 1.924 4.501 1.924 1.423 0 2.644-.47 3.615-1.238.97-.77 1.69-1.858 2.058-3.13H41.56l1.238-1.94 1.238-1.942h8.133q.015.135.035.275c.027.2.055.401.066.596M4.797 7.666v4.401h4.97c.62 0 1.188-.234 1.59-.636.4-.385.652-.937.652-1.573s-.25-1.188-.652-1.573a2.27 2.27 0 0 0-1.59-.619zm0 8.082v4.585h5.957c.67 0 1.255-.25 1.69-.67.434-.417.702-.986.702-1.64 0-.651-.268-1.22-.703-1.622a2.47 2.47 0 0 0-1.69-.653zm57.443 5.99c0-.05 0-.1-.017-.133l-1.79-.05-.201.318-.201.318h1.523c-.067.35-.218.67-.47.887-.25.217-.585.35-1.003.35-.452 0-.837-.183-1.121-.484a1.72 1.72 0 0 1-.452-1.188c0-.486.184-.904.469-1.188a1.6 1.6 0 0 1 1.137-.47c.2 0 .385.035.553.085.167.05.334.134.485.25l.184-.284.184-.284a2 2 0 0 0-.653-.318 2.7 2.7 0 0 0-.753-.1 2.34 2.34 0 0 0-2.342 2.342c0 .653.25 1.238.67 1.657a2.26 2.26 0 0 0 1.64.686c.635 0 1.187-.234 1.572-.636s.602-.954.602-1.59l-.008-.083zm9.22 1.74a2.4 2.4 0 0 1-1.674.687 2.34 2.34 0 0 1-2.342-2.326 2.34 2.34 0 0 1 2.342-2.326 2.38 2.38 0 0 1 1.674.686 2.33 2.33 0 0 1 .686 1.64 2.33 2.33 0 0 1-.686 1.64m2.375-1.137v-2.744h-.72v2.744c0 .536.2.988.537 1.306.334.318.785.518 1.321.518s.987-.2 1.321-.518c.318-.335.52-.787.52-1.306v-2.744h-.704v2.744c0 .318-.117.62-.318.82-.2.2-.485.335-.82.335s-.619-.134-.82-.335c-.2-.2-.317-.502-.317-.82m-7.646-2.326c-.268-.267-.653-.418-1.122-.418H63.26v4.468h.72v-1.607h.853l.502.804.502.803h.837l-.536-.854-.535-.853c.318-.067.569-.234.736-.468s.268-.52.268-.854c0-.401-.15-.77-.418-1.02m14.807 0a1.7 1.7 0 0 0-1.137-.418h-1.74v4.468h.72V22.51h1.02c.47 0 .87-.15 1.137-.42.268-.266.42-.635.42-1.036 0-.418-.15-.77-.42-1.038M68.65 23.01c.284.3.686.485 1.137.485.47 0 .87-.184 1.155-.485a1.66 1.66 0 0 0 .469-1.172c0-.451-.184-.87-.469-1.17a1.62 1.62 0 0 0-1.154-.486 1.58 1.58 0 0 0-1.138.485c-.285.3-.469.72-.469 1.17 0 .452.184.87.469 1.173m11.796-1.356a.87.87 0 0 1-.585.218H78.84v-1.607h1.02a.87.87 0 0 1 .586.218.78.78 0 0 1 .234.586c0 .25-.082.45-.233.585m-14.81-.05a.82.82 0 0 1-.568.2H63.98V20.25h1.087c.235 0 .436.083.57.217a.8.8 0 0 1 .217.57.77.77 0 0 1-.218.568m35.173-7.697c0-.05 0-.1-.016-.134l-1.79-.033-.202.318-.2.317h1.522c-.067.352-.217.67-.468.887-.251.218-.586.352-1.004.352a1.5 1.5 0 0 1-1.12-.486 1.7 1.7 0 0 1-.453-1.188c0-.468.184-.886.468-1.188a1.6 1.6 0 0 1 1.138-.468c.201 0 .385.033.553.083.167.05.334.134.485.252l.184-.285.184-.285c-.2-.15-.418-.25-.653-.317a2.7 2.7 0 0 0-.753-.1c-.652 0-1.238.267-1.656.685a2.27 2.27 0 0 0-.686 1.657c0 .652.25 1.238.67 1.656.417.436.986.686 1.639.686.636 0 1.188-.25 1.573-.652s.602-.954.602-1.59a1 1 0 0 0-.008-.083 1 1 0 0 1-.009-.084m-23.125.602v-2.744h-.72v2.744c0 .536.202.988.536 1.306.335.317.787.518 1.322.518.536 0 .987-.2 1.322-.518.318-.335.52-.787.52-1.306v-2.744h-.704v2.744c0 .318-.117.62-.318.82-.2.201-.485.335-.82.335s-.619-.134-.82-.335c-.2-.2-.318-.502-.318-.82m-2.175 1.44c-.268.234-.653.384-1.155.384-.35 0-.651-.067-.903-.167a2.8 2.8 0 0 1-.67-.368l.184-.285.185-.284c.184.117.385.217.585.301.201.067.403.117.636.117.285 0 .502-.067.636-.184a.57.57 0 0 0 .218-.468c0-.218-.1-.352-.268-.452s-.419-.184-.703-.268c-.35-.1-.686-.217-.937-.402-.25-.184-.417-.451-.417-.886 0-.385.15-.72.4-.954.252-.235.636-.368 1.105-.368.267 0 .502.05.736.117q.327.1.602.301l-.184.284-.184.285a1.8 1.8 0 0 0-1.004-.335c-.268 0-.451.067-.584.184a.62.62 0 0 0-.186.452c0 .218.1.351.269.452.152.107.375.172.63.247l.072.02.084.029c.32.106.622.205.853.39.251.184.418.468.418.887a1.3 1.3 0 0 1-.418.971m-9.236-.303a2.4 2.4 0 0 1-1.673.686 2.34 2.34 0 0 1-2.343-2.326 2.34 2.34 0 0 1 2.343-2.342 2.4 2.4 0 0 1 1.673.686 2.4 2.4 0 0 1 .686 1.656c0 .636-.267 1.222-.686 1.64m-7.83.017a2.34 2.34 0 0 1 1.69-4c.317 0 .585.05.836.135.25.083.468.217.67.368l-.185.284-.184.285a1.78 1.78 0 0 0-1.155-.402c-.434 0-.836.184-1.12.485-.302.301-.47.72-.47 1.188 0 .469.185.887.47 1.188.284.302.686.486 1.12.486.218 0 .436-.034.62-.1.193-.071.374-.173.535-.302l.184.285.184.284a2.2 2.2 0 0 1-.67.368c-.27.09-.552.135-.836.134a2.42 2.42 0 0 1-1.69-.686m30.903.569h.72v-4.468h-.72zm2.31 0h.67v-3.447l1.07 1.723 1.071 1.724h.836v-4.468h-.686v3.38l-1.037-1.69-1.038-1.69h-.887zm-4.803-3.799h1.406v-.669h-3.53v.67h1.39v3.798h.735zm-1.99 3.13h-2.21v-3.799h-.72v4.468h2.93zm-16.884.669h.67v-3.447l1.07 1.723 1.07 1.724h.837v-4.468h-.686v3.38l-1.037-1.69-1.038-1.69h-.886zm-4.518-1.054c.285.3.686.485 1.138.485s.853-.184 1.155-.485a1.66 1.66 0 0 0 .468-1.172c0-.451-.184-.87-.468-1.171a1.62 1.62 0 0 0-1.155-.485 1.58 1.58 0 0 0-1.138.485 1.66 1.66 0 0 0-.468 1.171c0 .452.184.87.468 1.172M79.374 7.8a2.4 2.4 0 0 1-2.572.514 2.3 2.3 0 0 1-.758-.514 2.33 2.33 0 0 1-.686-1.64 2.34 2.34 0 0 1 2.343-2.342c.67 0 1.255.268 1.673.686a2.4 2.4 0 0 1 .686 1.657 2.33 2.33 0 0 1-.686 1.64m-9.12.303c-.267.25-.651.384-1.154.384-.35 0-.651-.05-.902-.167a2.8 2.8 0 0 1-.67-.368l.183-.285.185-.284c.184.117.385.218.585.301.2.067.403.117.637.117.284 0 .502-.067.636-.184a.57.57 0 0 0 .216-.468c0-.218-.1-.352-.266-.452-.168-.1-.42-.184-.703-.268-.353-.1-.687-.217-.937-.4-.251-.185-.42-.453-.42-.888 0-.385.151-.72.402-.954s.636-.368 1.104-.368c.268 0 .502.05.737.117q.326.1.603.301l-.184.285-.184.284a1.8 1.8 0 0 0-1.004-.335c-.268 0-.453.067-.587.185a.62.62 0 0 0-.184.451c0 .218.1.352.269.452.153.107.376.172.63.247l.073.02c.35.118.685.235.936.42.25.183.419.468.419.886 0 .385-.15.72-.419.97M66.14 7.8a2.4 2.4 0 0 1-2.572.514 2.3 2.3 0 0 1-.758-.514 2.33 2.33 0 0 1-.687-1.64 2.34 2.34 0 0 1 2.343-2.342c.67 0 1.255.268 1.673.686a2.4 2.4 0 0 1 .686 1.657 2.33 2.33 0 0 1-.686 1.64m16.866-2.175-1.037-1.69-.887.017V8.42h.67V4.956l1.07 1.723 1.071 1.724h.837V3.935h-.686v3.38zm-8.098-1.02v-.67h-3.53v.67h1.389v3.798h.735v-3.8zM60.735 4.27a1.56 1.56 0 0 0-.988-.335l-1.757-.033V8.37h1.908c.418 0 .77-.134 1.02-.368a1.234 1.234 0 0 0 .218-1.556 1.2 1.2 0 0 0-.52-.435c.169-.084.286-.218.386-.368.084-.15.134-.318.134-.519 0-.335-.15-.636-.401-.853m15.83 3.062a1.55 1.55 0 0 0 1.136.485c.452 0 .853-.167 1.155-.485.284-.285.468-.703.468-1.17 0-.453-.184-.87-.468-1.173a1.62 1.62 0 0 0-1.155-.485 1.58 1.58 0 0 0-1.138.485 1.7 1.7 0 0 0-.468 1.172c0 .452.184.87.468 1.17m-13.236 0c.285.301.686.485 1.138.485s.853-.167 1.155-.485c.284-.285.468-.703.468-1.17 0-.453-.184-.87-.468-1.173a1.62 1.62 0 0 0-1.155-.485 1.58 1.58 0 0 0-1.138.485 1.7 1.7 0 0 0-.468 1.172c0 .452.184.871.468 1.171m-2.962.216a.68.68 0 0 1-.502.201l-1.154-.017V6.428h1.154c.2 0 .369.067.503.184a.61.61 0 0 1 .2.47.67.67 0 0 1-.2.467m-.15-1.907a.66.66 0 0 1-.47.184L58.71 5.81V4.554h1.037c.184 0 .352.067.469.184a.62.62 0 0 1 .184.452.62.62 0 0 1-.184.452"
+                            clipRule="evenodd"
+                          ></path>
+                        </g>
+                      </g>
+                      <defs>
+                        <clipPath id="bcg_inline_svg__a">
+                          <path fill="#fff" d="M0 0h101v28H0z"></path>
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </li>
+
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 28 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <g clipPath="url(#pepsi_inline_svg__a)">
+                        <mask
+                          id="pepsi_inline_svg__b"
+                          width="28"
+                          height="28"
+                          x="0"
+                          y="0"
+                          maskUnits="userSpaceOnUse"
+                          style={{ maskType: 'luminance' }}
+                        >
+                          <path fill="#fff" d="M0 0h28v28H0z" />
+                        </mask>
+                        <g mask="url(#pepsi_inline_svg__b)">
+                          <path
+                            fill="#94979E"
+                            d="M27.743 14A13.737 13.737 0 1 1 .267 14a13.737 13.737 0 0 1 27.475 0"
+                          />
+                          <path
+                            fill="#000"
+                            d="M14 0C6.27 0 0 6.27 0 14s6.27 14 14 14c7.729 0 14-6.27 14-14S21.728 0 14 0m0 .526a13.472 13.472 0 0 1 12.45 18.63A13.47 13.47 0 0 1 14 27.476 13.47 13.47 0 0 1 .526 14 13.47 13.47 0 0 1 13.998.526z"
+                          />
+                          <path
+                            fill="#000"
+                            d="M20.781 11.267c-1.597 0-2.432.677-2.432 1.714 0 .33.205.805.55 1.028.605.392 1.112.45 1.807.62.398.098.831.21.831.465 0 .211-.214.369-.78.369-1.123 0-1.344-.592-1.344-.592l-1.437.528c.304.968 1.793 1.3 2.779 1.3 1.055 0 1.664-.225 2.051-.596.428-.407.47-.802.47-1.177 0-.33-.13-.77-.765-1.137-.463-.266-1.398-.43-1.805-.517-.153-.034-.647-.106-.647-.397 0-.217.308-.334.722-.334.819 0 .95.552.95.552l1.442-.53c-.225-1.013-1.41-1.296-2.392-1.296m4.768.026-1.73.634v4.567h1.731zm-23.152.095v5.104h1.731v-.951a22 22 0 0 0 1.953-.74c1.21-.55 1.26-1.24 1.26-1.814 0-.71-.528-1.6-2.005-1.6zm5.44 0v5.104h4.5v-1.257h-2.77v-.676h2.175v-1.256H9.567v-.662h2.72v-1.255zm5.25 0v5.104h1.731v-.951a22 22 0 0 0 1.952-.74c1.21-.55 1.261-1.24 1.261-1.814 0-.71-.529-1.6-2.005-1.6zm-8.959 1.254h.865c.291 0 .533.237.533.538 0 .357-.138.548-.657.765l-.741.294zm10.69 0h.865c.292 0 .534.237.534.538 0 .357-.136.548-.658.765l-.74.294z"
+                          />
+                          <path
+                            fill="#303236"
+                            d="M13.999 1.461A12.54 12.54 0 0 0 2.496 9.028c.045.015 2.49.882 4.96.882 3.858 0 8.484-1.577 13.468-1.577 2.523 0 4.39.625 4.581.69A12.54 12.54 0 0 0 14 1.464"
+                          />
+                          <path
+                            fill="#0C0D0D"
+                            d="M14.003 26.542a12.54 12.54 0 0 0 11.503-7.564c-.046-.018-2.492-.883-4.961-.883-3.858 0-8.483 1.577-13.469 1.577-2.522 0-4.39-.624-4.582-.69a12.54 12.54 0 0 0 11.509 7.56"
+                          />
+                        </g>
+                      </g>
+                      <defs>
+                        <clipPath id="pepsi_inline_svg__a">
+                          <path fill="#fff" d="M0 0h28v28H0z" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </li>
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="107"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 107 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <mask
+                        id="retool_inline_svg__a"
+                        width="106"
+                        height="22"
+                        x="0"
+                        y="3"
+                        maskUnits="userSpaceOnUse"
+                        style={{ maskType: 'luminance' }}
+                      >
+                        <path fill="#fff" d="M.71 3.5h105.001v21h-105z" />
+                      </mask>
+                      <g mask="url(#retool_inline_svg__a)">
+                        <mask
+                          id="retool_inline_svg__b"
+                          width="106"
+                          height="22"
+                          x="0"
+                          y="3"
+                          maskUnits="userSpaceOnUse"
+                          style={{ maskType: 'luminance' }}
+                        >
+                          <path fill="#fff" d="M105.711 3.5h-105v21h105z" />
+                        </mask>
+                        <g mask="url(#retool_inline_svg__b)">
+                          <path
+                            fill="#94979E"
+                            d="M45.426 24.059h-3.828l-8.363-8.81h-1.56v8.811h-2.836V3.5h9.5c3.997 0 6.379 2.203 6.379 5.874s-2.382 5.874-6.38 5.874h-1.417zM41.881 9.376c0-2.085-1.134-3.378-3.543-3.378h-6.663v6.753h6.663c2.41 0 3.543-1.292 3.543-3.378M52.684 24.5c-4.536 0-7.371-3.494-7.371-8.078 0-4.582 2.835-8.076 7.23-8.076 3.544 0 5.67 2.056 6.606 5.11.34 1.146.482 2.409.482 3.701v.294H48.034c.086 2.468 1.843 4.846 4.65 4.846 2.41 0 3.515-1.44 3.743-2.497h2.92c-.68 2.497-2.948 4.7-6.663 4.7m-4.65-9.252h8.874c-.142-2.642-1.503-4.7-4.365-4.7-2.864 0-4.423 2.204-4.51 4.7m11.478-3.776V9.125h3.544V5.6h2.722v3.525h3.828v2.35h-3.829v9.251c0 1.028.284 1.381 1.276 1.381h2.552v2.291h-3.119c-2.58 0-3.43-1.322-3.43-3.672v-9.252zm18.176-3.126c4.537 0 7.512 3.495 7.512 8.077 0 4.583-2.975 8.077-7.513 8.077-4.537 0-7.512-3.494-7.512-8.078 0-4.582 2.977-8.076 7.513-8.076m0 2.35c-3.09 0-4.792 2.644-4.792 5.727s1.701 5.727 4.791 5.727 4.792-2.644 4.792-5.728c0-3.082-1.701-5.726-4.791-5.726m16.236-2.35c4.536 0 7.512 3.495 7.512 8.077 0 4.583-2.976 8.077-7.512 8.077s-7.513-3.494-7.513-8.078c0-4.582 2.976-8.076 7.513-8.076m0 2.35c-3.09 0-4.793 2.644-4.793 5.727s1.701 5.727 4.793 5.727c3.089 0 4.79-2.644 4.79-5.728 0-3.082-1.7-5.726-4.79-5.726M105.732 3.5v20.559h-2.722V3.5zm-92.553.964c0-.532-.42-.964-.935-.964H1.645c-.515 0-.934.43-.934.964V8.96c0 .532.419.964.934.964h10.6c.515 0 .934.43.934.964v1.284c0 .532-.42.964-.935.964H5.387c-.517 0-.935.43-.935.964v4.497c0 .532.418.964.935.964h6.856c.517 0 .935.43.935.964v2.569c0 .532.42.964.935.964h4.364c.517 0 .934-.432.934-.964v-4.496a.946.946 0 0 0-.934-.964h-4.364a.95.95 0 0 1-.934-.964v-1.285c0-.532.419-.964.934-.964h4.364c.517 0 .934-.43.934-.963V8.96a.947.947 0 0 0-.934-.964h-4.364a.95.95 0 0 1-.934-.964z"
+                          />
+                        </g>
+                      </g>
+                    </svg>
+                  </li>
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="101"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 101 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <path
+                        fill="#94979E"
+                        d="M37.182 4.643h3.76l6.397 11.57 6.396-11.57h3.68v19.011h-3.069V9.084l-5.608 10.09h-2.879L40.25 9.083v14.57h-3.067zm30.134 19.352q-2.131 0-3.748-.944a6.6 6.6 0 0 1-2.518-2.614q-.904-1.672-.904-3.83 0-2.186.883-3.87a6.6 6.6 0 0 1 2.45-2.635q1.569-.95 3.606-.95 2.023 0 3.483.958 1.46.956 2.248 2.682.786 1.725.788 4.045v.843H63.187q.285 1.74 1.405 2.736 1.12.998 2.832.998 1.371 0 2.362-.407a6 6 0 0 0 1.86-1.236l1.63 1.996q-2.43 2.228-5.96 2.228m2.24-11.278q-.963-.984-2.526-.984-1.52 0-2.545 1.005-1.026 1.005-1.297 2.7h7.47q-.14-1.737-1.101-2.721m7.769-.715H74.5V9.491h2.825V5.335h2.96v4.156h4.291v2.512h-4.291v6.369q0 1.587.544 2.267.541.68 1.86.679.584 0 .99-.048c.408-.047.572-.074.897-.129v2.486c-.8.227-1.627.341-2.458.34q-4.792 0-4.792-5.242zM100 23.656h-2.905v-1.983a5.25 5.25 0 0 1-1.97 1.718q-1.195.603-2.716.605-1.872 0-3.32-.958-1.446-.959-2.274-2.634-.83-1.678-.829-3.836 0-2.174.842-3.844.841-1.67 2.33-2.62c1.487-.952 2.129-.95 3.414-.95q1.453 0 2.608.563a5.2 5.2 0 0 1 1.915 1.596v-1.82h2.905zm-2.96-9.208a4 4 0 0 0-1.5-1.907q-1.026-.698-2.37-.698-1.902 0-3.028 1.276-1.127 1.275-1.127 3.449 0 2.186 1.086 3.462t2.947 1.276q1.371 0 2.444-.705a4 4 0 0 0 1.548-1.902zM22.354 4c-2.467 0-4.397 1.859-6.142 4.22C13.81 5.165 11.805 4 9.403 4 4.506 4 .755 10.372.755 17.117.755 21.338 2.796 24 6.217 24c2.462 0 4.232-1.16 7.38-6.662l2.214-3.913q.475.765.998 1.651l1.476 2.483c2.876 4.81 4.478 6.441 7.38 6.441 3.332 0 5.186-2.698 5.186-7.007 0-7.062-3.836-12.992-8.496-12.992zM11.196 15.848c-2.552 4-3.434 4.897-4.855 4.897-1.462 0-2.331-1.284-2.331-3.573 0-4.897 2.442-9.903 5.351-9.903 1.576 0 2.894.91 4.911 3.798a414 414 0 0 0-3.076 4.781m9.63-.503L19.063 12.4a62 62 0 0 0-1.377-2.144c1.59-2.455 2.902-3.678 4.463-3.678 3.24 0 5.834 4.772 5.834 10.635 0 2.235-.733 3.53-2.249 3.53-1.452 0-2.147-.959-4.907-5.4"
+                      />
+                    </svg>
+                  </li>
+                  <li className="m-0! before:content-none!">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="101"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 101 28"
+                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                    >
+                      <path
+                        fill="#94979E"
+                        d="M17.124 20.123a.557.557 0 0 0-.578-.578c-.53.048-1.302.048-1.784.048-3.086 0-5.545-2.507-5.545-5.593V.693A.21.21 0 0 0 9.024.5H1.503q-.145 0-.145.145V14c0 7.425 6.027 13.5 13.404 13.5.723 0 1.494-.048 2.17-.193.096 0 .144-.096.144-.193v-6.99zM14.76.5c-.771 0-1.494.048-2.217.193-.097 0-.145.096-.145.193v7.039c0 .337.241.579.579.579.289-.049 1.783-.049 1.783-.049 3.086 0 5.545 2.508 5.545 5.593v12.15c0 .048.048.097.096.048 4.63-2.121 7.811-6.798 7.811-12.246C28.212 6.527 22.185.5 14.76.5M92.193 8.263c-4.966 0-7.136 3.375-7.136 7.907 0 4.484 2.604 7.184 6.702 7.184 4.966 0 7.136-3.327 7.136-7.811-.048-4.484-2.604-7.28-6.702-7.28m1.64 11.282c-.531.385-1.158.578-2.026.578-1.639 0-2.651-1.446-2.651-4.001 0-1.447.289-2.7.771-3.375.53-.434 1.205-.627 2.025-.627 1.784 0 2.652 1.446 2.652 3.568-.048 1.59-.29 2.989-.772 3.857m-15.526-5.11c-2.17-.387-2.651-.628-2.651-1.303 0-.337.096-.626.24-.771.531-.193 1.399-.29 2.267-.29 1.736 0 3.23.242 4.484.676V9.323c-.965-.482-2.604-.964-4.822-.964-3.809 0-6.171 1.784-6.171 4.87 0 2.94 1.736 3.857 4.918 4.435 2.362.434 2.844.675 2.844 1.399 0 .337-.096.578-.192.723-.58.193-1.399.337-2.604.337-1.591 0-3.472-.337-4.58-.723v3.375c1.205.482 3.037.723 4.724.723 4.05 0 6.654-1.253 6.654-4.532 0-2.893-1.687-3.905-5.11-4.532m-30.616-.676c1.35-.771 2.508-2.073 2.508-3.953 0-3.134-2.411-4.822-7.474-4.822h-7.28v18.129h8.437c4.484 0 6.799-1.736 6.799-5.16 0-2.265-1.302-3.519-2.99-4.194m-7.81-5.303c.723-.049 1.59-.049 2.603-.049 2.314 0 3.327.675 3.327 2.218 0 .868-.337 1.447-1.109 2.025-.627.145-1.302.193-2.17.193-1.012 0-1.928-.048-2.651-.048zm5.64 11.474c-.578.145-1.542.193-2.362.193-1.35 0-2.459-.048-3.278-.048v-4.194h3.133c2.267 0 3.23.674 3.23 2.17q-.07 1.084-.722 1.88m8.1 3.183h4.243V8.552h-4.242zm12.15-18.177-4.098.337v13.741c0 2.7 1.254 4.34 4.34 4.34 1.301 0 2.362-.241 3.278-.627v-3.375c-.867.337-1.639.482-2.459.482-.723 0-1.06-.386-1.06-1.06v-6.847h3.471V8.552h-3.471zm-7.858 1.109V2.429l-4.243.337v3.327h4.243z"
+                      />
+                    </svg>
+                  </li>
+                </ul>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* Bento Box Features Section */}
+      <section className="container mx-auto relative w-full overflow-hidden bg-background py-24">
+        <GridBackground />
+        <div className="relative z-10">
+          <div className="flex flex-col gap-6">
+
+            {/* Top Row */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
+              {/* Card 1 */}
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  Save 8+ hours a week with smart email drafting
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Our AI uses advanced models to instantly draft replies, follow-ups, and intros—freeing you from the email grind.
+                </p>
+                <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full border-[length:var(--radius-xl)] /90" />
+                <div className="absolute bottom-16 left-24 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-center shadow-xl">
+                  <div className="flex flex-col items-center">
+                    <span className="text-micro font-bold leading-tight text-primary-foreground">8h/week</span>
+                    <span className="text-nano font-medium leading-tight text-primary-foreground/80">saved</span>
+                  </div>
+                  {/* Badge pointer */}
+                  <div className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-primary" />
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  Never miss a follow-up again
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  The system detects action items, deadlines, and reminders—and nudges you automatically.
+                </p>
+                <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center justify-center gap-10">
+                  <Image src="/assets/never-miss.png" width={700} height={500} alt="Search on gmail & calendar"
+                    className="w-40" />
+                </div>
+              </div>
+
+              {/* Card 3 */}
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  Action items extracted instantly
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Turns messy meeting convos into clear next steps—auto-assigned to the right person in seconds.
+                </p>
+                <div className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 items-center justify-center gap-4 px-6">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-background shadow-md shrink-0">
+                    <GoogleCalendarLogo className="h-8 w-8" />
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground/50 shrink-0" />
+                  <div className="flex flex-col gap-2 rounded-lg bg-primary/10 p-4 shrink-0 w-32">
+                    <div className="h-2 w-full rounded bg-primary/20" />
+                    <div className="flex items-center gap-2">
+                      <Check className="h-3 w-3 text-primary" />
+                      <div className="h-1.5 w-16 rounded bg-primary/30" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Check className="h-3 w-3 text-primary" />
+                      <div className="h-1.5 w-12 rounded bg-primary/30" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  Draft messages instantly with AI
+                </h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  Write emails in seconds, fix spelling and grammar automatically, and generate concise summaries without leaving Gmail.
+                </p>
+                <div className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 items-center justify-center gap-4 px-6">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-background shadow-md shrink-0">
+                    <SpellCheck className="h-8 w-8 text-primary" />
+                  </div>
+                  <ArrowRight className="h-5 w-5 text-muted-foreground/50 shrink-0" />
+                  <div className="flex flex-col gap-2 rounded-lg  p-4 shrink-0 w-32">
+                    <div className="h-2 w-full rounded bg-primary/20" />
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-3 w-3 text-primary" />
+                      <div className="h-1.5 w-16 rounded bg-primary/30" />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-3 w-3 text-primary" />
+                      <div className="h-1.5 w-12 rounded bg-primary/30" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Row */}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+              {/* Card 4 */}
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  Search less, do more: Smart labels & filters
+                </h3>
+                <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+                  No more inbox clutter. Automatically tags emails by priority and intent—saving up to 2 hours daily.
+                </p>
+                <div className="absolute bottom-12 left-8 flex flex-wrap gap-3 max-w-[80%]">
+                  <span className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm">
+                    To respond
+                  </span>
+                  <span className="rounded-full bg-secondary px-5 py-2.5 text-sm font-medium text-secondary-foreground shadow-sm">
+                    FYI
+                  </span>
+                  <span className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground shadow-sm">
+                    Awaiting Reply
+                  </span>
+                  <span className="rounded-full bg-primary/80 px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm">
+                    Done
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 5 */}
+              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
+                <h3 className="mb-3 text-xl font-semibold text-foreground">
+                  AI that works where you do—directly in Gmail & Google Calendar
+                </h3>
+                <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
+                  No switching tabs or tools. Integrates natively with your workspace, making your workflow seamless and smarter.
+                </p>
+                <div className="absolute bottom-4 left-1/2 flex w-full -translate-x-1/2 items-center justify-center">
+                  <div className="relative h-40 w-full max-w-sm">
+                    {/* Orbiting Icons */}
+                    <div className="absolute left-[15%] top-0 flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-md">
+                      <GmailLogo />
+                    </div>
+                    <div className="absolute right-[20%] top-4 flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-md">
+                      <GoogleCalendarLogo className="h-6 w-6" />
+                    </div>
+                    <div className="absolute bottom-4 left-[25%] flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md">
+                      <ListTodo className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="absolute bottom-2 right-[25%] flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md">
+                      <Calendar className="h-5 w-5 text-secondary" />
+                    </div>
+
+                    {/* Center AI Hub */}
+                    <div className="absolute bottom-2 left-1/2 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full bg-primary shadow-xl">
+                      <Sparkles className="h-8 w-8 text-primary-foreground" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works Section */}
+      <section className="relative w-full bg-background border-t border-border/50">
+        <ElectricBorderFrame className="container mx-auto px-4 py-24" bulbCount={8}>
+          <div className="mb-16 text-center max-w-2xl mx-auto">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              How Spider Web works
+            </h2>
+            <p className="mt-4 text-lg text-muted-foreground">
+              Get up and running in minutes. Our AI securely integrates with your existing tools to automate your daily tasks.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 relative">
+            {/* Connecting dashed lines for desktop */}
+            <div className="hidden md:block absolute top-8 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-border/50" />
+
+            {/* Step 1 */}
+            <div className="relative flex flex-col items-center text-center z-10">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-background border  text-primary shadow-sm">
+                <span className="text-xl font-bold">1</span>
+              </div>
+              <h3 className="mb-3 text-xl font-semibold text-foreground">Connect your tools</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                Securely link your Gmail and Google Calendar with one click. We use enterprise-grade encryption to keep your data safe.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative flex flex-col items-center text-center z-10">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-background border-2  text-primary shadow-sm">
+                <span className="text-xl font-bold">2</span>
+              </div>
+              <h3 className="mb-3 text-xl font-semibold text-foreground">AI learns your style</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                Our models analyze your past communications to understand your tone, priorities, and typical workflows.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative flex flex-col items-center text-center z-10">
+              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
+                <span className="text-xl font-bold">3</span>
+              </div>
+              <h3 className="mb-3 text-xl font-semibold text-foreground">Automate the rest</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+                Enjoy auto-drafted replies, smart categorization, and automatic action-item extraction from your meetings.
+              </p>
+            </div>
+          </div>
+        </ElectricBorderFrame>
+      </section>
+
+
+
+      {/* Testimonials Section */}
+      <section className="relative w-full py-24 border-t border-border/50">
+        <GridBackground />
+
+        <div className="container mx-auto px-4">
+
+          <div className="mb-16 text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Loved by teams worldwide
+            </h2>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {[
+              {
+                quote: "Spider Web has completely transformed how I handle my mornings. What used to take 2 hours of email triaging now takes 15 minutes.",
+                author: "Sarah Jenkins",
+                role: "Product Manager at TechFlow"
+              },
+              {
+                quote: "The automated meeting action items are flawlessly accurate. It's like having a dedicated chief of staff in every calendar invite.",
+                author: "Marcus Chen",
+                role: "Engineering Lead"
+              },
+              {
+                quote: "I was skeptical about AI writing my emails, but it learned my tone within days. I literally can't imagine working without it now.",
+                author: "Elena Rodriguez",
+                role: "Founder & CEO"
+              }
+            ].map((testimonial, i) => (
+              <div key={i} className="flex flex-col justify-between  border border-border p-6 shadow-sm">
+                <p className="mb-6 text-muted-foreground leading-relaxed">
+                  &quot;{testimonial.quote}&quot;
+                </p>
+                <div>
+                  <p className="font-semibold text-foreground">{testimonial.author}</p>
+                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative w-full border-t border-border/50 bg-muted/10 py-24 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background to-transparent" />
+        <div className="container relative mx-auto px-4 text-center z-10">
+          <div className="mx-auto max-w-2xl space-y-8">
+            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+              Ready to put your inbox on autopilot?
+            </h2>
+            <p className="text-lg leading-relaxed text-muted-foreground">
+              Join thousands of professionals who have reclaimed their time.
+              No credit card required. Setup takes less than 2 minutes.
+            </p>
+            <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
+              <Link href="/signup">
+                <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base">
+                  Get Started for Free
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/pricing">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto h-12 px-8 text-base bg-background">
+                  View Pricing
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Section */}
+      <footer className="border-t border-border/50 bg-background py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
+            <div className="md:col-span-2">
+              <Link href="/" className="flex items-center gap-2 mb-4">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="2" fill="#ec4899" />
+                  <line x1="12" y1="3" x2="12" y2="21" stroke="#ec4899" strokeWidth="1.5" />
+                  <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="1.5" />
+                  <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+                <span className="text-xl font-bold tracking-tight">Spider Web</span>
+              </Link>
+              <p className="text-sm text-muted-foreground max-w-xs">
+                The intelligent assistant that manages your email and meetings so you can focus on what matters.
+              </p>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-foreground">Product</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><Link href="/features" className="hover:text-foreground transition-colors">Features</Link></li>
+                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
+                <li><Link href="/security" className="hover:text-foreground transition-colors">Security</Link></li>
+                <li><Link href="/changelog" className="hover:text-foreground transition-colors">Changelog</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-foreground">Company</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
+                <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
+                <li><Link href="/careers" className="hover:text-foreground transition-colors">Careers</Link></li>
+                <li><Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
+              <ul className="space-y-3 text-sm text-muted-foreground">
+                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
+                <li><Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-sm text-muted-foreground">
+              © {new Date().getFullYear()} Spider Web. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <Link href="https://twitter.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                <span className="sr-only">Twitter</span>
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                </svg>
+              </Link>
+              <Link href="https://github.com" className="text-muted-foreground hover:text-foreground transition-colors">
+                <span className="sr-only">GitHub</span>
+                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                </svg>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </main>
   );
-};
+}
