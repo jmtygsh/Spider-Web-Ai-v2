@@ -117,17 +117,24 @@ function GridBackground() {
   );
 }
 
-// Purpose:
-// Public marketing landing page for Spider Web.
-// Explains the product, social proof, and links to signup.
+
+// style={{
+//   backgroundImage: `radial-gradient(var(--color-foreground) 1px, transparent 1px)`,
+//   backgroundSize: "16px 16px",
+// }}
+
+
 export default function Home() {
   // Short trust bullets shown under the hero headline.
   const highlights = ["No software to download", "No credit card required"];
 
   return (
     <main className="bg-background min-h-screen">
-      <ElectricBorderFrame className="container mx-auto px-4" bulbCount={11}>
-        <div className="flex h-screen flex-col items-center justify-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
+
+      <ElectricBorderFrame className="container mx-auto px-4" bulbCount={4}>
+        <div className="flex h-screen flex-col items-center justify-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12"
+
+        >
           {/* Left Column */}
           <div className="w-full max-w-xl space-y-8">
             <div className="space-y-5">
@@ -171,11 +178,18 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <GmailLogo />
+                  <Image
+                    src="/assets/never-miss.png"
+                    width={200}
+                    height={100}
+                    alt="Search on gmail & calendar"
+                    className="w-10"
+                  />
                   <span className="text-foreground text-sm font-medium">
                     Gmail
                   </span>
                 </div>
+
               </div>
             </div>
           </div>
@@ -489,7 +503,7 @@ export default function Home() {
                 <div className="bg-primary absolute bottom-16 left-24 flex h-16 w-16 items-center justify-center rounded-full text-center shadow-xl">
                   <div className="flex flex-col items-center">
                     <span className="text-micro text-primary-foreground leading-tight font-bold">
-                      8h/week
+                      8h,
                     </span>
                     <span className="text-nano text-primary-foreground/80 leading-tight font-medium">
                       saved

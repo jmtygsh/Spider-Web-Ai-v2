@@ -97,8 +97,8 @@ const ChatPage: FC = () => {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <div className="min-h-screen bg-app-shell text-foreground">
-        <div className="container mx-auto flex min-h-[calc(100vh-73px)] flex-col px-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
+      <div className="bg-panel text-foreground">
+        <div className="flex min-h-screen flex-col px-2 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
           {/* left side  */}
           <aside className="flex flex-col border-b border-l border-border bg-panel p-5">
             <p className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">

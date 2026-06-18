@@ -35,10 +35,7 @@ export default function RootLayout({
         >
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.05] dark:opacity-[0.08]"
-            style={{
-              backgroundImage: `radial-gradient(var(--color-foreground) 1px, transparent 1px)`,
-              backgroundSize: "16px 16px",
-            }}
+
           />
           {/* Header is hidden on auth and connected app routes. */}
           <ConditonRender>

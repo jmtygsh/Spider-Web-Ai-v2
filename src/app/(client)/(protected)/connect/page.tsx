@@ -38,9 +38,7 @@ function createConnectionState(connected: boolean): ConnectionState {
   };
 }
 
-function createSnapshot(
-  status: PluginStatusResponse,
-): ConnectionStatusSnapshot {
+function createSnapshot(status: PluginStatusResponse): ConnectionStatusSnapshot {
   const connectionStates = Object.fromEntries(
     CONNECT_PLUGIN_IDS.map((pluginId) => [
       pluginId,
