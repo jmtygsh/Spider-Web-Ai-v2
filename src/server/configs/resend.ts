@@ -100,7 +100,7 @@ export function sendPasswordChangedConfirmationEmail(
   to: string,
   firstName?: string | null,
 ) {
-  const name = firstName?.trim() || "there";
+  const name = firstName?.trim() ?? "there";
 
   return sendEmail({
     to,

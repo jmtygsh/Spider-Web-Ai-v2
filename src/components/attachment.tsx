@@ -1,6 +1,7 @@
 "use client";
 
 import { type PropsWithChildren, useEffect, useState, type FC } from "react";
+import Image from "next/image";
 import { XIcon, PlusIcon, FileText } from "lucide-react";
 import {
   AttachmentPrimitive,
@@ -50,8 +51,7 @@ const useAttachmentSrc = () => {
     useShallow((s): { file?: File; src?: string } => {
       if (s.attachment.type !== "image") return {};
       if (s.attachment.file) return { file: s.attachment.file };
-      const src = s.attachment.content?.filter((c) => c.type === "image")[0]
-        ?.image;
+      const src = s.attachment.content?.find((c) => c.type === "image")?.image;
       if (!src) return {};
       return { src };
     }),
@@ -67,9 +67,12 @@ type AttachmentPreviewProps = {
 const AttachmentPreview: FC<AttachmentPreviewProps> = ({ src }) => {
   const [isLoaded, setIsLoaded] = useState(false);
   return (
-    <img
+    <Image
       src={src}
       alt="Attachment preview"
+      width={800}
+      height={600}
+      unoptimized
       className={cn(
         "block h-auto max-h-[80vh] w-auto max-w-full object-contain",
         isLoaded

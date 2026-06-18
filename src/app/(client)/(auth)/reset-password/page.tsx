@@ -54,7 +54,7 @@ function ResetPasswordForm() {
     });
 
     if (resetError) {
-      setError(resetError.message || "Failed to reset password");
+      setError(resetError.message ?? "Failed to reset password");
       setIsLoading(false);
     } else {
       router.push("/login");

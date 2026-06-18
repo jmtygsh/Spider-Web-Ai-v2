@@ -1,8 +1,6 @@
 // import 'dotenv/config';
 import { gmail } from "@corsair-dev/gmail";
 import { googlecalendar } from "@corsair-dev/googlecalendar";
-import { outlook } from "@corsair-dev/outlook";
-import { tavily } from "@corsair-dev/tavily";
 import { createCorsair } from "corsair";
 
 import { conn } from "@/server/db/index";
@@ -13,7 +11,7 @@ const plugins = [
     authType: "oauth_2",
     webhookHooks: {
       messageChanged: {
-        after: async (ctx) => {
+        after: async (_ctx) => {
           // await markWebhookReceived(ctx.tenantId, "gmail");
         },
       },
@@ -23,7 +21,7 @@ const plugins = [
     authType: "oauth_2",
     webhookHooks: {
       onEventChanged: {
-        after: async (ctx) => {
+        after: async (_ctx) => {
           // await markWebhookReceived(ctx.tenantId, "googlecalendar");
         },
       },
@@ -35,7 +33,7 @@ const plugins = [
   // tavily({
   //   authType: "api_key",
   // }),
-] as any;
+];
 
 // Shared multi-tenant Corsair client — Gmail + Google Calendar with webhook hooks.
 export const corsair = createCorsair({

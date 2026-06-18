@@ -1,14 +1,7 @@
 import {
-  Archive,
   Calendar,
   Check,
-  ChevronDown,
-  Flag,
-  Reply,
-  Settings,
   Sparkles,
-  Image as ImageIcon,
-  Search,
   ArrowRight,
   ListTodo,
   SpellCheck,
@@ -214,7 +207,7 @@ export default function Home() {
 
             <div className="animate-marquee flex w-max">
               {/* Render two identical sets of logos for seamless looping */}
-              {[...Array(2)].map((_, i) => (
+              {Array.from({ length: 2 }, (_, i) => (
                 <ul
                   key={i}
                   className="flex w-max items-center justify-around gap-16 px-8"

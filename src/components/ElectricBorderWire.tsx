@@ -100,21 +100,22 @@ export function ElectricBorderWire({
 
     const scheduleNextFlow = () => {
       const delay = 600 + Math.random() * 2200;
-      timeoutId = setTimeout(async () => {
-        if (!mountedRef.current) return;
-        await runElectricFlow();
-        if (mountedRef.current) scheduleNextFlow();
+      timeoutId = setTimeout(() => {
+        void (async () => {
+          if (!mountedRef.current) return;
+          await runElectricFlow();
+          if (mountedRef.current) scheduleNextFlow();
+        })();
       }, delay);
     };
 
-    timeoutId = setTimeout(
-      async () => {
+    timeoutId = setTimeout(() => {
+      void (async () => {
         if (!mountedRef.current) return;
         await runElectricFlow();
         if (mountedRef.current) scheduleNextFlow();
-      },
-      400 + Math.random() * 900,
-    );
+      })();
+    }, 400 + Math.random() * 900);
 
     return () => {
       mountedRef.current = false;

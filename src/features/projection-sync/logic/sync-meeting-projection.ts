@@ -24,8 +24,8 @@ function normalizePerson(
   if (!person) return null;
 
   const normalized = {
-    email: person.email?.trim() || null,
-    name: person.displayName?.trim() || null,
+    email: person.email?.trim() ?? null,
+    name: person.displayName?.trim() ?? null,
   };
 
   return normalized.email || normalized.name ? normalized : null;
@@ -40,7 +40,7 @@ function normalizeEventDateTime(
     | null
     | undefined,
 ) {
-  return value?.dateTime?.trim() || value?.date?.trim() || null;
+  return value?.dateTime?.trim() ?? value?.date?.trim() ?? null;
 }
 
 export async function syncMeetingProjection(input: {
@@ -55,15 +55,15 @@ export async function syncMeetingProjection(input: {
 
   const attendees =
     input.meeting.attendees?.map((attendee) => ({
-      email: attendee.email?.trim() || null,
-      name: attendee.displayName?.trim() || null,
-      responseStatus: attendee.responseStatus?.trim() || null,
+      email: attendee.email?.trim() ?? null,
+      name: attendee.displayName?.trim() ?? null,
+      responseStatus: attendee.responseStatus?.trim() ?? null,
       optional: attendee.optional ?? false,
       self: attendee.self ?? false,
       organizer: attendee.organizer ?? false,
     })) ?? [];
   const version =
-    input.meeting.updated?.trim() ||
+    input.meeting.updated?.trim() ??
     `${input.meeting.sequence ?? 0}:${externalMeetingId}`;
 
   const projection: MeetingProjection = {
@@ -73,15 +73,15 @@ export async function syncMeetingProjection(input: {
     externalMeetingId,
     provider: "googlecalendar",
     version,
-    calendarId: input.calendarId?.trim() || null,
-    iCalUID: input.meeting.iCalUID?.trim() || null,
-    status: input.meeting.status?.trim() || null,
-    title: input.meeting.summary?.trim() || null,
-    description: input.meeting.description?.trim() || null,
-    location: input.meeting.location?.trim() || null,
-    htmlLink: input.meeting.htmlLink?.trim() || null,
-    hangoutLink: input.meeting.hangoutLink?.trim() || null,
-    eventType: input.meeting.eventType?.trim() || null,
+    calendarId: input.calendarId?.trim() ?? null,
+    iCalUID: input.meeting.iCalUID?.trim() ?? null,
+    status: input.meeting.status?.trim() ?? null,
+    title: input.meeting.summary?.trim() ?? null,
+    description: input.meeting.description?.trim() ?? null,
+    location: input.meeting.location?.trim() ?? null,
+    htmlLink: input.meeting.htmlLink?.trim() ?? null,
+    hangoutLink: input.meeting.hangoutLink?.trim() ?? null,
+    eventType: input.meeting.eventType?.trim() ?? null,
     organizer: normalizePerson(input.meeting.organizer),
     creator: normalizePerson(input.meeting.creator),
     attendees,
@@ -89,11 +89,11 @@ export async function syncMeetingProjection(input: {
     startAt: normalizeEventDateTime(input.meeting.start),
     endAt: normalizeEventDateTime(input.meeting.end),
     timeZone:
-      input.meeting.start?.timeZone?.trim() ||
-      input.meeting.end?.timeZone?.trim() ||
+      input.meeting.start?.timeZone?.trim() ??
+      input.meeting.end?.timeZone?.trim() ??
       null,
     isCancelled: input.meeting.status === "cancelled",
-    raw: input.meeting as Record<string, unknown>,
+    raw: input.meeting,
   };
 
   await upsertProjectionEntity({

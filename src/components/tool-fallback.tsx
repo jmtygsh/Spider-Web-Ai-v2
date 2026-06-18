@@ -545,7 +545,7 @@ const ToolFallbackImpl: ToolCallMessagePartComponent = ({
             respondToApproval={respondToApproval}
           />
         )}
-        {!isCancelled && <ToolFallbackResult result={result} />}
+        {!isCancelled && <ToolFallbackResult result={result as unknown} />}
       </ToolFallbackContent>
     </ToolFallbackRoot>
   );

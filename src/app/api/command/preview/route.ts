@@ -48,7 +48,7 @@ export async function POST(request: Request) {
       return unauthorized();
     }
 
-    await captureException(error, { route: "/api/command/preview" });
+    captureException(error, { route: "/api/command/preview" });
     return serverError("Command preview failed.");
   }
 }

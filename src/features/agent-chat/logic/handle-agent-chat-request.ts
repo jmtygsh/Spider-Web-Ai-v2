@@ -27,7 +27,7 @@ import { env } from "@/env";
 function extractLatestUserQuery(messages: UIMessage[]) {
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     const message = messages[index];
-    if (!message || message.role !== "user") {
+    if (message?.role !== "user") {
       continue;
     }
 

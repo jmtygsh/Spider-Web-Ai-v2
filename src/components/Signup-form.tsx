@@ -48,7 +48,7 @@ export function SignUpForm({
     });
 
     if (signUpError) {
-      setError(signUpError.message || "Failed to sign up");
+      setError(signUpError.message ?? "Failed to sign up");
       setIsLoading(false);
     } else {
       router.push(`/verify?email=${encodeURIComponent(email)}`);
@@ -67,7 +67,7 @@ export function SignUpForm({
     });
 
     if (signInError) {
-      setError(signInError.message || "Failed to sign up with Google");
+      setError(signInError.message ?? "Failed to sign up with Google");
       setIsLoading(false);
     }
   };

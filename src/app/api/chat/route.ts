@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       }
     }
 
-    await captureException(error, { route: "/api/chat" });
+    captureException(error, { route: "/api/chat" });
     return serverError("Agent chat request failed.");
   }
 }

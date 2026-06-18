@@ -69,7 +69,7 @@ const useCopyToClipboard = ({
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), copiedDuration);
       },
-      () => {},
+      () => undefined,
     );
   };
 

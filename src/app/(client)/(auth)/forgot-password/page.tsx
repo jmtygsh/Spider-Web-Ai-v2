@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
     });
 
     if (resetError) {
-      setError(resetError.message || "Failed to send password reset email");
+      setError(resetError.message ?? "Failed to send password reset email");
     } else {
       setSuccess(true);
     }

@@ -55,7 +55,7 @@ export async function verifyToolResult(
     case "thread_found": {
       const output = input.result.output;
       const arrayHit =
-        Array.isArray(output?.threads) && output!.threads.length > 0;
+        Array.isArray(output?.threads) && output.threads.length > 0;
       const idHit = hasAnyField(output, ["id", "threadId"]);
       return {
         stepId: input.step.id,

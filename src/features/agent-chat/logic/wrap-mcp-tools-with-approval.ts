@@ -10,9 +10,15 @@ const READ_OPERATION_PATTERN =
 
 function serializeToolInput(input: unknown) {
   try {
-    return JSON.stringify(input ?? "").toLowerCase();
+    if (input === null || input === undefined) {
+      return "";
+    }
+    if (typeof input === "string") {
+      return input.toLowerCase();
+    }
+    return JSON.stringify(input).toLowerCase();
   } catch {
-    return String(input ?? "").toLowerCase();
+    return "";
   }
 }
 

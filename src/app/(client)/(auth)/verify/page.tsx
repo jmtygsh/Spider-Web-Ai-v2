@@ -40,7 +40,7 @@ function VerifyContent() {
     });
 
     if (resendError) {
-      setError(resendError.message || "Failed to resend verification email");
+      setError(resendError.message ?? "Failed to resend verification email");
     } else {
       setMessage("Verification email sent. Check your inbox.");
     }

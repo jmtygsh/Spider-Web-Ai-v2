@@ -4,7 +4,6 @@ import { z } from "zod";
 
 import { env } from "@/env";
 import type {
-  CommandIntent,
   ParsedCommandIntent,
 } from "@/features/command-bar/types/command-bar";
 
@@ -73,7 +72,7 @@ export function mergeIntentResults(
 
   return {
     ...heuristic,
-    intent: ai.intent as CommandIntent,
+    intent: ai.intent,
     confidence: ai.confidence,
     args: {
       queryText: ai.queryText ?? heuristic.args.queryText,

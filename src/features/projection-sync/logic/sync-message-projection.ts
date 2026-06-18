@@ -27,8 +27,8 @@ export async function syncMessageProjection(input: {
   const sender =
     headers.sender.email || headers.sender.name ? headers.sender : null;
   const version =
-    input.message.historyId?.trim() ||
-    input.message.internalDate?.trim() ||
+    input.message.historyId?.trim() ??
+    input.message.internalDate?.trim() ??
     externalMessageId;
 
   const projection: MessageProjection = {
@@ -36,12 +36,12 @@ export async function syncMessageProjection(input: {
     accountId: input.accountId,
     entityType: "message_projection",
     externalMessageId,
-    externalThreadId: input.message.threadId?.trim() || null,
+    externalThreadId: input.message.threadId?.trim() ?? null,
     provider: "gmail",
     version,
-    historyId: input.message.historyId?.trim() || null,
-    internalDate: input.message.internalDate?.trim() || null,
-    snippet: input.message.snippet?.trim() || null,
+    historyId: input.message.historyId?.trim() ?? null,
+    internalDate: input.message.internalDate?.trim() ?? null,
+    snippet: input.message.snippet?.trim() ?? null,
     subject: headers.subject,
     from,
     sender,
@@ -52,7 +52,7 @@ export async function syncMessageProjection(input: {
     labelIds: input.message.labelIds?.filter(Boolean) ?? [],
     hasAttachments: hasAttachments(input.message.payload),
     isUnread: (input.message.labelIds ?? []).includes("UNREAD"),
-    raw: input.message as Record<string, unknown>,
+    raw: input.message,
   };
 
   await upsertProjectionEntity({

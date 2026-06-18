@@ -50,7 +50,7 @@ export function LoginForm({
         router.push(`/verify?email=${encodeURIComponent(email)}`);
         return;
       }
-      setError(signInError.message || "Failed to login");
+      setError(signInError.message ?? "Failed to login");
       setIsLoading(false);
     } else {
       router.push("/dashboard");
@@ -69,7 +69,7 @@ export function LoginForm({
     });
 
     if (signInError) {
-      setError(signInError.message || "Failed to login with Google");
+      setError(signInError.message ?? "Failed to login with Google");
       setIsLoading(false);
     }
   };

@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       return unauthorized();
     }
 
-    await captureException(error, { route: "/api/command/execute" });
+    captureException(error, { route: "/api/command/execute" });
     return serverError("Command execution failed.");
   }
 }

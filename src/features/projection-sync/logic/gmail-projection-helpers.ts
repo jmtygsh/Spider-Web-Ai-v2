@@ -4,6 +4,9 @@ import type {
   ProjectionParticipant,
 } from "@/features/projection-sync/types/projection";
 
+const MAILBOX_REGEX =
+  /^(?:"?([^"]*)"?\s)?<?([^<>@\s]+@[^<>@\s]+)>?$/;
+
 function getHeaderValue(
   headers: GmailHeader[] | null | undefined,
   name: string,
@@ -11,20 +14,20 @@ function getHeaderValue(
   const header = headers?.find(
     (item) => item.name?.toLowerCase() === name.toLowerCase(),
   );
-  return header?.value?.trim() || null;
+  return header?.value?.trim() ?? null;
 }
 
 function parseMailboxEntry(value: string): ProjectionParticipant {
   const trimmed = value.trim();
-  const match = trimmed.match(/^(?:"?([^"]*)"?\s)?<?([^<>@\s]+@[^<>@\s]+)>?$/);
+  const match = MAILBOX_REGEX.exec(trimmed);
   if (!match) {
     return { email: trimmed || null, name: null };
   }
 
   const [, displayName, email] = match;
   return {
-    email: email?.trim() || null,
-    name: displayName?.trim() || null,
+    email: email?.trim() ?? null,
+    name: displayName?.trim() ?? null,
   };
 }
 
@@ -34,7 +37,9 @@ export function parseMailboxList(value: string | null): ProjectionParticipant[] 
   return value
     .split(",")
     .map((entry) => parseMailboxEntry(entry))
-    .filter((entry) => entry.email || entry.name);
+    .filter(
+      (entry) => Boolean(entry.email) || Boolean(entry.name),
+    );
 }
 
 function countAttachments(part: GmailMessagePart | null | undefined): number {

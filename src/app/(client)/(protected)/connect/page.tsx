@@ -230,13 +230,13 @@ export default function ConnectPage() {
     0,
   );
   const progressPct = (connectedCount / CONNECT_PLUGIN_IDS.length) * 100;
-  const statusText = error
-    ? error
-    : connectedCount === 0
+  const statusText =
+    error ??
+    (connectedCount === 0
       ? "Connect both Google services to unlock your dashboard."
       : connectedCount === 1
         ? "One more connection is required before entering the dashboard."
-        : "Both required accounts are connected. Redirecting to your dashboard.";
+        : "Both required accounts are connected. Redirecting to your dashboard.");
 
   if (isLoading) {
     return (

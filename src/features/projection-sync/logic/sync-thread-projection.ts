@@ -51,12 +51,15 @@ export async function syncThreadProjection(input: {
       ...headers.replyTo,
     ];
 
-    return participants.filter((participant) => participant.email || participant.name);
+    return participants.filter(
+      (participant) =>
+        Boolean(participant.email) || Boolean(participant.name),
+    );
   });
   const participants = uniqueParticipants(participantPool);
   const version =
-    input.thread.historyId?.trim() ||
-    lastMessage?.historyId?.trim() ||
+    input.thread.historyId?.trim() ??
+    lastMessage?.historyId?.trim() ??
     `${messages.length}:${externalThreadId}`;
 
   const projection: ThreadProjection = {
@@ -67,8 +70,8 @@ export async function syncThreadProjection(input: {
     provider: "gmail",
     version,
     subject: firstHeaders.subject,
-    snippet: input.thread.snippet?.trim() || lastMessage?.snippet?.trim() || null,
-    historyId: input.thread.historyId?.trim() || lastMessage?.historyId?.trim() || null,
+    snippet: input.thread.snippet?.trim() ?? lastMessage?.snippet?.trim() ?? null,
+    historyId: input.thread.historyId?.trim() ?? lastMessage?.historyId?.trim() ?? null,
     labelIds: Array.from(
       new Set(messages.flatMap((message) => message.labelIds ?? [])),
     ),
@@ -80,8 +83,8 @@ export async function syncThreadProjection(input: {
       .map((participant) => participant.email)
       .filter((value): value is string => !!value),
     participants,
-    lastMessageAt: lastMessage?.internalDate?.trim() || null,
-    raw: input.thread as Record<string, unknown>,
+    lastMessageAt: lastMessage?.internalDate?.trim() ?? null,
+    raw: input.thread,
   };
 
   await upsertProjectionEntity({

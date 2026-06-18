@@ -46,7 +46,7 @@ function normalizeWhitespace(value: string): string {
 }
 
 function getRawThreadMessages(thread: ThreadProjection): Array<Record<string, unknown>> {
-  const rawMessages = (thread.raw["messages"] ?? null) as unknown;
+  const rawMessages = (thread.raw.messages ?? null) as unknown;
   if (!Array.isArray(rawMessages)) return [];
 
   return rawMessages.filter(
@@ -58,7 +58,7 @@ function getRawThreadMessages(thread: ThreadProjection): Array<Record<string, un
 function getMessageSnippets(thread: ThreadProjection): string[] {
   return getRawThreadMessages(thread)
     .map((message) =>
-      typeof message["snippet"] === "string" ? message["snippet"] : null,
+      typeof message.snippet === "string" ? message.snippet : null,
     )
     .filter((value): value is string => !!value)
     .map(normalizeWhitespace);
@@ -140,7 +140,7 @@ export function extractSchedulingSignals(thread: ThreadProjection) {
 }
 
 export function getThreadPurposeHint(thread: ThreadProjection): string | null {
-  const subject = thread.subject?.trim() || null;
+  const subject = thread.subject?.trim() ?? null;
   if (subject) return subject;
 
   const topics = extractCandidateTopics(thread).slice(0, 3);

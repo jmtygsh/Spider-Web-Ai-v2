@@ -1,3 +1,5 @@
+import type { NextResponse } from "next/server";
+
 import { redis } from "@/server/configs/redis";
 import { fail } from "@/server/http/response";
 
@@ -128,7 +130,7 @@ export async function checkRateLimit(
   key: string,
   opts: RateLimitOptions,
 ): Promise<{
-  limited: import("next/server").NextResponse | null;
+  limited: NextResponse | null;
   headers: Record<string, string>;
 }> {
   const result = await rateLimit(key, opts);

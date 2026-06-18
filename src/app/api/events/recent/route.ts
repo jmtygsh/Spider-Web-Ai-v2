@@ -44,7 +44,7 @@ export async function GET(request: Request) {
       return unauthorized();
     }
 
-    await captureException(error, { route: "/api/events/recent" });
+    captureException(error, { route: "/api/events/recent" });
     return serverError("Recent integration events load failed.");
   }
 }
