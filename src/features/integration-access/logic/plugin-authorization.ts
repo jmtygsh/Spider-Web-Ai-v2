@@ -159,10 +159,6 @@ export async function completePluginAuthorization(input: {
         capabilityStatus: "enabled",
         pendingStateCookieName: OAUTH_STATE_COOKIE_NAME,
       },
-      user: {
-        external_id: workspace.userId,
-        email: workspace.session.user.email,
-      },
     });
 
     bootstrapRequested = true;

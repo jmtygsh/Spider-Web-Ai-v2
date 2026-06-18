@@ -27,33 +27,33 @@ function buildContextPrompt(input: InvokeReasoningModelInput) {
       purpose: input.context.purpose,
       relatedThread: input.context.relatedThread
         ? {
-            id: input.context.relatedThread.externalThreadId,
-            subject: input.context.relatedThread.subject,
-            snippet: input.context.relatedThread.snippet,
-            participants: input.context.relatedThread.participants,
-            messageCount: input.context.relatedThread.messageCount,
-            lastMessageAt: input.context.relatedThread.lastMessageAt,
-          }
+          id: input.context.relatedThread.externalThreadId,
+          subject: input.context.relatedThread.subject,
+          snippet: input.context.relatedThread.snippet,
+          participants: input.context.relatedThread.participants,
+          messageCount: input.context.relatedThread.messageCount,
+          lastMessageAt: input.context.relatedThread.lastMessageAt,
+        }
         : null,
       relatedMeeting: input.context.relatedMeeting
         ? {
-            id: input.context.relatedMeeting.externalMeetingId,
-            title: input.context.relatedMeeting.title,
-            description: input.context.relatedMeeting.description,
-            startAt: input.context.relatedMeeting.startAt,
-            attendeeCount: input.context.relatedMeeting.attendeeCount,
-            attendees: input.context.relatedMeeting.attendees.slice(0, 8),
-          }
+          id: input.context.relatedMeeting.externalMeetingId,
+          title: input.context.relatedMeeting.title,
+          description: input.context.relatedMeeting.description,
+          startAt: input.context.relatedMeeting.startAt,
+          attendeeCount: input.context.relatedMeeting.attendeeCount,
+          attendees: input.context.relatedMeeting.attendees.slice(0, 8),
+        }
         : null,
       relatedPerson: input.context.relatedPerson
         ? {
-            email: input.context.relatedPerson.personEmail,
-            name: input.context.relatedPerson.personName,
-            lastMeeting: input.context.relatedPerson.lastMeeting?.title ?? null,
-            openRequests: input.context.relatedPerson.openRequests.slice(0, 5),
-            pendingTasks: input.context.relatedPerson.pendingTasks.slice(0, 5),
-            activeTopics: input.context.relatedPerson.activeTopics.slice(0, 5),
-          }
+          email: input.context.relatedPerson.personEmail,
+          name: input.context.relatedPerson.personName,
+          lastMeeting: input.context.relatedPerson.lastMeeting?.title ?? null,
+          openRequests: input.context.relatedPerson.openRequests.slice(0, 5),
+          pendingTasks: input.context.relatedPerson.pendingTasks.slice(0, 5),
+          activeTopics: input.context.relatedPerson.activeTopics.slice(0, 5),
+        }
         : null,
       prepBriefs: input.context.prepBriefs.map((brief) => ({
         meetingId: brief.meetingId,
@@ -113,6 +113,10 @@ export async function invokeReasoningModel(
       format: zodTextFormat(agentReasoningResultSchema, "agent_reasoning_result"),
     },
   });
+
+  if (!response.output_parsed) {
+    throw new Error("Reasoning model returned no structured output.");
+  }
 
   return response.output_parsed;
 }

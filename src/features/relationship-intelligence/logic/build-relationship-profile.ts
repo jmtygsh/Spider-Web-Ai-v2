@@ -36,6 +36,7 @@ function computeAverageResponseLatencyHours(
     for (let index = 1; index < sorted.length; index += 1) {
       const previous = sorted[index - 1];
       const current = sorted[index];
+      if (!previous || !current) continue;
       const previousSender = previous.from?.email?.toLowerCase() ?? null;
       const currentSender = current.from?.email?.toLowerCase() ?? null;
 

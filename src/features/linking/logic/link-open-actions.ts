@@ -10,6 +10,7 @@ import type {
   OpenActionInput,
   OpenActionLink,
 } from "@/features/linking/types/linking";
+import type { MeetingProjection, ThreadProjection } from "@/features/projection-sync";
 
 function actionTokens(action: OpenActionInput): string[] {
   return Array.from(

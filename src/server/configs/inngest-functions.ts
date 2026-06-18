@@ -1,4 +1,13 @@
 import { inngest } from "@/server/configs/inngest";
+import {
+  fanOutProjectionRefresh,
+  refreshMeetingPrepWorkflow,
+  refreshMeetingProjectionWorkflow,
+  refreshRelationshipProfilesWorkflow,
+  refreshThreadProjectionWorkflow,
+  refreshTimelineWorkflow,
+  runScheduledMeetingPrep,
+} from "@/features/workflow";
 
 // Purpose:
 // Minimal demo function so the Inngest dev server can discover this app.
@@ -21,3 +30,14 @@ export const inngestHealthcheck = inngest.createFunction(
     return payload;
   },
 );
+
+export const inngestFunctions = [
+  inngestHealthcheck,
+  fanOutProjectionRefresh,
+  refreshThreadProjectionWorkflow,
+  refreshMeetingProjectionWorkflow,
+  refreshMeetingPrepWorkflow,
+  refreshRelationshipProfilesWorkflow,
+  refreshTimelineWorkflow,
+  runScheduledMeetingPrep,
+];
