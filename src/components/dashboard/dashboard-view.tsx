@@ -7,10 +7,10 @@ import type { ApiResponse } from "@/server/types/api";
 import { useCallback, useEffect, useState, type FC } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import Link from "next/link";
-import { CommandPalette } from "@/app/(client)/(protected)/dashboard/command-palette";
-import { InboxTriagePanel } from "@/app/(client)/(protected)/dashboard/inbox-triage-panel";
-import { IntelligencePanels } from "@/app/(client)/(protected)/dashboard/intelligence-panels";
-import { useRealtimeIntegrationEvents } from "@/app/(client)/(protected)/dashboard/use-realtime-integration-events";
+import { CommandPalette } from "@/components/dashboard/command-palette";
+import { InboxTriagePanel } from "@/components/dashboard/inbox-triage-panel";
+import { IntelligencePanels } from "@/components/dashboard/intelligence-panels";
+import { useRealtimeIntegrationEvents } from "@/components/dashboard/use-realtime-integration-events";
 
 const EmptyPanel: FC<{ copy: string }> = ({ copy }) => {
   return (
@@ -46,7 +46,7 @@ const MetricCard: FC<{ title: string; value: string; label: string; glowColor: s
   );
 };
 
-const DashboardAssistantPanel = dynamic(() => import("@/app/(client)/(protected)/dashboard/assistant-panel"), {
+const DashboardAssistantPanel = dynamic(() => import("@/components/dashboard/assistant-panel"), {
   ssr: false,
   loading: () => (
     <div className="flex min-h-0 flex-1 flex-col items-center justify-center p-4">

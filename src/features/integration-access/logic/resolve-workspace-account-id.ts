@@ -4,7 +4,7 @@ import { CONNECT_PLUGIN_IDS } from "@/constants/plugins";
 import { db } from "@/server/db";
 import { corsairAccounts, corsairIntegrations } from "@/server/db/schema";
 
-export async function resolveChatAccountId(
+export async function resolveWorkspaceAccountId(
   tenantId: string,
 ): Promise<string | null> {
   const accounts = await db
@@ -26,3 +26,6 @@ export async function resolveChatAccountId(
 
   return accounts[0]?.accountId ?? null;
 }
+
+/** @deprecated Use resolveWorkspaceAccountId */
+export const resolveChatAccountId = resolveWorkspaceAccountId;

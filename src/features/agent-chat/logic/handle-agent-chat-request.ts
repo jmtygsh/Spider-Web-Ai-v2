@@ -11,7 +11,8 @@ import {
 import { buildChatSystemPrompt } from "@/features/agent-chat/logic/build-chat-system-prompt";
 import { createCorsairMcpClient } from "@/features/agent-chat/logic/create-corsair-mcp-client";
 import { logChatToolSteps } from "@/features/agent-chat/logic/log-chat-tool-steps";
-import { resolveChatAccountId } from "@/features/agent-chat/logic/resolve-chat-account-id";
+import { resolveWorkspaceAccountId } from "@/features/integration-access/logic/resolve-workspace-account-id";
+import { wrapMcpToolsWithApproval } from "@/features/agent-chat/logic/wrap-mcp-tools-with-approval";
 import type {
   AgentChatRequestBody,
   AgentChatRunContext,
@@ -75,7 +76,7 @@ export async function handleAgentChatRequest(input: {
   const runContext: AgentChatRunContext = {
     runId: crypto.randomUUID(),
     tenantId: input.workspace.tenantId,
-    accountId: await resolveChatAccountId(input.workspace.tenantId),
+    accountId: await resolveWorkspaceAccountId(input.workspace.tenantId),
   };
 
   const latestUserQuery = extractLatestUserQuery(body.messages);
@@ -100,10 +101,10 @@ export async function handleAgentChatRequest(input: {
     const frontendToolSet = body.tools
       ? frontendTools(body.tools as Parameters<typeof frontendTools>[0])
       : {};
-    const tools = {
+    const tools = wrapMcpToolsWithApproval({
       ...frontendToolSet,
       ...mcpTools,
-    } as ToolSet;
+    } as ToolSet);
 
     const result = streamText({
       model: openai("gpt-4.1"),
@@ -115,6 +116,7 @@ export async function handleAgentChatRequest(input: {
       messages: modelMessages,
       tools,
       stopWhen: stepCountIs(10),
+      experimental_toolApprovalSecret: env.BETTER_AUTH_SECRET,
       onStepFinish: async ({ toolCalls, toolResults }) => {
         if (toolCalls.length === 0) {
           return;

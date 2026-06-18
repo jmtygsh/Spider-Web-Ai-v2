@@ -2,6 +2,10 @@ export {
   createWorkspaceCorsairClient,
 } from "@/features/integration-access/logic/create-workspace-corsair-client";
 export {
+  resolveChatAccountId,
+  resolveWorkspaceAccountId,
+} from "@/features/integration-access/logic/resolve-workspace-account-id";
+export {
   completePluginAuthorization,
   decodePendingAuthorizationState,
   encodePendingAuthorizationState,

@@ -66,8 +66,8 @@ import {
 } from "lucide-react";
 import { MarkdownText } from "@/components/markdown-text";
 import { ToolFallback } from "@/components/tool-fallback";
-import { ChatExecutionLogPanel } from "@/app/(client)/(protected)/dashboard/chat-execution-log";
-import { createAssistantThreadHistoryAdapter } from "@/app/(client)/(protected)/dashboard/assistant-thread-history-adapter";
+import { ChatExecutionLogPanel } from "@/components/dashboard/chat-execution-log";
+import { createAssistantThreadHistoryAdapter } from "@/components/dashboard/assistant-thread-history-adapter";
 
 type AssistantThreadListResponse = {
   threads: AssistantThreadListItem[];
@@ -132,7 +132,7 @@ function extractThreadTitleCandidate(messages: readonly ThreadMessage[]): string
   return text.length <= 72 ? text : `${text.slice(0, 69).trimEnd()}...`;
 }
 
-const AssistantHistoryProvider: FC<{ children: ReactNode }> = ({
+const AssistantHistoryProvider: FC<{ children?: ReactNode }> = ({
   children,
 }) => {
   const aui = useAui();

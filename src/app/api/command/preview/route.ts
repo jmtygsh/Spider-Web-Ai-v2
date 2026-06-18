@@ -1,4 +1,4 @@
-import { resolveChatAccountId } from "@/features/agent-chat";
+import { resolveWorkspaceAccountId } from "@/features/integration-access";
 import { previewCommand } from "@/features/command-execution";
 import {
   isWorkspaceAuthenticationError,
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       return badRequest("INVALID_COMMAND", "A non-empty command is required.");
     }
 
-    const accountId = await resolveChatAccountId(workspace.tenantId);
+    const accountId = await resolveWorkspaceAccountId(workspace.tenantId);
     const preview = await previewCommand({
       command: body.command.trim(),
       accountId,

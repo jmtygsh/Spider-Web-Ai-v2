@@ -4,6 +4,7 @@ import { generateText, stepCountIs, type ToolSet } from "ai";
 import { buildChatSystemPrompt } from "@/features/agent-chat/logic/build-chat-system-prompt";
 import { createCorsairMcpClient } from "@/features/agent-chat/logic/create-corsair-mcp-client";
 import { logChatToolSteps } from "@/features/agent-chat/logic/log-chat-tool-steps";
+import { wrapMcpToolsWithApproval } from "@/features/agent-chat/logic/wrap-mcp-tools-with-approval";
 import { env } from "@/env";
 
 export async function executeCommandWithMcp(input: {
@@ -22,9 +23,9 @@ export async function executeCommandWithMcp(input: {
   });
 
   try {
-    const tools = {
+    const tools = wrapMcpToolsWithApproval({
       ...(await mcpClient.tools()),
-    } as ToolSet;
+    } as ToolSet);
 
     const result = await generateText({
       model: openai("gpt-4.1"),
@@ -34,6 +35,7 @@ export async function executeCommandWithMcp(input: {
       prompt: input.command,
       tools,
       stopWhen: stepCountIs(10),
+      experimental_toolApprovalSecret: env.BETTER_AUTH_SECRET,
       onStepFinish: async ({ toolCalls, toolResults }) => {
         if (toolCalls.length === 0) {
           return;

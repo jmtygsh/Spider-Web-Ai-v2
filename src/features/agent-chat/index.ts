@@ -2,7 +2,10 @@ export { buildChatSystemPrompt } from "@/features/agent-chat/logic/build-chat-sy
 export { createCorsairMcpClient } from "@/features/agent-chat/logic/create-corsair-mcp-client";
 export { handleAgentChatRequest } from "@/features/agent-chat/logic/handle-agent-chat-request";
 export { logChatToolSteps } from "@/features/agent-chat/logic/log-chat-tool-steps";
-export { resolveChatAccountId } from "@/features/agent-chat/logic/resolve-chat-account-id";
+export {
+  isMcpWriteToolCall,
+  wrapMcpToolsWithApproval,
+} from "@/features/agent-chat/logic/wrap-mcp-tools-with-approval";
 export type {
   AgentChatRequestBody,
   AgentChatRunContext,
