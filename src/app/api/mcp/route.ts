@@ -2,6 +2,7 @@ import { createBaseMcpServer } from "@corsair-dev/mcp";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { NextResponse } from "next/server";
 
+import { env } from "@/env";
 import {
   isWorkspaceAuthenticationError,
   requireAuthenticatedWorkspace,
@@ -28,7 +29,24 @@ function jsonError(status: number, error: string) {
   return NextResponse.json({ error }, { status });
 }
 
+function validateRequestOrigin(request: Request) {
+  const origin = request.headers.get("origin");
+  if (!origin) {
+    return null;
+  }
+
+  const allowedOrigin = new URL(env.APP_URL).origin;
+  return origin === allowedOrigin
+    ? null
+    : jsonError(403, "Origin is not allowed for MCP transport.");
+}
+
 async function getSessionForRequest(request: Request) {
+  const originError = validateRequestOrigin(request);
+  if (originError) {
+    return { error: originError, session: null };
+  }
+
   let workspace;
   try {
     workspace = await requireAuthenticatedWorkspace();
@@ -49,7 +67,7 @@ async function getSessionForRequest(request: Request) {
   }
 
   const session = sessions.get(sessionId);
-  if (!session || session.tenantId !== workspace.tenantId) {
+  if (session?.tenantId !== workspace.tenantId) {
     return { error: jsonError(404, "Session not found"), session: null };
   }
 
@@ -57,6 +75,11 @@ async function getSessionForRequest(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const originError = validateRequestOrigin(request);
+  if (originError) {
+    return originError;
+  }
+
   let workspace;
   try {
     workspace = await requireAuthenticatedWorkspace();
@@ -71,7 +94,7 @@ export async function POST(request: Request) {
   const sessionId = request.headers.get("mcp-session-id");
   if (sessionId) {
     const session = sessions.get(sessionId);
-    if (!session || session.tenantId !== workspace.tenantId) {
+    if (session?.tenantId !== workspace.tenantId) {
       return jsonError(404, "Session not found");
     }
 
@@ -112,14 +135,16 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const { error, session } = await getSessionForRequest(request);
-  if (error || !session) return error!;
+  if (!session) return error ?? jsonError(404, "Session not found");
+  if (error) return error;
 
   return session.transport.handleRequest(request);
 }
 
 export async function DELETE(request: Request) {
   const { error, session } = await getSessionForRequest(request);
-  if (error || !session) return error!;
+  if (!session) return error ?? jsonError(404, "Session not found");
+  if (error) return error;
 
   const sessionId = request.headers.get("mcp-session-id");
   if (sessionId) {

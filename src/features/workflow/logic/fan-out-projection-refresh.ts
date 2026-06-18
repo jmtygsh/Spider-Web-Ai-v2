@@ -3,6 +3,10 @@ import {
   extractSchedulingIntent,
   extractTopicsFromThread,
 } from "@/features/extraction";
+import { resetThreadAiScan } from "@/features/inbox-triage/logic/mark-thread-ai-scanned";
+import { runAiThreadTriage } from "@/features/inbox-triage/logic/run-ai-thread-triage";
+import { runBatchTriage } from "@/features/inbox-triage/logic/run-batch-triage";
+import { embedThreadProjection } from "@/features/rag";
 import { createWorkspaceCorsairClient } from "@/features/integration-access";
 import {
   linkOpenActions,
@@ -18,11 +22,17 @@ import {
   type CalendarEventResource,
   type GmailThreadResource,
   type MeetingProjection,
-  type ThreadProjection,
 } from "@/features/projection-sync";
-import { buildRelationshipProfile } from "@/features/relationship-intelligence";
+import { buildRelationshipProfile, summarizeRelationshipState } from "@/features/relationship-intelligence";
+import {
+  generateMeetingSuggestionFromEmail,
+  generateNextBestAction,
+  generateReplySuggestion,
+  loadNextBestActionInputs,
+} from "@/features/suggestions";
 import { projectTimelineItems } from "@/features/timeline";
 import {
+  WORKFLOW_BATCH_TRIAGE_CRON,
   WORKFLOW_INTEGRATION_EVENT,
   WORKFLOW_MEETING_PREP_REFRESH_EVENT,
   WORKFLOW_MEETING_REFRESH_EVENT,
@@ -52,9 +62,7 @@ import type {
 } from "@/features/workflow/types/workflow";
 import { inngest } from "@/server/configs/inngest";
 
-type CorsairDynamicClient = {
-  [key: string]: unknown;
-};
+type CorsairDynamicClient = Record<string, unknown>;
 
 type WorkflowEventPayload = {
   id: string;
@@ -122,7 +130,7 @@ function extractThreadResource(result: unknown): GmailThreadResource | null {
   if (!record) return null;
 
   if (typeof record.id === "string" && Array.isArray(record.messages)) {
-    return record as GmailThreadResource;
+    return record;
   }
 
   if (Array.isArray(record.threads) && record.threads.length > 0) {
@@ -145,7 +153,7 @@ function extractMeetingResource(result: unknown): CalendarEventResource | null {
     typeof record.id === "string" &&
     ("start" in record || "summary" in record || "updated" in record)
   ) {
-    return record as CalendarEventResource;
+    return record;
   }
 
   if (Array.isArray(record.events) && record.events.length > 0) {
@@ -161,11 +169,14 @@ function extractMeetingResource(result: unknown): CalendarEventResource | null {
 }
 
 async function callCorsairReadOperation(input: {
+  accountId: string;
   plugin: "gmail" | "googlecalendar";
   operationCandidates: string[];
   payloadCandidates: Record<string, unknown>[];
 }): Promise<unknown> {
-  const client = (await createWorkspaceCorsairClient()) as unknown as CorsairDynamicClient;
+  const client = (await createWorkspaceCorsairClient({
+    accountId: input.accountId,
+  })) as unknown as CorsairDynamicClient;
   const pluginSurface = asRecord(client[input.plugin]);
   const actions = asRecord(pluginSurface?.actions);
   const execute = client.execute;
@@ -211,7 +222,7 @@ async function callCorsairReadOperation(input: {
     }
   }
 
-  if (lastError) {
+  if (lastError instanceof Error) {
     throw lastError;
   }
 
@@ -221,9 +232,11 @@ async function callCorsairReadOperation(input: {
 }
 
 async function fetchLatestThreadResource(
+  accountId: string,
   threadId: string,
 ): Promise<GmailThreadResource | null> {
   const result = await callCorsairReadOperation({
+    accountId,
     plugin: "gmail",
     operationCandidates: ["getThread", "findThread"],
     payloadCandidates: [{ threadId }, { id: threadId }],
@@ -233,6 +246,7 @@ async function fetchLatestThreadResource(
 }
 
 async function fetchLatestMeetingResource(input: {
+  accountId: string;
   meetingId: string;
   calendarId: string | null;
 }): Promise<CalendarEventResource | null> {
@@ -241,6 +255,7 @@ async function fetchLatestMeetingResource(input: {
     { id: input.meetingId, calendarId: input.calendarId ?? "primary" },
   ];
   const result = await callCorsairReadOperation({
+    accountId: input.accountId,
     plugin: "googlecalendar",
     operationCandidates: ["getEvent", "getCalendarEvent", "findEvent"],
     payloadCandidates: payloads,
@@ -393,7 +408,10 @@ export const refreshThreadProjectionWorkflow = inngest.createFunction(
         });
 
         try {
-          const latestThread = await fetchLatestThreadResource(input.threadId);
+          const latestThread = await fetchLatestThreadResource(
+            input.accountId,
+            input.threadId,
+          );
           if (!latestThread) {
             return existingThread;
           }
@@ -486,6 +504,58 @@ export const refreshThreadProjectionWorkflow = inngest.createFunction(
       },
     });
 
+    const suggestions = await retryTransientFailures({
+      step,
+      stepId: "refresh-thread-suggestions",
+      operation: async () => {
+        const replySuggestion = await generateReplySuggestion({
+          accountId: input.accountId,
+          thread,
+          commitments: extracted.commitments,
+          topics: extracted.topics,
+          prepBrief: null,
+        });
+        const meetingSuggestion =
+          extracted.schedulingIntent.intent.confidence >= 0.55 ||
+            extracted.schedulingIntent.intent.candidateTimeSlots.length > 0
+            ? await generateMeetingSuggestionFromEmail({
+              accountId: input.accountId,
+              thread,
+              schedulingIntent: extracted.schedulingIntent,
+              topics: extracted.topics,
+            })
+            : null;
+
+        return {
+          replySuggestionId: replySuggestion.id,
+          meetingSuggestionId: meetingSuggestion?.id ?? null,
+        };
+      },
+    });
+
+    await retryTransientFailures({
+      step,
+      stepId: "refresh-thread-intelligence",
+      operation: async () => {
+        await resetThreadAiScan({
+          accountId: input.accountId,
+          threadId: thread.externalThreadId,
+        });
+
+        await embedThreadProjection({
+          accountId: input.accountId,
+          thread,
+        });
+
+        await runAiThreadTriage({
+          accountId: input.accountId,
+          thread,
+        }).catch(() => null);
+
+        return { refreshed: true };
+      },
+    });
+
     const derivedEvents: WorkflowEventPayload[] = [
       {
         id: `${input.normalizedEventId}:timeline:thread`,
@@ -529,6 +599,7 @@ export const refreshThreadProjectionWorkflow = inngest.createFunction(
       refreshed: true,
       threadId: thread.externalThreadId,
       participantCount: links.people.persons.length,
+      suggestionIds: suggestions,
       scheduledEventIds: dispatch.ids,
     };
   },
@@ -558,6 +629,7 @@ export const refreshMeetingProjectionWorkflow = inngest.createFunction(
 
         try {
           const latestMeeting = await fetchLatestMeetingResource({
+            accountId: input.accountId,
             meetingId: input.meetingId,
             calendarId: input.calendarId,
           });
@@ -698,11 +770,21 @@ export const refreshMeetingPrepWorkflow = inngest.createFunction(
         }),
     });
 
+    const dispatch = await step.sendEvent("dispatch-meeting-prep-timeline-refresh", {
+      id: `${input.meetingId}:timeline:prep:${output.brief.version}`,
+      name: WORKFLOW_TIMELINE_REFRESH_EVENT,
+      data: {
+        accountId: input.accountId,
+        reason: `meeting prep refresh ${input.meetingId}`,
+      } satisfies WorkflowTimelineRefreshEventData,
+    });
+
     return {
       refreshed: true,
       meetingId: input.meetingId,
       offset: input.offset,
       briefVersion: output.brief.version,
+      timelineEventId: dispatch.ids[0] ?? null,
     };
   },
 );
@@ -723,18 +805,35 @@ export const refreshRelationshipProfilesWorkflow = inngest.createFunction(
       stepId: "refresh-relationship-profiles",
       operation: async () =>
         Promise.all(
-          personEmails.map((personEmail) =>
-            buildRelationshipProfile({
+          personEmails.map(async (personEmail) => {
+            const profile = await buildRelationshipProfile({
               accountId: input.accountId,
               personEmail,
-            }),
-          ),
+            });
+
+            await summarizeRelationshipState({
+              accountId: input.accountId,
+              profile,
+            });
+
+            return profile;
+          }),
         ),
+    });
+
+    const dispatch = await step.sendEvent("dispatch-relationship-timeline-refresh", {
+      id: `${input.accountId}:timeline:relationships:${personEmails.join(",")}`,
+      name: WORKFLOW_TIMELINE_REFRESH_EVENT,
+      data: {
+        accountId: input.accountId,
+        reason: `relationship refresh ${personEmails.join(",")}`,
+      } satisfies WorkflowTimelineRefreshEventData,
     });
 
     return {
       refreshed: profiles.length,
       personEmails,
+      timelineEventId: dispatch.ids[0] ?? null,
     };
   },
 );
@@ -751,10 +850,17 @@ export const refreshTimelineWorkflow = inngest.createFunction(
     const projection = await retryTransientFailures({
       step,
       stepId: "project-timeline-items",
-      operation: async () =>
-        projectTimelineItems({
+      operation: async () => {
+        const nextBestActionInputs = await loadNextBestActionInputs(input.accountId);
+        await generateNextBestAction({
           accountId: input.accountId,
-        }),
+          ...nextBestActionInputs,
+        });
+
+        return await projectTimelineItems({
+          accountId: input.accountId,
+        });
+      },
     });
 
     return {
@@ -815,6 +921,40 @@ export const runScheduledMeetingPrep = inngest.createFunction(
     return {
       dispatched: scheduledRefreshes.length,
       eventIds: result.ids,
+    };
+  },
+);
+
+export const runScheduledBatchTriage = inngest.createFunction(
+  {
+    id: "workflow-run-scheduled-batch-triage",
+    name: "Workflow Run Scheduled Batch Triage",
+    triggers: [{ cron: WORKFLOW_BATCH_TRIAGE_CRON }],
+    retries: 2,
+  },
+  async ({ step }) => {
+    const results = await retryTransientFailures({
+      step,
+      stepId: "run-batch-triage-for-accounts",
+      operation: async () => {
+        const accountIds = await loadWorkflowAccountIds();
+        const summaries = [];
+
+        for (const accountId of accountIds) {
+          const result = await runBatchTriage({
+            accountId,
+            limit: 12,
+          });
+          summaries.push({ accountId, ...result });
+        }
+
+        return summaries;
+      },
+    });
+
+    return {
+      accounts: results.length,
+      scanned: results.reduce((total, entry) => total + entry.scanned, 0),
     };
   },
 );

@@ -33,6 +33,7 @@ export const env = createEnv({
       process.env.NODE_ENV === "production"
         ? z.string().trim().min(32)
         : z.string().trim().min(1).optional(),
+    CORSAIR_WEBHOOK_SHARED_SECRET: z.string().trim().min(1).optional(),
     RESEND_API_KEY: z.string(),
     RESEND_FROM_EMAIL: z.string().optional(),
     // Full Pub/Sub topic for Gmail push, e.g. projects/my-app/topics/gmail-push
@@ -75,6 +76,7 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     CORSAIR_KEK: process.env.CORSAIR_KEK,
+    CORSAIR_WEBHOOK_SHARED_SECRET: process.env.CORSAIR_WEBHOOK_SHARED_SECRET,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     RESEND_FROM_EMAIL: process.env.RESEND_FROM_EMAIL,
     GOOGLE_PUBSUB_TOPIC_ID: process.env.GOOGLE_PUBSUB_TOPIC_ID,

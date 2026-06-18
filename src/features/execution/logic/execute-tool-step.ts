@@ -6,9 +6,7 @@ import type {
   ToolStepResult,
 } from "@/features/execution/types/execution";
 
-type CorsairDynamicClient = {
-  [key: string]: unknown;
-};
+type CorsairDynamicClient = Record<string, unknown>;
 
 function toRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value === "object" && value !== null) {
@@ -18,11 +16,14 @@ function toRecord(value: unknown): Record<string, unknown> | null {
 }
 
 async function callCorsairOperation(input: {
+  accountId: string;
   plugin: string;
   operation: string;
   payload: Record<string, unknown>;
 }) {
-  const client = (await createWorkspaceCorsairClient()) as unknown as CorsairDynamicClient;
+  const client = (await createWorkspaceCorsairClient({
+    accountId: input.accountId,
+  })) as unknown as CorsairDynamicClient;
   const pluginSurface = client[input.plugin] as Record<string, unknown> | undefined;
 
   const directOperation = pluginSurface?.[input.operation];
@@ -60,7 +61,17 @@ export async function executeToolStep(
   try {
     if (input.step.plugin === "internal") {
       if (input.step.action === "generate_meeting_prep") {
-        const meetingId = String(input.step.payload.meetingId ?? "");
+        const rawMeetingId = input.step.payload.meetingId;
+        const meetingId =
+          typeof rawMeetingId === "string" ? rawMeetingId : null;
+        if (!meetingId) {
+          return {
+            stepId: input.step.id,
+            status: "failed",
+            output: null,
+            error: "Meeting prep execution requires a string meetingId payload.",
+          };
+        }
         const meeting = await loadMeetingProjection({
           accountId: input.accountId,
           meetingId,
@@ -97,6 +108,7 @@ export async function executeToolStep(
     }
 
     const output = await callCorsairOperation({
+      accountId: input.accountId,
       plugin: input.step.plugin,
       operation: input.step.operation,
       payload: input.step.payload,

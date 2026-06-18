@@ -1,11 +1,13 @@
 import { inngest } from "@/server/configs/inngest";
 import {
+  bootstrapAuthorizedIntegrationWorkflow,
   fanOutProjectionRefresh,
   refreshMeetingPrepWorkflow,
   refreshMeetingProjectionWorkflow,
   refreshRelationshipProfilesWorkflow,
   refreshThreadProjectionWorkflow,
   refreshTimelineWorkflow,
+  runScheduledBatchTriage,
   runScheduledMeetingPrep,
 } from "@/features/workflow";
 
@@ -33,11 +35,13 @@ export const inngestHealthcheck = inngest.createFunction(
 
 export const inngestFunctions = [
   inngestHealthcheck,
+  bootstrapAuthorizedIntegrationWorkflow,
   fanOutProjectionRefresh,
   refreshThreadProjectionWorkflow,
   refreshMeetingProjectionWorkflow,
   refreshMeetingPrepWorkflow,
   refreshRelationshipProfilesWorkflow,
   refreshTimelineWorkflow,
+  runScheduledBatchTriage,
   runScheduledMeetingPrep,
 ];

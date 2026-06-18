@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { env } from "@/env";
 import {
   ingestCorsairWebhookEvent,
   isCorsairWebhookIngestionError,
@@ -28,9 +29,45 @@ function parseJsonBody(rawBody: string): unknown {
   }
 }
 
+function verifyWebhookRequest(request: Request, url: URL) {
+  const sharedSecret = env.CORSAIR_WEBHOOK_SHARED_SECRET?.trim();
+  if (!sharedSecret) {
+    return { ok: true as const };
+  }
+
+  const presentedSecret =
+    [
+      request.headers.get("x-corsair-webhook-secret")?.trim(),
+      request.headers.get("x-goog-channel-token")?.trim(),
+      url.searchParams.get("secret")?.trim(),
+    ].find((value): value is string => Boolean(value)) ?? null;
+
+  if (presentedSecret !== sharedSecret) {
+    return {
+      ok: false as const,
+      response: NextResponse.json(
+        {
+          ok: false,
+          error: {
+            code: "WEBHOOK_UNAUTHORIZED",
+            message: "Webhook shared secret validation failed.",
+          },
+        },
+        { status: 401 },
+      ),
+    };
+  }
+
+  return { ok: true as const };
+}
+
 export async function POST(request: Request) {
   try {
     const url = new URL(request.url);
+    const verification = verifyWebhookRequest(request, url);
+    if (!verification.ok) {
+      return verification.response;
+    }
     const rawBody = await request.text();
 
     const result = await ingestCorsairWebhookEvent({

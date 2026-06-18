@@ -11,6 +11,7 @@ export const WORKFLOW_TIMELINE_REFRESH_EVENT =
   "workflow/timeline-refresh.requested";
 
 export const WORKFLOW_MEETING_PREP_CRON = "*/15 * * * *";
+export const WORKFLOW_BATCH_TRIAGE_CRON = "0 * * * *";
 
 export const WORKFLOW_MEETING_PREP_OFFSETS = [
   { label: "24h", minutes: 24 * 60 },

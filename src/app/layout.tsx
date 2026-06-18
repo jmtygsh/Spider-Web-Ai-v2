@@ -24,7 +24,11 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable} h-full`}>
+    <html
+      lang="en"
+      className={`${geist.variable} h-full`}
+      suppressHydrationWarning
+    >
       <body className="min-h-screen">
         {/* Light/dark theme follows system preference by default. */}
         <ThemeProvider

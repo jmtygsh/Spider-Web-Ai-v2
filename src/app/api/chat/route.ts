@@ -1,87 +1,39 @@
-import OpenAI from "openai";
-import { NextResponse } from "next/server";
-import type {
-  EasyInputMessage,
-  Tool,
-} from "openai/resources/responses/responses";
-
-import { env } from "@/env";
 import {
   isWorkspaceAuthenticationError,
   requireAuthenticatedWorkspace,
 } from "@/features/identity-workspace";
-import { unauthorized } from "@/server/http/response";
+import { handleAgentChatRequest } from "@/features/agent-chat";
+import {
+  badRequest,
+  serverError,
+  unauthorized,
+} from "@/server/http/response";
 
-type ChatMessage = {
-  role: "assistant" | "system" | "user";
-  content?:
-    | string
-    | Array<{
-        type: string;
-        text?: string;
-      }>;
-};
+export const maxDuration = 60;
 
-const openai = new OpenAI({
-  apiKey: env.OPENAI_API_KEY,
-});
-
-function getMessageText(message: ChatMessage) {
-  if (typeof message.content === "string") {
-    return message.content.trim();
-  }
-
-  if (!Array.isArray(message.content)) return "";
-
-  return message.content
-    .filter((part) => part.type === "text" && typeof part.text === "string")
-    .map((part) => part.text!.trim())
-    .filter(Boolean)
-    .join("\n");
-}
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    await requireAuthenticatedWorkspace();
-
-    const { messages } = (await req.json()) as {
-      messages: ChatMessage[];
-    };
-
-    const forwardedCookie = req.headers.get("cookie");
-    const input = messages.reduce<EasyInputMessage[]>((result, message) => {
-      const content = getMessageText(message);
-      if (!content) return result;
-
-      result.push({
-        role: message.role,
-        content,
-      });
-
-      return result;
-    }, []);
-
-    const tools: Tool[] = [
-      {
-        type: "mcp",
-        server_label: "corsair",
-        server_url: new URL("/api/mcp", env.APP_URL).toString(),
-        headers: forwardedCookie ? { cookie: forwardedCookie } : undefined,
-      },
-    ];
-
-    const response = await openai.responses.create({
-      model: "gpt-4.1",
-      input,
-      tools,
+    const workspace = await requireAuthenticatedWorkspace();
+    return await handleAgentChatRequest({
+      request,
+      workspace,
     });
-
-    return NextResponse.json({ message: response.output_text });
   } catch (error) {
     if (isWorkspaceAuthenticationError(error)) {
       return unauthorized();
     }
 
-    throw error;
+    if (error instanceof Error) {
+      if (error.message === "Invalid chat request body.") {
+        return badRequest("INVALID_CHAT_BODY", error.message);
+      }
+
+      if (error.message === "OPENAI_API_KEY is not configured.") {
+        return serverError(error.message);
+      }
+    }
+
+    console.error("Agent chat request failed:", error);
+    return serverError("Agent chat request failed.");
   }
 }

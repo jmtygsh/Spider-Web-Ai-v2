@@ -14,21 +14,19 @@ import {
 export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
 // better auth
-export const posts = createTable(
-  "post",
-  (d) => ({
-    id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
-    name: d.varchar({ length: 256 }),
-    createdById: d
-      .varchar({ length: 255 })
-      .notNull()
-      .references(() => user.id),
-    createdAt: d
-      .timestamp({ withTimezone: true })
-      .$defaultFn(() => new Date())
-      .notNull(),
-    updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
-  }),
+export const posts = createTable("post", (d) => ({
+  id: d.integer().primaryKey().generatedByDefaultAsIdentity(),
+  name: d.varchar({ length: 256 }),
+  createdById: d
+    .varchar({ length: 255 })
+    .notNull()
+    .references(() => user.id),
+  createdAt: d
+    .timestamp({ withTimezone: true })
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: d.timestamp({ withTimezone: true }).$onUpdate(() => new Date()),
+}),
   (t) => [
     index("created_by_idx").on(t.createdById),
     index("name_idx").on(t.name),
@@ -109,6 +107,64 @@ export const sessionRelations = relations(session, ({ one }) => ({
 }));
 // end better auth
 
+export const assistantThreads = pgTable(
+  "assistant_threads",
+  {
+    id: text("id").primaryKey(),
+    workspaceId: text("workspace_id").notNull(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    title: text("title").notNull().default("New command center thread"),
+    status: text("status").notNull().default("regular"),
+    externalId: text("external_id"),
+    lastMessageAt: timestamp("last_message_at", { withTimezone: true }),
+    archivedAt: timestamp("archived_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("assistant_threads_workspace_user_updated_idx").on(
+      table.workspaceId,
+      table.userId,
+      table.updatedAt,
+    ),
+    index("assistant_threads_workspace_user_archived_idx").on(
+      table.workspaceId,
+      table.userId,
+      table.archivedAt,
+    ),
+  ],
+);
+
+export const assistantMessages = pgTable(
+  "assistant_messages",
+  {
+    id: text("id").primaryKey(),
+    threadId: text("thread_id")
+      .notNull()
+      .references(() => assistantThreads.id, { onDelete: "cascade" }),
+    parentId: text("parent_id"),
+    role: text("role").notNull(),
+    contentText: text("content_text").notNull().default(""),
+    message: jsonb("message").notNull().default({}),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("assistant_messages_thread_created_idx").on(
+      table.threadId,
+      table.createdAt,
+    ),
+    index("assistant_messages_thread_parent_idx").on(table.threadId, table.parentId),
+  ],
+);
+
 // --- Corsair integration cache (accounts, entities, events, sync state) ---
 export const corsairIntegrations = pgTable("corsair_integrations", {
   id: text("id").primaryKey(),
@@ -161,6 +217,34 @@ export const corsairEntities = pgTable("corsair_entities", {
     .notNull()
     .default(false),
 });
+
+export const entityEmbeddings = pgTable(
+  "entity_embeddings",
+  {
+    id: text("id").primaryKey(),
+    accountId: text("account_id")
+      .notNull()
+      .references(() => corsairAccounts.id),
+    sourceEntityId: text("source_entity_id").notNull(),
+    sourceEntityType: text("source_entity_type").notNull(),
+    chunkText: text("chunk_text").notNull(),
+    embedding: jsonb("embedding").$type<number[]>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (table) => [
+    index("entity_embeddings_account_idx").on(table.accountId),
+    index("entity_embeddings_source_idx").on(
+      table.accountId,
+      table.sourceEntityId,
+      table.sourceEntityType,
+    ),
+  ],
+);
 
 export const corsairEvents = pgTable("corsair_events", {
   id: text("id").primaryKey(),
