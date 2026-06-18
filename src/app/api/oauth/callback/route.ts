@@ -2,8 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { processOAuthCallback } from "corsair/oauth";
 import { corsair } from "@/server/configs/corsair";
 import { env } from "@/env";
-
-const REDIRECT_URI = `${env.APP_URL}/api/oauth`;
+import { REDIRECT_URI } from "@/constants/corsair";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);

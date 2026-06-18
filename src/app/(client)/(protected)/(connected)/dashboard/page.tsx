@@ -97,15 +97,15 @@ const ChatPage: FC = () => {
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
-      <div className="min-h-screen bg-[#eef1f4] text-[#0d0d0d] dark:bg-[#0b0c0f] dark:text-[#ececec]">
+      <div className="min-h-screen bg-app-shell text-foreground">
         <div className="container mx-auto flex min-h-[calc(100vh-73px)] flex-col px-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
           {/* left side  */}
-          <aside className="flex flex-col border-b border-l border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
-            <p className="text-sm font-semibold tracking-[0.24em] text-[#6b7280] uppercase dark:text-[#9ca3af]">
+          <aside className="flex flex-col border-b border-l border-border bg-panel p-5">
+            <p className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
               Executive Copilot
             </p>
             <h1 className="mt-3 text-lg font-semibold">Action Queue</h1>
-            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+            <p className="text-muted-foreground mt-2 text-sm">
               Tasks that need attention from your assistant.
             </p>
             <div className="mt-6">
@@ -114,11 +114,11 @@ const ChatPage: FC = () => {
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-medium">{item.title}</p>
-                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                      <p className="text-muted-foreground mt-1 text-xs">
                         {item.detail}
                       </p>
                     </div>
-                    <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-medium text-[#4b5563] dark:bg-white/10 dark:text-[#d1d5db]">
+                    <span className="bg-panel-muted text-muted-foreground rounded-full px-2.5 py-1 text-[11px] font-medium">
                       {item.priority}
                     </span>
                   </div>
@@ -127,33 +127,33 @@ const ChatPage: FC = () => {
             </div>
           </aside>
 
-          <main className="flex min-h-[70vh] min-w-0 flex-col overflow-hidden border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-[#0b0c0f]">
+          <main className="flex min-h-[70vh] min-w-0 flex-col overflow-hidden border border-border bg-panel shadow-[var(--shadow-panel)]">
             <div className="min-h-0 flex-1">
               <ChatGPT />
             </div>
           </main>
 
-          <aside className="flex flex-col border-r border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
-            <p className="text-sm font-semibold tracking-[0.24em] text-[#6b7280] uppercase dark:text-[#9ca3af]">
+          <aside className="flex flex-col border-r border-b border-border bg-panel p-5">
+            <p className="text-muted-foreground text-sm font-semibold tracking-[0.24em] uppercase">
               Calendar
             </p>
             <h2 className="mt-2 text-lg font-semibold">Today</h2>
-            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+            <p className="text-muted-foreground mt-2 text-sm">
               Upcoming events and scheduling context.
             </p>
             <div className="mt-6">
               {calendarItems.map((item) => (
                 <div
                   key={`${item.time}-${item.title}`}
-                  className="px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                  className="px-4 py-3 transition-colors hover:bg-[var(--panel-hover)]"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="min-w-20 text-sm font-semibold text-[#111827] dark:text-[#f3f4f6]">
+                    <div className="text-foreground min-w-20 text-sm font-semibold">
                       {item.time}
                     </div>
                     <div>
                       <p className="text-sm font-medium">{item.title}</p>
-                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                      <p className="text-muted-foreground mt-1 text-xs">
                         {item.meta}
                       </p>
                     </div>
@@ -172,7 +172,7 @@ export default ChatPage;
 
 const ChatGPT: FC = () => {
   return (
-    <ThreadPrimitive.Root className="flex h-full min-h-0 flex-col items-stretch bg-transparent px-4 text-[#0d0d0d] dark:text-[#ececec]">
+    <ThreadPrimitive.Root className="text-foreground flex h-full min-h-0 flex-col items-stretch bg-transparent px-4">
       <AuiIf condition={(s) => s.thread.isEmpty}>
         <EmptyState />
       </AuiIf>
@@ -187,10 +187,10 @@ const ChatGPT: FC = () => {
             }}
           </ThreadPrimitive.Messages>
 
-          <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl bg-white pb-4 dark:bg-[#111214]">
+          <ThreadPrimitive.ViewportFooter className="bg-footer-surface sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl pb-4">
             <ThreadScrollToBottom />
             <Composer placeholder="Ask anything" />
-            <p className="text-center text-xs text-[#5d5d5d] dark:text-[#a8a8a8]">
+            <p className="text-subtle-foreground text-center text-xs">
               SpierWeb can make mistakes. Check important info.
             </p>
           </ThreadPrimitive.ViewportFooter>
@@ -204,10 +204,10 @@ const EmptyState: FC = () => {
   return (
     <div className="flex grow flex-col items-center justify-center px-4 py-12">
       <div className="mx-auto flex w-full max-w-3xl flex-col items-stretch gap-6">
-        <h1 className="text-center text-2xl font-medium text-[#0d0d0d] sm:text-3xl dark:text-[#ececec]">
+        <h1 className="text-foreground text-center text-2xl font-medium sm:text-3xl">
           Where should we begin?
         </h1>
-        <p className="text-center text-sm text-[#6b7280] dark:text-[#9ca3af]">
+        <p className="text-muted-foreground text-center text-sm">
           Ask your assistant to manage inbox, calendar, and follow-ups from one
           place.
         </p>
@@ -219,7 +219,7 @@ const EmptyState: FC = () => {
 
 const Composer: FC<{ placeholder: string }> = ({ placeholder }) => {
   return (
-    <ComposerPrimitive.Root className="group/composer flex w-full flex-col rounded-[28px] border border-[#e5e5e5] bg-white px-2 py-2 shadow-[0_2px_6px_-2px_rgba(0,0,0,0.05)] focus-within:border-[#d0d0d0] dark:border-transparent dark:bg-[#212121] dark:shadow-none dark:focus-within:border-transparent">
+    <ComposerPrimitive.Root className="bg-composer border-composer-border focus-within:border-composer-border-focus group/composer flex w-full flex-col rounded-[28px] border px-2 py-2 shadow-[var(--shadow-composer)]">
       <AuiIf condition={(s) => s.composer.attachments.length > 0}>
         <div className="flex flex-row flex-wrap gap-2 px-1 pt-1 pb-2">
           <ComposerPrimitive.Attachments
@@ -232,7 +232,7 @@ const Composer: FC<{ placeholder: string }> = ({ placeholder }) => {
         <ComposerPrimitive.AddAttachment asChild>
           <button
             type="button"
-            className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#cdcdcd] dark:hover:bg-white/10 dark:hover:text-white"
+            className="text-icon-muted hover:bg-accent hover:text-icon-strong flex size-9 shrink-0 items-center justify-center rounded-full transition-colors"
             aria-label="Add attachment"
           >
             <PlusIcon size={20} />
@@ -242,7 +242,7 @@ const Composer: FC<{ placeholder: string }> = ({ placeholder }) => {
         <ComposerPrimitive.Input
           placeholder={placeholder}
           rows={1}
-          className="max-h-52 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-[#0d0d0d] outline-none placeholder:text-[#8e8e8e] dark:text-[#ececec] dark:placeholder:text-[#8e8e8e]"
+          className="text-foreground placeholder:text-subtle-foreground max-h-52 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base outline-none"
         />
 
         <div className="flex shrink-0 items-center gap-1">
@@ -257,7 +257,7 @@ const ComposerPrimaryAction: FC = () => {
   return (
     <div className="flex items-center gap-1">
       <AuiIf condition={(s) => s.thread.isRunning}>
-        <ComposerPrimitive.Cancel className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black">
+        <ComposerPrimitive.Cancel className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full">
           <div className="size-2.5 rounded-[2px] bg-current" />
         </ComposerPrimitive.Cancel>
       </AuiIf>
@@ -266,7 +266,7 @@ const ComposerPrimaryAction: FC = () => {
         condition={(s) => !s.thread.isRunning && s.composer.dictation != null}
       >
         <ComposerPrimitive.StopDictation
-          className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black"
+          className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full"
           aria-label="Stop dictation"
         >
           <div className="size-2.5 animate-pulse rounded-[2px] bg-current" />
@@ -280,7 +280,7 @@ const ComposerPrimaryAction: FC = () => {
           !s.composer.isEmpty
         }
       >
-        <ComposerPrimitive.Send className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white transition-opacity disabled:opacity-30 dark:bg-white dark:text-black">
+        <ComposerPrimitive.Send className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full transition-opacity disabled:opacity-30">
           <ArrowUpIcon className="size-6" />
         </ComposerPrimitive.Send>
       </AuiIf>
@@ -293,7 +293,7 @@ const ComposerPrimaryAction: FC = () => {
         }
       >
         <ComposerPrimitive.Dictate
-          className="flex size-9 items-center justify-center rounded-full text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#cdcdcd] dark:hover:bg-white/10 dark:hover:text-white"
+          className="text-icon-muted hover:bg-accent hover:text-icon-strong flex size-9 items-center justify-center rounded-full transition-colors"
           aria-label="Dictate"
         >
           <Mic className="size-5" />
@@ -303,7 +303,7 @@ const ComposerPrimaryAction: FC = () => {
           type="button"
           aria-hidden="true"
           tabIndex={-1}
-          className="flex size-9 items-center justify-center rounded-full bg-[#0d0d0d] text-white dark:bg-white dark:text-black"
+          className="bg-primary text-primary-foreground flex size-9 items-center justify-center rounded-full"
         >
           <AudioLines className="size-5" />
         </button>
@@ -317,7 +317,7 @@ const ThreadScrollToBottom: FC = () => {
     <ThreadPrimitive.ScrollToBottom asChild>
       <TooltipIconButton
         tooltip="Scroll to bottom"
-        className="bg-background absolute -top-10 z-10 self-center rounded-full border p-2 shadow-sm disabled:invisible dark:border-white/15 dark:bg-[#2a2a2a]"
+        className="bg-background border-border absolute -top-10 z-10 self-center rounded-full border p-2 shadow-[var(--shadow-panel)] disabled:invisible"
       >
         <ChevronDownIcon className="size-5" />
       </TooltipIconButton>
@@ -342,13 +342,13 @@ const UserMessage: FC = () => {
           className="mt-2"
         >
           <ActionBarPrimitive.Edit asChild>
-            <TooltipIconButton tooltip="Edit" className="text-[#b4b4b4]">
+            <TooltipIconButton tooltip="Edit" className="text-subtle-foreground">
               <Pencil1Icon className="size-5" />
             </TooltipIconButton>
           </ActionBarPrimitive.Edit>
         </ActionBarPrimitive.Root>
 
-        <div className="bg-secondary text-foreground rounded-3xl px-5 py-2 dark:bg-white/5 dark:text-[#eee]">
+        <div className="bg-secondary text-secondary-foreground rounded-3xl px-5 py-2">
           <MessagePrimitive.Parts />
         </div>
       </div>
@@ -360,14 +360,14 @@ const UserMessage: FC = () => {
 
 const EditComposer: FC = () => {
   return (
-    <ComposerPrimitive.Root className="bg-secondary mx-auto flex w-full max-w-3xl flex-col justify-end gap-1 rounded-3xl dark:bg-white/15">
-      <ComposerPrimitive.Input className="text-foreground flex h-8 w-full resize-none bg-transparent p-5 pb-0 outline-none dark:text-white" />
+    <ComposerPrimitive.Root className="bg-secondary mx-auto flex w-full max-w-3xl flex-col justify-end gap-1 rounded-3xl">
+      <ComposerPrimitive.Input className="text-foreground flex h-8 w-full resize-none bg-transparent p-5 pb-0 outline-none" />
 
       <div className="m-3 mt-2 flex items-center justify-center gap-2 self-end">
-        <ComposerPrimitive.Cancel className="bg-background text-foreground hover:bg-muted rounded-full px-3 py-2 text-sm font-semibold dark:bg-zinc-900 dark:text-white dark:hover:bg-zinc-800">
+        <ComposerPrimitive.Cancel className="bg-background text-foreground hover:bg-muted rounded-full px-3 py-2 text-sm font-semibold">
           Cancel
         </ComposerPrimitive.Cancel>
-        <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-3 py-2 text-sm font-semibold dark:bg-white dark:text-black dark:hover:bg-white/90">
+        <ComposerPrimitive.Send className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-full px-3 py-2 text-sm font-semibold">
           Send
         </ComposerPrimitive.Send>
       </div>
@@ -376,12 +376,12 @@ const EditComposer: FC = () => {
 };
 
 const assistantActionClassName =
-  "flex size-8 items-center justify-center rounded-md text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#afafaf] dark:hover:bg-white/10 dark:hover:text-white";
+  "text-icon-muted hover:bg-accent hover:text-icon-strong flex size-8 items-center justify-center rounded-md transition-colors";
 
 const AssistantMessage: FC = () => {
   return (
     <MessagePrimitive.Root className="relative mx-auto flex w-full max-w-3xl flex-col">
-      <div className="text-[#0d0d0d] dark:text-[#ececec]">
+      <div className="text-foreground">
         <MessagePrimitive.Parts>
           {({ part }) => {
             if (part.type === "text") return <MarkdownText />;
@@ -431,7 +431,7 @@ const AssistantMessage: FC = () => {
                 aria-label="More"
                 className={cn(
                   assistantActionClassName,
-                  "data-[state=open]:bg-[#0d0d0d]/5 dark:data-[state=open]:bg-white/10",
+                  "data-[state=open]:bg-accent",
                 )}
               >
                 <MoreHorizontal className="size-5" />
@@ -463,18 +463,18 @@ const BranchPicker: FC<{ className?: string }> = ({ className }) => {
     <BranchPickerPrimitive.Root
       hideWhenSingleBranch
       className={cn(
-        "text-muted-foreground inline-flex items-center text-sm font-semibold dark:text-[#b4b4b4]",
+        "text-muted-foreground inline-flex items-center text-sm font-semibold",
         className,
       )}
     >
       <BranchPickerPrimitive.Previous asChild>
-        <TooltipIconButton tooltip="Previous" className="text-[#b4b4b4]">
+        <TooltipIconButton tooltip="Previous" className="text-subtle-foreground">
           <ChevronLeftIcon className="size-5" />
         </TooltipIconButton>
       </BranchPickerPrimitive.Previous>
       <BranchPickerPrimitive.Number />/<BranchPickerPrimitive.Count />
       <BranchPickerPrimitive.Next asChild>
-        <TooltipIconButton tooltip="Next" className="text-[#b4b4b4]">
+        <TooltipIconButton tooltip="Next" className="text-subtle-foreground">
           <ChevronRightIcon className="size-5" />
         </TooltipIconButton>
       </BranchPickerPrimitive.Next>
@@ -524,7 +524,7 @@ const ChatGPTAttachmentUI: FC = () => {
 
   return (
     <AttachmentPrimitive.Root className="group/attachment relative">
-      <div className="bg-secondary flex items-center gap-2 overflow-hidden rounded-2xl border dark:bg-white/5">
+      <div className="bg-secondary flex items-center gap-2 overflow-hidden rounded-2xl border">
         <AuiIf condition={(s) => s.attachment.type === "image"}>
           {src ? (
             <img
@@ -539,13 +539,13 @@ const ChatGPTAttachmentUI: FC = () => {
           )}
         </AuiIf>
         <AuiIf condition={(s) => s.attachment.type !== "image"}>
-          <div className="bg-background flex h-full w-12 items-center justify-center rounded-[9px] text-[#6b6b6b] dark:bg-[#3a3a3a] dark:text-[#9a9a9a]">
+          <div className="bg-background text-muted-foreground flex h-full w-12 items-center justify-center rounded-[9px]">
             <AttachmentPrimitive.unstable_Thumb className="text-xs" />
           </div>
         </AuiIf>
       </div>
       {isComposer && (
-        <AttachmentPrimitive.Remove className="absolute -top-1.5 -right-1.5 flex size-7 items-center justify-center rounded-full border border-[#e5e5e5] bg-white text-[#6b6b6b] transition-all hover:bg-[#f5f5f5] hover:text-[#0d0d0d] dark:border-[#3a3a3a] dark:bg-[#1a1a1a] dark:text-[#9a9a9a] dark:hover:bg-[#252525] dark:hover:text-white">
+        <AttachmentPrimitive.Remove className="border-border bg-panel text-muted-foreground hover:bg-accent hover:text-foreground absolute -top-1.5 -right-1.5 flex size-7 items-center justify-center rounded-full border transition-all">
           <Cross2Icon className="size-5" />
         </AttachmentPrimitive.Remove>
       )}

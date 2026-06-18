@@ -38,38 +38,44 @@ export function Header() {
         {/* Left: Brand */}
         <div className="flex items-center gap-2">
           <Link href="/" className="flex cursor-pointer items-baseline gap-1">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="2" fill="#ec4899" />
+            <div className="flex items-center gap-3">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="2" fill="#ec4899" />
 
-              <line
-                x1="12"
-                y1="3"
-                x2="12"
-                y2="21"
-                stroke="#ec4899"
-                strokeWidth="1.5"
-              />
+                <line
+                  x1="12"
+                  y1="3"
+                  x2="12"
+                  y2="21"
+                  stroke="#ec4899"
+                  strokeWidth="1.5"
+                />
 
-              <line
-                x1="3"
-                y1="12"
-                x2="21"
-                y2="12"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
+                <line
+                  x1="3"
+                  y1="12"
+                  x2="21"
+                  y2="12"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
 
-              <line
-                x1="5"
-                y1="5"
-                x2="19"
-                y2="19"
-                stroke="currentColor"
-                strokeWidth="1.5"
-              />
-            </svg>
-
-            <span className="text-xl font-bold tracking-tight">Spider Web</span>
+                <line
+                  x1="5"
+                  y1="5"
+                  x2="19"
+                  y2="19"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+              </svg>
+              <p className="text-sm font-semibold tracking-[0.24em] text-[#6b7280] uppercase dark:text-[#9ca3af]">
+                SpiderWeb
+              </p>
+              <span className="rounded-full border border-[#dbe2ea] bg-white px-2 py-0.5 text-[10px] font-semibold tracking-[0.18em] text-[#6b7280] uppercase dark:border-white/10 dark:bg-white/5 dark:text-[#cbd5e1]">
+                Beta
+              </span>
+            </div>
           </Link>
         </div>
 
