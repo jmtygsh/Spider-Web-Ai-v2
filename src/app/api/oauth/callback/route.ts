@@ -1,42 +1,43 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { processOAuthCallback } from "corsair/oauth";
-import { corsair } from "@/server/configs/corsair";
-import { REDIRECT_URI } from "@/constants/corsair";
+import {
+  isWorkspaceAuthenticationError,
+  requireAuthenticatedWorkspace,
+} from "@/features/identity-workspace";
+import {
+  completePluginAuthorization,
+  isPluginAuthorizationError,
+} from "@/features/integration-access";
+import { OAUTH_STATE_COOKIE_NAME } from "@/features/integration-access/config/plugin-authorization";
 import { redirectTo } from "@/server/http/response";
 
 export async function GET(request: NextRequest) {
-  const { searchParams } = new URL(request.url);
-  const code = searchParams.get("code");
-  const state = searchParams.get("state");
-
-  if (!code || !state) {
-    const response = new NextResponse("Missing code or state.", {
-      status: 400,
-    });
-    response.cookies.delete("oauth_state");
-    return response;
-  }
-
-  const storedState = request.cookies.get("oauth_state")?.value;
-  if (!storedState || storedState !== state) {
-    const response = new NextResponse("Invalid state.", { status: 400 });
-    response.cookies.delete("oauth_state");
-    return response;
-  }
-
   try {
-    const result = await processOAuthCallback(corsair, {
-      code,
-      state,
-      redirectUri: REDIRECT_URI,
+    const workspace = await requireAuthenticatedWorkspace();
+    const { searchParams } = new URL(request.url);
+
+    await completePluginAuthorization({
+      code: searchParams.get("code"),
+      state: searchParams.get("state"),
+      pendingStateCookieValue: request.cookies.get(OAUTH_STATE_COOKIE_NAME)?.value,
+      workspace,
     });
 
     const response = redirectTo("/dashboard");
-    response.cookies.delete("oauth_state");
+    response.cookies.delete(OAUTH_STATE_COOKIE_NAME);
     return response;
-  } catch {
-    const response = new NextResponse("OAuth failed.", { status: 500 });
-    response.cookies.delete("oauth_state");
+  } catch (error) {
+    const status = isWorkspaceAuthenticationError(error)
+      ? 401
+      : isPluginAuthorizationError(error)
+        ? 400
+        : 500;
+    const response = new NextResponse(
+      isWorkspaceAuthenticationError(error) || isPluginAuthorizationError(error)
+        ? error.message
+        : "OAuth failed.",
+      { status },
+    );
+    response.cookies.delete(OAUTH_STATE_COOKIE_NAME);
     return response;
   }
 }
