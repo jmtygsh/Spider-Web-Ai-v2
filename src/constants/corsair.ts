@@ -1,3 +1,4 @@
+import type { IntegrationProvider } from "@/features/event-ingestion";
 import { env } from "@/env";
 
 // Must match the "Authorized redirect URI" registered in Google Cloud Console
@@ -8,11 +9,17 @@ export const REDIRECT_URI = `${env.APP_URL}/api/oauth/callback`;
 export const WEBHOOK_URI = `${env.APP_URL}/api/webhooks`;
 
 // Purpose:
-// Builds the per-tenant webhook URL that Google Calendar push notifications target.
-// Called when registering calendar watch subscriptions after OAuth.
-// Handles tenant id; expected result is a full webhook URL with tenantId query param.
-export function buildWebhookUrl(tenantId: string): string {
-    const url = new URL(WEBHOOK_URI);
-    url.searchParams.set("tenantId", tenantId);
-    return url.toString();
+// Builds the per-tenant webhook URL integrations target.
+// Called when registering provider watches/subscriptions after OAuth.
+// Handles tenant id and optional provider; expected result is a full webhook URL.
+export function buildWebhookUrl(
+  tenantId: string,
+  provider?: IntegrationProvider,
+): string {
+  const url = new URL(WEBHOOK_URI);
+  url.searchParams.set("tenantId", tenantId);
+  if (provider) {
+    url.searchParams.set("provider", provider);
+  }
+  return url.toString();
 }
