@@ -6,8 +6,11 @@ import type {
 } from "openai/resources/responses/responses";
 
 import { env } from "@/env";
+import {
+  isWorkspaceAuthenticationError,
+  requireAuthenticatedWorkspace,
+} from "@/features/identity-workspace";
 import { unauthorized } from "@/server/http/response";
-import { getCorsairTenant } from "@/server/corsair/tenant";
 
 type ChatMessage = {
   role: "assistant" | "system" | "user";
@@ -38,40 +41,47 @@ function getMessageText(message: ChatMessage) {
 }
 
 export async function POST(req: Request) {
-  const tenantCtx = await getCorsairTenant();
-  if (!tenantCtx) return unauthorized();
+  try {
+    await requireAuthenticatedWorkspace();
 
-  const { messages } = (await req.json()) as {
-    messages: ChatMessage[];
-  };
+    const { messages } = (await req.json()) as {
+      messages: ChatMessage[];
+    };
 
-  const forwardedCookie = req.headers.get("cookie");
-  const input = messages.reduce<EasyInputMessage[]>((result, message) => {
-    const content = getMessageText(message);
-    if (!content) return result;
+    const forwardedCookie = req.headers.get("cookie");
+    const input = messages.reduce<EasyInputMessage[]>((result, message) => {
+      const content = getMessageText(message);
+      if (!content) return result;
 
-    result.push({
-      role: message.role,
-      content,
+      result.push({
+        role: message.role,
+        content,
+      });
+
+      return result;
+    }, []);
+
+    const tools: Tool[] = [
+      {
+        type: "mcp",
+        server_label: "corsair",
+        server_url: new URL("/api/mcp", env.APP_URL).toString(),
+        headers: forwardedCookie ? { cookie: forwardedCookie } : undefined,
+      },
+    ];
+
+    const response = await openai.responses.create({
+      model: "gpt-4.1",
+      input,
+      tools,
     });
 
-    return result;
-  }, []);
+    return NextResponse.json({ message: response.output_text });
+  } catch (error) {
+    if (isWorkspaceAuthenticationError(error)) {
+      return unauthorized();
+    }
 
-  const tools: Tool[] = [
-    {
-      type: "mcp",
-      server_label: "corsair",
-      server_url: new URL("/api/mcp", env.APP_URL).toString(),
-      headers: forwardedCookie ? { cookie: forwardedCookie } : undefined,
-    },
-  ];
-
-  const response = await openai.responses.create({
-    model: "gpt-4.1",
-    input,
-    tools,
-  });
-
-  return NextResponse.json({ message: response.output_text });
+    throw error;
+  }
 }

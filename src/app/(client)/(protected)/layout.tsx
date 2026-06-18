@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { getSession } from "@/server/better-auth/server";
+import { resolveWorkspaceContext } from "@/features/identity-workspace";
 
 // Purpose:
 // Gate for routes that require a signed-in user.
@@ -10,9 +10,9 @@ export default async function ProtectedLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
+  const workspace = await resolveWorkspaceContext();
 
-  if (!session) {
+  if (!workspace) {
     redirect("/login");
   }
 

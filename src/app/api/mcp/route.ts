@@ -2,7 +2,10 @@ import { createBaseMcpServer } from "@corsair-dev/mcp";
 import { WebStandardStreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/webStandardStreamableHttp.js";
 import { NextResponse } from "next/server";
 
-import { getCorsairTenant } from "@/server/corsair/tenant";
+import {
+  isWorkspaceAuthenticationError,
+  requireAuthenticatedWorkspace,
+} from "@/features/identity-workspace";
 
 type McpServerSession = {
   server: ReturnType<typeof createBaseMcpServer>;
@@ -26,9 +29,16 @@ function jsonError(status: number, error: string) {
 }
 
 async function getSessionForRequest(request: Request) {
-  const tenantCtx = await getCorsairTenant();
-  if (!tenantCtx)
-    return { error: jsonError(401, "Unauthorized"), session: null };
+  let workspace;
+  try {
+    workspace = await requireAuthenticatedWorkspace();
+  } catch (error) {
+    if (isWorkspaceAuthenticationError(error)) {
+      return { error: jsonError(401, "Unauthorized"), session: null };
+    }
+
+    throw error;
+  }
 
   const sessionId = request.headers.get("mcp-session-id");
   if (!sessionId) {
@@ -39,7 +49,7 @@ async function getSessionForRequest(request: Request) {
   }
 
   const session = sessions.get(sessionId);
-  if (!session || session.tenantId !== tenantCtx.tenantId) {
+  if (!session || session.tenantId !== workspace.tenantId) {
     return { error: jsonError(404, "Session not found"), session: null };
   }
 
@@ -47,13 +57,21 @@ async function getSessionForRequest(request: Request) {
 }
 
 export async function POST(request: Request) {
-  const tenantCtx = await getCorsairTenant();
-  if (!tenantCtx) return jsonError(401, "Unauthorized");
+  let workspace;
+  try {
+    workspace = await requireAuthenticatedWorkspace();
+  } catch (error) {
+    if (isWorkspaceAuthenticationError(error)) {
+      return jsonError(401, "Unauthorized");
+    }
+
+    throw error;
+  }
 
   const sessionId = request.headers.get("mcp-session-id");
   if (sessionId) {
     const session = sessions.get(sessionId);
-    if (!session || session.tenantId !== tenantCtx.tenantId) {
+    if (!session || session.tenantId !== workspace.tenantId) {
       return jsonError(404, "Session not found");
     }
 
@@ -61,8 +79,8 @@ export async function POST(request: Request) {
   }
 
   const server = createBaseMcpServer({
-    corsair: tenantCtx.tenant,
-    tenantId: tenantCtx.tenantId,
+    corsair: workspace.tenant,
+    tenantId: workspace.tenantId,
   });
   const transport = new WebStandardStreamableHTTPServerTransport({
     sessionIdGenerator: () => crypto.randomUUID(),
@@ -70,7 +88,7 @@ export async function POST(request: Request) {
       sessions.set(createdSessionId, {
         server,
         transport,
-        tenantId: tenantCtx.tenantId,
+        tenantId: workspace.tenantId,
       });
     },
     onsessionclosed: async (closedSessionId: string) => {

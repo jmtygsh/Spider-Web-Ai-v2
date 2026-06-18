@@ -1,10 +1,12 @@
-import { getSession } from "@/server/better-auth/server";
-import { corsair } from "@/server/configs/corsair";
+import { resolveWorkspaceContext } from "@/features/identity-workspace";
 
 export async function getCorsairTenant() {
-  const session = await getSession();
-  if (!session) return null;
+  const workspace = await resolveWorkspaceContext();
+  if (!workspace) return null;
 
-  const tenantId = session.user.id;
-  return { session, tenantId, tenant: corsair.withTenant(tenantId) };
+  return {
+    session: workspace.session,
+    tenantId: workspace.tenantId,
+    tenant: workspace.tenant,
+  };
 }

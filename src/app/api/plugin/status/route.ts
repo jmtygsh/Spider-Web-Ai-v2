@@ -4,18 +4,17 @@ import { eq } from "drizzle-orm";
 import { corsairAccounts, corsairIntegrations } from "@/server/db/schema";
 
 import { CONNECT_PLUGIN_IDS, type ConnectPluginId } from "@/constants/plugins";
-import { getSession } from "@/server/better-auth/server";
+import {
+  isWorkspaceAuthenticationError,
+  requireAuthenticatedWorkspace,
+} from "@/features/identity-workspace";
 import { ok, serverError, unauthorized } from "@/server/http/response";
 import { db } from "@/server/db";
 
 export async function GET(_req: NextRequest) {
-  const session = await getSession();
-
-  if (!session) {
-    return unauthorized("Unauthorized");
-  }
-
   try {
+    const workspace = await requireAuthenticatedWorkspace();
+
     const integrations = await db
       .selectDistinct({
         name: corsairIntegrations.name,
@@ -25,7 +24,7 @@ export async function GET(_req: NextRequest) {
         corsairIntegrations,
         eq(corsairAccounts.integrationId, corsairIntegrations.id),
       )
-      .where(eq(corsairAccounts.tenantId, session.user.id));
+      .where(eq(corsairAccounts.tenantId, workspace.tenantId));
 
     const connectedIntegrations = new Set(
       integrations.map(({ name }) => name.toLowerCase()),
@@ -40,6 +39,10 @@ export async function GET(_req: NextRequest) {
 
     return ok(status);
   } catch (err) {
+    if (isWorkspaceAuthenticationError(err)) {
+      return unauthorized("Unauthorized");
+    }
+
     console.error("Connections read failed:", err);
     return serverError("Connections read failed");
   }

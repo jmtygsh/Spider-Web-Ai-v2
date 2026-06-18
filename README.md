@@ -27,3 +27,109 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+
+
+Act as a Principal AI Architect, Staff Engineer, and Agentic AI Systems Reviewer.
+
+Your task is to audit my entire codebase and identify everything required to transform it into a production-grade Agentic AI platform.
+
+Analyze the codebase from the perspective of:
+
+1. System Architecture
+   - Separation of concerns
+   - Scalability
+   - Modularity
+   - Extensibility
+   - Event-driven design
+   - Service boundaries
+
+2. Agent Architecture
+   - Agent lifecycle
+   - Planning system
+   - Reasoning layer
+   - Memory architecture
+   - Task decomposition
+   - Multi-agent coordination
+   - Tool calling framework
+   - Reflection and self-correction
+   - Context management
+
+3. AI Infrastructure
+   - Model abstraction layer
+   - Multi-model support
+   - Prompt management
+   - Context window optimization
+   - Token management
+   - Embedding strategy
+   - RAG architecture
+
+4. Memory System
+   - Short-term memory
+   - Long-term memory
+   - Episodic memory
+   - Semantic memory
+   - Knowledge graph integration
+   - User memory
+
+5. Execution Layer
+   - Workflow engine
+   - Task orchestration
+   - Queue system
+   - Retry mechanisms
+   - State management
+   - Checkpointing
+
+6. Tooling Layer
+   - Tool registry
+   - Tool permissions
+   - Tool execution
+   - Error recovery
+   - Dynamic tool discovery
+
+7. Security
+   - Prompt injection protection
+   - Tool abuse prevention
+   - Access control
+   - Data isolation
+   - Secrets management
+
+8. Observability
+   - Logging
+   - Tracing
+   - Agent monitoring
+   - Evaluation metrics
+   - Cost tracking
+   - Performance monitoring
+
+9. Production Readiness
+   - Testing strategy
+   - CI/CD
+   - Versioning
+   - Deployment architecture
+   - Failover design
+
+For every issue found provide:
+
+- Current implementation
+- Missing capability
+- Why it matters
+- Severity (Critical/High/Medium/Low)
+- Recommended architecture
+- Example implementation approach
+
+Then generate:
+
+1. Architecture Score (0-100)
+2. Agentic AI Maturity Score (0-100)
+3. Scalability Score (0-100)
+4. Production Readiness Score (0-100)
+
+Finally create:
+
+- Immediate fixes (1 week)
+- Short-term roadmap (30 days)
+- Mid-term roadmap (90 days)
+- Long-term roadmap (6 months)
+
+Be brutally honest and identify all architectural weaknesses.
