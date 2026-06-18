@@ -1,13 +1,11 @@
+import { redis } from "@/server/configs/redis";
 import { fail } from "@/server/http/response";
 
 /**
- * In-memory fixed-window rate limiter.
+ * Fixed-window rate limiter with Upstash Redis when configured, otherwise in-memory.
  *
- * Trade-off: counts live in this process's memory, so limits are enforced
- * per-instance, not globally. That's fine for a single Node server and for
- * local/dev, but a multi-instance/serverless deployment should swap the store
- * for a shared backend (e.g. Upstash Redis). Only `rateLimit()` below needs to
- * change for that — callers use `checkRateLimit()` and stay untouched.
+ * Redis gives distributed limits across serverless instances. In-memory is fine for
+ * local dev and single-node deploys.
  */
 
 export type RateLimitOptions = { limit: number; windowMs: number };
@@ -22,7 +20,6 @@ export type RateLimitResult = {
 
 type Bucket = { count: number; resetAt: number };
 
-// Persist the store across dev HMR reloads (mirrors the db connection cache).
 const globalForRateLimit = globalThis as unknown as {
   rateLimitBuckets?: Map<string, Bucket>;
   rateLimitLastSweep?: number;
@@ -34,10 +31,6 @@ globalForRateLimit.rateLimitBuckets = buckets;
 
 const SWEEP_INTERVAL_MS = 60_000;
 
-// Purpose:
-// Removes expired rate-limit buckets from the in-memory store.
-// Runs periodically during rateLimit calls to prevent unbounded memory growth.
-// Handles current timestamp; expected result is cleaned bucket map.
 function sweepExpired(now: number) {
   if (now - (globalForRateLimit.rateLimitLastSweep ?? 0) < SWEEP_INTERVAL_MS) {
     return;
@@ -48,11 +41,7 @@ function sweepExpired(now: number) {
   }
 }
 
-// Purpose:
-// Applies a fixed-window rate limit for a single key.
-// Called directly or via checkRateLimit from API routes.
-// Handles limit key and window options; expected result is success flag and remaining budget.
-export function rateLimit(
+function memoryRateLimit(
   key: string,
   opts: RateLimitOptions,
 ): RateLimitResult {
@@ -90,10 +79,43 @@ export function rateLimit(
   };
 }
 
-// Purpose:
-// Builds standard X-RateLimit-* response headers from a rate limit result.
-// Called internally when constructing API responses.
-// Handles RateLimitResult; expected result is header key/value map.
+async function redisRateLimit(
+  key: string,
+  opts: RateLimitOptions,
+): Promise<RateLimitResult> {
+  const now = Date.now();
+  const windowId = Math.floor(now / opts.windowMs);
+  const redisKey = `ratelimit:${key}:${windowId}`;
+  const reset = (windowId + 1) * opts.windowMs;
+
+  const count = await redis!.incr(redisKey);
+  if (count === 1) {
+    await redis!.expire(redisKey, Math.ceil(opts.windowMs / 1000));
+  }
+
+  return {
+    success: count <= opts.limit,
+    limit: opts.limit,
+    remaining: Math.max(0, opts.limit - count),
+    reset,
+  };
+}
+
+export async function rateLimit(
+  key: string,
+  opts: RateLimitOptions,
+): Promise<RateLimitResult> {
+  if (redis) {
+    try {
+      return await redisRateLimit(key, opts);
+    } catch {
+      return memoryRateLimit(key, opts);
+    }
+  }
+
+  return memoryRateLimit(key, opts);
+}
+
 function rateLimitHeaders(result: RateLimitResult): Record<string, string> {
   return {
     "X-RateLimit-Limit": String(result.limit),
@@ -102,26 +124,14 @@ function rateLimitHeaders(result: RateLimitResult): Record<string, string> {
   };
 }
 
-/**
- * Convenience wrapper for route handlers.
- *
- * Returns `limited` as a ready-to-return 429 response when the budget is
- * exceeded (with `Retry-After` + rate headers), otherwise `null`. Either way it
- * returns `headers` to attach to the success response so clients always see
- * their remaining budget.
- */
-// Purpose:
-// Checks rate limit and returns either a 429 response or headers for success.
-// Called at the top of rate-limited API routes.
-// Handles limit key and options; expected result is limited response or header map.
-export function checkRateLimit(
+export async function checkRateLimit(
   key: string,
   opts: RateLimitOptions,
-): {
+): Promise<{
   limited: import("next/server").NextResponse | null;
   headers: Record<string, string>;
-} {
-  const result = rateLimit(key, opts);
+}> {
+  const result = await rateLimit(key, opts);
   const headers = rateLimitHeaders(result);
 
   if (!result.success) {

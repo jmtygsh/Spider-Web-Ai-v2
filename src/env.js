@@ -47,6 +47,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     OTEL_SERVICE_NAME: z.string().optional(),
+    SENTRY_DSN: z.string().url().optional(),
     // --- Rate limiting (Upstash Redis) ---
     UPSTASH_REDIS_REST_TOKEN: z.string().optional(),
     UPSTASH_REDIS_REST_URL: z.string().url().optional(),
@@ -60,6 +61,7 @@ export const env = createEnv({
   // --- Client-side env (NEXT_PUBLIC_* only) ---
   client: {
     NEXT_PUBLIC_API_BASE_URL: z.string().url().optional(),
+    NEXT_PUBLIC_SENTRY_DSN: z.string().url().optional(),
   },
 
   /**
@@ -85,9 +87,11 @@ export const env = createEnv({
     INNGEST_SIGNING_KEY: process.env.INNGEST_SIGNING_KEY,
     NODE_ENV: process.env.NODE_ENV,
     OTEL_SERVICE_NAME: process.env.OTEL_SERVICE_NAME,
+    SENTRY_DSN: process.env.SENTRY_DSN,
     UPSTASH_REDIS_REST_TOKEN: process.env.UPSTASH_REDIS_REST_TOKEN,
     UPSTASH_REDIS_REST_URL: process.env.UPSTASH_REDIS_REST_URL,
     NEXT_PUBLIC_API_BASE_URL: process.env.NEXT_PUBLIC_API_BASE_URL,
+    NEXT_PUBLIC_SENTRY_DSN: process.env.NEXT_PUBLIC_SENTRY_DSN,
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

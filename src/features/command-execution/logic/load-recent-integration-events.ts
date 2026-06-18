@@ -1,6 +1,7 @@
 import { and, desc, eq, gt, inArray } from "drizzle-orm";
 
 import { CONNECT_PLUGIN_IDS } from "@/constants/plugins";
+import { getCached, setCached } from "@/server/cache/redis-cache";
 import { db } from "@/server/db";
 import {
   corsairAccounts,
@@ -16,11 +17,24 @@ export type RecentIntegrationEvent = {
   createdAt: string;
 };
 
+const EVENTS_CACHE_TTL_SECONDS = 3;
+
+function eventsCacheKey(tenantId: string, since: string | undefined, limit: number) {
+  return `events:recent:${tenantId}:${since ?? "all"}:${limit}`;
+}
+
 export async function loadRecentIntegrationEvents(input: {
   tenantId: string;
   since?: string;
   limit?: number;
 }): Promise<RecentIntegrationEvent[]> {
+  const limit = input.limit ?? 20;
+  const cacheKey = eventsCacheKey(input.tenantId, input.since, limit);
+  const cached = await getCached<RecentIntegrationEvent[]>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const accounts = await db
     .select({ accountId: corsairAccounts.id })
     .from(corsairAccounts)
@@ -58,13 +72,16 @@ export async function loadRecentIntegrationEvents(input: {
       ),
     )
     .orderBy(desc(corsairEvents.createdAt))
-    .limit(input.limit ?? 20);
+    .limit(limit);
 
-  return rows.map((row) => ({
+  const events = rows.map((row) => ({
     id: row.id,
     eventType: row.eventType,
     accountId: row.accountId,
     status: row.status,
     createdAt: row.createdAt.toISOString(),
   }));
+
+  await setCached(cacheKey, events, EVENTS_CACHE_TTL_SECONDS);
+  return events;
 }

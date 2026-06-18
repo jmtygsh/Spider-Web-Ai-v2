@@ -1,9 +1,12 @@
+import { createHash } from "node:crypto";
+
 import { eq } from "drizzle-orm";
 
 import {
   cosineSimilarity,
   embedText,
 } from "@/features/rag/logic/embed-text";
+import { getCached, setCached } from "@/server/cache/redis-cache";
 import { db } from "@/server/db";
 import { entityEmbeddings } from "@/server/db/schema";
 
@@ -14,11 +17,28 @@ export type RetrievedContextChunk = {
   score: number;
 };
 
+const RAG_CACHE_TTL_SECONDS = 90;
+
+function ragCacheKey(accountId: string, query: string, limit: number) {
+  const hash = createHash("sha256")
+    .update(`${accountId}:${query}:${limit}`)
+    .digest("hex")
+    .slice(0, 24);
+  return `rag:ctx:${hash}`;
+}
+
 export async function retrieveRelevantContext(input: {
   accountId: string;
   query: string;
   limit?: number;
 }): Promise<RetrievedContextChunk[]> {
+  const limit = input.limit ?? 6;
+  const cacheKey = ragCacheKey(input.accountId, input.query, limit);
+  const cached = await getCached<RetrievedContextChunk[]>(cacheKey);
+  if (cached) {
+    return cached;
+  }
+
   const queryEmbedding = await embedText(input.query);
   if (!queryEmbedding) {
     return [];
@@ -30,7 +50,7 @@ export async function retrieveRelevantContext(input: {
     .where(eq(entityEmbeddings.accountId, input.accountId))
     .limit(250);
 
-  return rows
+  const chunks = rows
     .map((row) => ({
       sourceEntityId: row.sourceEntityId,
       sourceEntityType: row.sourceEntityType,
@@ -38,8 +58,11 @@ export async function retrieveRelevantContext(input: {
       score: cosineSimilarity(queryEmbedding, row.embedding),
     }))
     .sort((left, right) => right.score - left.score)
-    .slice(0, input.limit ?? 6)
+    .slice(0, limit)
     .filter((entry) => entry.score > 0.2);
+
+  await setCached(cacheKey, chunks, RAG_CACHE_TTL_SECONDS);
+  return chunks;
 }
 
 export function formatRetrievedContext(chunks: RetrievedContextChunk[]) {

@@ -1,7 +1,8 @@
 import {
   buildCommandPreview,
-  parseCommandIntent,
+  planCommandWithAi,
   resolveCommandEntities,
+  resolveCommandIntent,
 } from "@/features/command-bar";
 import type {
   CommandPreviewResult,
@@ -13,7 +14,7 @@ export async function previewCommand(
   input: PreviewCommandInput,
 ): Promise<CommandPreviewResult> {
   const command = input.command.trim();
-  const parsed = parseCommandIntent({ command });
+  const parsed = await resolveCommandIntent({ command });
   const resolved = input.accountId
     ? await resolveCommandEntities({
         accountId: input.accountId,
@@ -25,7 +26,18 @@ export async function previewCommand(
         threads: [],
         timeHints: parsed.args.timeHints,
       };
-  const preview = buildCommandPreview({ parsed, resolved });
+  let preview = buildCommandPreview({ parsed, resolved });
+
+  if (parsed.intent !== "unknown" && parsed.confidence >= 0.7) {
+    const aiPlan = await planCommandWithAi({ command, parsed, resolved });
+    if (aiPlan) {
+      preview = {
+        ...preview,
+        summary: aiPlan.summary,
+        plannedSteps: aiPlan.steps,
+      };
+    }
+  }
 
   const injection = input.accountId
     ? await checkPromptInjectionRisk({

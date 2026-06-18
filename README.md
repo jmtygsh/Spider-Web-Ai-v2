@@ -1,135 +1,170 @@
-# Create T3 App
+# Spider Web AI
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+**Built by Yogesh JMT** — an AI-native workspace command center for email and calendar.
 
-## What's next? How do I make an app with this?
+> Not another chatbot. Spider Web is a **proactive agent platform** that reads your inbox, prepares you for meetings, and executes multi-step commands — with human approval gates and safety policies built in.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## Demo Highlights (Hackathon Pitch)
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 1. Meeting Preparation Agent
+Before every meeting (24h / 2h / 30m windows), background agents:
+- Pull related threads, commitments, and relationship context
+- Generate a prep brief with risks and next actions
+- Surface one-click templates on the dashboard
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+### 2. Natural Language Command Center (`Ctrl+K`)
+Type what you mean — no rigid syntax:
+- **Two-stage intent pipeline**: zero-cost regex fast path → `gpt-4o-mini` when ambiguous
+- **AI planner** (`gpt-4o`) generates multi-step execution plans
+- Supports: create invites, find email threads, draft/send replies, meeting prep
+- **Preview before execute** with safety checks and human approval for risky writes
 
-## Learn More
+### 3. AI Inbox Prioritization
+Hourly Inngest cron scans unread threads and triages into buckets:
+`action_required` · `schedule` · `fyi` · `later`
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Uses structured reasoning model output — not just keyword rules.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 4. Fan-Out Event Architecture
+Webhook → Inngest orchestrator → isolated child jobs:
+thread projection · meeting projection · embeddings · relationship profiles · timeline · suggestions
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+Each user/workspace gets staggered execution — no thundering herd at cron time.
 
-## How do I deploy this?
+---
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+## What Competitors Usually Don't Have
 
+| Spider Web | Typical AI Email Assistants |
+|------------|----------------------------|
+| **Command center + chat** (Ctrl+K deterministic + MCP agent fallback) | Chat-only UI |
+| **Human-in-the-loop tool approval** for writes | Auto-execute without gates |
+| **Fan-out Inngest workflows** with retries | Single cron or inline processing |
+| **Safety policy layer** (injection detection, tool risk scoring) | Prompt-only guardrails |
+| **Relationship intelligence** (latency, open requests, linking) | Flat thread list |
+| **Grounded RAG** over your workspace embeddings | Generic LLM answers |
+| **Dual execution modes** (deterministic plan vs MCP agent) | One-size-fits-all agent |
 
+---
 
-Act as a Principal AI Architect, Staff Engineer, and Agentic AI Systems Reviewer.
+## Architecture
 
-Your task is to audit my entire codebase and identify everything required to transform it into a production-grade Agentic AI platform.
+```
+User → Dashboard / Ctrl+K / Chat
+         ↓
+    API Routes (rate-limited via Upstash Redis)
+         ↓
+    Feature modules (23 slices under src/features/)
+         ↓
+    PostgreSQL (Drizzle) + entity store + embeddings (JSONB)
+         ↓
+    Inngest (background jobs, cron, fan-out)
+         ↓
+    Corsair MCP (Gmail, Google Calendar, Tavily)
+```
 
-Analyze the codebase from the perspective of:
+### Stack
+- **Next.js 15** (App Router) + React 19
+- **Better Auth** + Google OAuth
+- **Drizzle ORM** + PostgreSQL
+- **Inngest** — durable workflows, cron, fan-out
+- **Upstash Redis** — distributed rate limits + hot-path cache
+- **Corsair** — integration layer + MCP tools
+- **OpenAI** — embeddings (`text-embedding-3-small`), chat (`gpt-4.1`), intent (`gpt-4o-mini`), reasoning (`gpt-4o`)
 
-1. System Architecture
-   - Separation of concerns
-   - Scalability
-   - Modularity
-   - Extensibility
-   - Event-driven design
-   - Service boundaries
+---
 
-2. Agent Architecture
-   - Agent lifecycle
-   - Planning system
-   - Reasoning layer
-   - Memory architecture
-   - Task decomposition
-   - Multi-agent coordination
-   - Tool calling framework
-   - Reflection and self-correction
-   - Context management
+## Feature Checklist (Honest Audit)
 
-3. AI Infrastructure
-   - Model abstraction layer
-   - Multi-model support
-   - Prompt management
-   - Context window optimization
-   - Token management
-   - Embedding strategy
-   - RAG architecture
+| Capability | Status |
+|------------|--------|
+| Multi-model intent (regex + gpt-4o-mini) | ✅ Wired |
+| Multi-model planning (gpt-4o planner) | ✅ Wired |
+| Rate limiting (Upstash Redis, per-tenant) | ✅ Wired on chat/command/events |
+| Redis cache (events poll, RAG retrieval) | ✅ Wired |
+| Background jobs / queue (Inngest) | ✅ 10 registered functions |
+| RAG + embeddings | ✅ OpenAI embeddings, cosine search |
+| Vector DB (pgvector / Pinecone) | ⚠️ JSONB + in-memory cosine (hackathon scope) |
+| Structured JSON logging | ✅ `src/server/observability/logger.ts` |
+| Sentry | ⚠️ Scaffold ready — install manually (see below) |
+| Human approval for tool writes | ✅ |
+| Prompt injection detection | ✅ |
+| MCP agent fallback | ✅ |
 
-4. Memory System
-   - Short-term memory
-   - Long-term memory
-   - Episodic memory
-   - Semantic memory
-   - Knowledge graph integration
-   - User memory
+---
 
-5. Execution Layer
-   - Workflow engine
-   - Task orchestration
-   - Queue system
-   - Retry mechanisms
-   - State management
-   - Checkpointing
+## Quick Start
 
-6. Tooling Layer
-   - Tool registry
-   - Tool permissions
-   - Tool execution
-   - Error recovery
-   - Dynamic tool discovery
+```bash
+pnpm install
+cp .env.example .env   # fill in keys
+pnpm db:push
+pnpm dev               # Next.js on :3000
+pnpm inngest           # Inngest dev server (separate terminal)
+```
 
-7. Security
-   - Prompt injection protection
-   - Tool abuse prevention
-   - Access control
-   - Data isolation
-   - Secrets management
+### Required env vars
+See `.env.example`. Minimum: `DATABASE_URL`, `OPENAI_API_KEY`, `CORSAIR_KEK`, auth keys, `RESEND_API_KEY`.
 
-8. Observability
-   - Logging
-   - Tracing
-   - Agent monitoring
-   - Evaluation metrics
-   - Cost tracking
-   - Performance monitoring
+### Optional but recommended for demo
+```env
+UPSTASH_REDIS_REST_URL=...   # distributed rate limits + cache
+UPSTASH_REDIS_REST_TOKEN=...
+INNGEST_EVENT_KEY=...        # production Inngest
+INNGEST_SIGNING_KEY=...
+```
 
-9. Production Readiness
-   - Testing strategy
-   - CI/CD
-   - Versioning
-   - Deployment architecture
-   - Failover design
+---
 
-For every issue found provide:
+## Sentry
 
-- Current implementation
-- Missing capability
-- Why it matters
-- Severity (Critical/High/Medium/Low)
-- Recommended architecture
-- Example implementation approach
+Manual setup is complete. Add your DSN from [Sentry dashboard](https://ygjm.sentry.io) to `.env`:
 
-Then generate:
+```env
+SENTRY_DSN="https://...@o....ingest.de.sentry.io/..."
+NEXT_PUBLIC_SENTRY_DSN="https://...@o....ingest.de.sentry.io/..."
+```
 
-1. Architecture Score (0-100)
-2. Agentic AI Maturity Score (0-100)
-3. Scalability Score (0-100)
-4. Production Readiness Score (0-100)
+Both vars use the same DSN value. Restart `pnpm dev` after saving.
 
-Finally create:
+Errors are captured from:
+- Server/API routes (`/api/chat`, `/api/command/*`, etc.)
+- React render errors (`src/app/global-error.tsx`)
+- Client-side via `src/instrumentation-client.ts`
 
-- Immediate fixes (1 week)
-- Short-term roadmap (30 days)
-- Mid-term roadmap (90 days)
-- Long-term roadmap (6 months)
+To verify: trigger any error in the app and check **Issues** in Sentry.
 
-Be brutally honest and identify all architectural weaknesses.
+---
+
+## Ctrl+K Command Flow
+
+```
+User types command
+    → resolveCommandIntent (regex fast path OR gpt-4o-mini)
+    → resolveCommandEntities (DB projections)
+    → planCommandWithAi (gpt-4o steps)
+    → safety check (injection + tool risk)
+    → preview → user confirms
+    → deterministic execute OR MCP agent fallback
+```
+
+---
+
+## Background Jobs (Inngest)
+
+| Function | Trigger |
+|----------|---------|
+| `fanOutProjectionRefresh` | Webhook events |
+| `refreshThreadProjection` | Fan-out child |
+| `refreshMeetingProjection` | Fan-out child |
+| `refreshMeetingPrep` | Fan-out child |
+| `refreshRelationshipProfiles` | Fan-out child |
+| `refreshTimeline` | Fan-out child |
+| `runScheduledMeetingPrep` | Cron `*/15 * * * *` |
+| `runScheduledBatchTriage` | Cron `0 * * * *` |
+
+---
+
+## License
+
+MIT
