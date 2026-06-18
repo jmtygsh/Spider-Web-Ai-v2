@@ -1,8 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { processOAuthCallback } from "corsair/oauth";
 import { corsair } from "@/server/configs/corsair";
-import { env } from "@/env";
 import { REDIRECT_URI } from "@/constants/corsair";
+import { redirectTo } from "@/server/http/response";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
       redirectUri: REDIRECT_URI,
     });
 
-    //[DEBUG] console
-    console.log("OAuth callback result:", result);
-
-    const response = NextResponse.redirect("/dashboard");
+    const response = redirectTo("/dashboard");
     response.cookies.delete("oauth_state");
     return response;
   } catch {
