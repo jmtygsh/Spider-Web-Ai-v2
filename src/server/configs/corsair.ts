@@ -6,6 +6,10 @@ import { createCorsair } from "corsair";
 import { conn } from "@/server/db/index";
 import { env } from "@/env";
 
+type CorsairPlugins = NonNullable<
+  Parameters<typeof createCorsair>[0]
+>["plugins"];
+
 const plugins = [
   gmail({
     authType: "oauth_2",
@@ -33,7 +37,7 @@ const plugins = [
   // tavily({
   //   authType: "api_key",
   // }),
-];
+] as unknown as CorsairPlugins;
 
 // Shared multi-tenant Corsair client — Gmail + Google Calendar with webhook hooks.
 export const corsair = createCorsair({
