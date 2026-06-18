@@ -34,7 +34,9 @@ function ResetPasswordForm() {
     setError("");
 
     if (!token) {
-      setError("Invalid or missing reset token. Please request a new password reset link.");
+      setError(
+        "Invalid or missing reset token. Please request a new password reset link.",
+      );
       return;
     }
 
@@ -63,7 +65,7 @@ function ResetPasswordForm() {
   if (!token || tokenError === "INVALID_TOKEN") {
     return (
       <div className="flex flex-col gap-4 text-center">
-        <div className="rounded-md bg-[var(--status-error-bg)] p-3 text-sm text-[var(--status-error)] border border-[var(--status-error)]/20">
+        <div className="rounded-md border border-[var(--status-error)]/20 bg-[var(--status-error-bg)] p-3 text-sm text-[var(--status-error)]">
           {tokenError === "INVALID_TOKEN"
             ? "This reset link is invalid or has expired. Please request a new one."
             : "Invalid or missing reset token. Please request a new password reset link."}
@@ -117,10 +119,13 @@ function ResetPasswordForm() {
 // Wrapper page for the password reset flow with branding and layout.
 export default function ResetPasswordPage() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link href="/" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <Link
+          href="/"
+          className="flex items-center gap-2 self-center font-medium"
+        >
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
           Spider Web
@@ -129,13 +134,17 @@ export default function ResetPasswordPage() {
           <Card>
             <CardHeader className="text-center">
               <CardTitle className="text-xl">Set New Password</CardTitle>
-              <CardDescription>
-                Enter your new password below
-              </CardDescription>
+              <CardDescription>Enter your new password below</CardDescription>
             </CardHeader>
             <CardContent>
               {/* Suspense is required because ResetPasswordForm reads search params. */}
-              <Suspense fallback={<div className="text-center text-sm text-muted-foreground">Loading...</div>}>
+              <Suspense
+                fallback={
+                  <div className="text-muted-foreground text-center text-sm">
+                    Loading...
+                  </div>
+                }
+              >
                 <ResetPasswordForm />
               </Suspense>
             </CardContent>

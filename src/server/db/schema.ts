@@ -13,8 +13,7 @@ import {
 
 export const createTable = pgTableCreator((name) => `pg-drizzle_${name}`);
 
-
-// better auth 
+// better auth
 export const posts = createTable(
   "post",
   (d) => ({
@@ -33,7 +32,7 @@ export const posts = createTable(
   (t) => [
     index("created_by_idx").on(t.createdById),
     index("name_idx").on(t.name),
-  ]
+  ],
 );
 
 export const user = pgTable("user", {
@@ -89,10 +88,10 @@ export const verification = pgTable("verification", {
   value: text("value").notNull(),
   expiresAt: timestamp("expires_at").notNull(),
   createdAt: timestamp("created_at").$defaultFn(
-    () => /* @__PURE__ */ new Date()
+    () => /* @__PURE__ */ new Date(),
   ),
   updatedAt: timestamp("updated_at").$defaultFn(
-    () => /* @__PURE__ */ new Date()
+    () => /* @__PURE__ */ new Date(),
   ),
 });
 
@@ -108,40 +107,53 @@ export const accountRelations = relations(account, ({ one }) => ({
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, { fields: [session.userId], references: [user.id] }),
 }));
-// end better auth 
-
-
-
+// end better auth
 
 // --- Corsair integration cache (accounts, entities, events, sync state) ---
-export const corsairIntegrations = pgTable('corsair_integrations', {
-  id: text('id').primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  name: text('name').notNull(),
-  config: jsonb('config').notNull().default({}),
-  dek: text('dek'),
+export const corsairIntegrations = pgTable("corsair_integrations", {
+  id: text("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  name: text("name").notNull(),
+  config: jsonb("config").notNull().default({}),
+  dek: text("dek"),
 });
 
-export const corsairAccounts = pgTable('corsair_accounts', {
-  id: text('id').primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  tenantId: text('tenant_id').notNull(),
-  integrationId: text('integration_id').notNull().references(() => corsairIntegrations.id),
-  config: jsonb('config').notNull().default({}),
-  dek: text('dek'),
+export const corsairAccounts = pgTable("corsair_accounts", {
+  id: text("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  tenantId: text("tenant_id").notNull(),
+  integrationId: text("integration_id")
+    .notNull()
+    .references(() => corsairIntegrations.id),
+  config: jsonb("config").notNull().default({}),
+  dek: text("dek"),
 });
 
-export const corsairEntities = pgTable('corsair_entities', {
-  id: text('id').primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  accountId: text('account_id').notNull().references(() => corsairAccounts.id),
-  entityId: text('entity_id').notNull(),
-  entityType: text('entity_type').notNull(),
-  version: text('version').notNull(),
-  data: jsonb('data').notNull().default({}),
+export const corsairEntities = pgTable("corsair_entities", {
+  id: text("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  accountId: text("account_id")
+    .notNull()
+    .references(() => corsairAccounts.id),
+  entityId: text("entity_id").notNull(),
+  entityType: text("entity_type").notNull(),
+  version: text("version").notNull(),
+  data: jsonb("data").notNull().default({}),
   /** True once the hourly AI scanner has evaluated this cached Gmail row. */
   isRead: boolean("is_read").notNull().default(false),
   /** True when AI decides the user should see this email immediately. */
@@ -150,15 +162,20 @@ export const corsairEntities = pgTable('corsair_entities', {
     .default(false),
 });
 
-export const corsairEvents = pgTable('corsair_events', {
-  id: text('id').primaryKey(),
-  createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
-  accountId: text('account_id').notNull().references(() => corsairAccounts.id),
-  eventType: text('event_type').notNull(),
-  payload: jsonb('payload').notNull().default({}),
-  status: text('status'),
+export const corsairEvents = pgTable("corsair_events", {
+  id: text("id").primaryKey(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  accountId: text("account_id")
+    .notNull()
+    .references(() => corsairAccounts.id),
+  eventType: text("event_type").notNull(),
+  payload: jsonb("payload").notNull().default({}),
+  status: text("status"),
 });
 
-// corsair end 
-
+// corsair end

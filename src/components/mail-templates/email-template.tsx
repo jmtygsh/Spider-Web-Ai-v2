@@ -231,7 +231,7 @@ export function PasswordResetEmailTemplate({
   appName = "Spider Web",
   resetUrl,
 }: PasswordResetEmailTemplateProps) {
-  const name = (firstName);
+  const name = firstName;
 
   return (
     <BaseEmailTemplate

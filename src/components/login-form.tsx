@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import Link from "next/link"
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
   FieldGroup,
   FieldLabel,
   FieldSeparator,
-} from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
-import { GalleryVerticalEndIcon } from "lucide-react"
-import { authClient } from "@/server/better-auth/client"
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { GalleryVerticalEndIcon } from "lucide-react";
+import { authClient } from "@/server/better-auth/client";
 
 // Purpose:
 // Email/password and Google sign-in form for existing users.
@@ -25,54 +25,54 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [error, setError] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   // Purpose:
   // Submit credentials via Better Auth; redirect to verify if email unconfirmed.
   // Runs on login form submit.
   // Input: email and password; expected result: dashboard redirect or error.
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError("")
-    setIsLoading(true)
+    e.preventDefault();
+    setError("");
+    setIsLoading(true);
 
     const { error: signInError } = await authClient.signIn.email({
       email,
       password,
-    })
+    });
 
     if (signInError) {
       if (signInError.status === 403) {
-        router.push(`/verify?email=${encodeURIComponent(email)}`)
-        return
+        router.push(`/verify?email=${encodeURIComponent(email)}`);
+        return;
       }
-      setError(signInError.message || "Failed to login")
-      setIsLoading(false)
+      setError(signInError.message || "Failed to login");
+      setIsLoading(false);
     } else {
-      router.push("/dashboard")
+      router.push("/dashboard");
     }
-  }
+  };
 
   // Purpose:
   // Start Google OAuth flow with dashboard as callback.
   // Runs when the user clicks the Google sign-in button.
   // Expected result: OAuth redirect or error message on failure.
   const handleGoogleSignIn = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     const { error: signInError } = await authClient.signIn.social({
       provider: "google",
       callbackURL: "/dashboard",
-    })
+    });
 
     if (signInError) {
-      setError(signInError.message || "Failed to login with Google")
-      setIsLoading(false)
+      setError(signInError.message || "Failed to login with Google");
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -83,7 +83,7 @@ export function LoginForm({
               href="/"
               className="flex flex-col items-center gap-2 font-medium"
             >
-              <div className="flex size-8 items-center justify-center rounded-md bg-primary text-primary-foreground">
+              <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-md">
                 <GalleryVerticalEndIcon className="size-6" />
               </div>
               <span className="sr-only">Spider Web</span>
@@ -111,7 +111,7 @@ export function LoginForm({
             />
           </Field>
           <Field>
-            <div className="flex items-center justify-between w-full">
+            <div className="flex w-full items-center justify-between">
               <FieldLabel htmlFor="password">Password</FieldLabel>
               <Link
                 href="/forgot-password"
@@ -143,7 +143,11 @@ export function LoginForm({
               onClick={handleGoogleSignIn}
               disabled={isLoading}
             >
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="size-4">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="size-4"
+              >
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
                   fill="#4285F4"
@@ -167,9 +171,10 @@ export function LoginForm({
         </FieldGroup>
       </form>
       <FieldDescription className="px-6 text-center">
-        By clicking continue, you agree to our <Link href="/terms">Terms of Service</Link>{" "}
-        and <Link href="/privacy">Privacy Policy</Link>.
+        By clicking continue, you agree to our{" "}
+        <Link href="/terms">Terms of Service</Link> and{" "}
+        <Link href="/privacy">Privacy Policy</Link>.
       </FieldDescription>
     </div>
-  )
+  );
 }

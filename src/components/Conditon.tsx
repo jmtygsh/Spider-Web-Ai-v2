@@ -15,10 +15,16 @@ export default function ConditonRender({
   const pathname = usePathname();
 
   // Hide the public header on the dashboard or other protected routes
-  if (pathname?.startsWith("/dashboard") || pathname?.startsWith("/connect")
-    || pathname?.startsWith("/mails") || pathname?.startsWith("/calendar") ||
-    pathname?.startsWith("/login") || pathname?.startsWith("/register") ||
-    pathname?.startsWith("/forgot-password") || pathname?.startsWith("/reset-password")) {
+  if (
+    pathname?.startsWith("/dashboard") ||
+    pathname?.startsWith("/connect") ||
+    pathname?.startsWith("/mails") ||
+    pathname?.startsWith("/calendar") ||
+    pathname?.startsWith("/login") ||
+    pathname?.startsWith("/register") ||
+    pathname?.startsWith("/forgot-password") ||
+    pathname?.startsWith("/reset-password")
+  ) {
     return null;
   }
 

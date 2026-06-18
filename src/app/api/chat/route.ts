@@ -1,6 +1,9 @@
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
-import type { EasyInputMessage, Tool } from "openai/resources/responses/responses";
+import type {
+  EasyInputMessage,
+  Tool,
+} from "openai/resources/responses/responses";
 
 import { env } from "@/env";
 import { unauthorized } from "@/server/http/response";
@@ -9,11 +12,11 @@ import { getCorsairTenant } from "@/server/corsair/tenant";
 type ChatMessage = {
   role: "assistant" | "system" | "user";
   content?:
-  | string
-  | Array<{
-    type: string;
-    text?: string;
-  }>;
+    | string
+    | Array<{
+        type: string;
+        text?: string;
+      }>;
 };
 
 const openai = new OpenAI({

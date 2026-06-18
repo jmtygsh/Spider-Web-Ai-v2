@@ -17,7 +17,7 @@ function ElectricBulb({ isActive }: { isActive: boolean }) {
   return (
     <div className="relative flex h-1.5 w-1.5 items-center justify-center">
       <motion.div
-        className="absolute h-1.5 w-1.5 rounded-full border border-border/60 bg-background"
+        className="border-border/60 bg-background absolute h-1.5 w-1.5 rounded-full border"
         animate={{
           scale: isActive ? 1.3 : 1,
           backgroundColor: isActive ? "var(--primary)" : "var(--background)",
@@ -30,7 +30,7 @@ function ElectricBulb({ isActive }: { isActive: boolean }) {
       />
       {isActive ? (
         <motion.span
-          className="absolute h-1.5 w-1.5 rounded-full bg-primary"
+          className="bg-primary absolute h-1.5 w-1.5 rounded-full"
           initial={{ scale: 1, opacity: 0.7 }}
           animate={{ scale: 2.8, opacity: 0 }}
           transition={{ duration: 0.35, ease: "easeOut" }}
@@ -107,11 +107,14 @@ export function ElectricBorderWire({
       }, delay);
     };
 
-    timeoutId = setTimeout(async () => {
-      if (!mountedRef.current) return;
-      await runElectricFlow();
-      if (mountedRef.current) scheduleNextFlow();
-    }, 400 + Math.random() * 900);
+    timeoutId = setTimeout(
+      async () => {
+        if (!mountedRef.current) return;
+        await runElectricFlow();
+        if (mountedRef.current) scheduleNextFlow();
+      },
+      400 + Math.random() * 900,
+    );
 
     return () => {
       mountedRef.current = false;
@@ -129,8 +132,8 @@ export function ElectricBorderWire({
       aria-hidden
     >
       {/* Wire backbone */}
-      <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-border/50" />
-      <div className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-border/30 to-transparent" />
+      <div className="bg-border/50 absolute inset-y-0 left-1/2 w-px -translate-x-1/2" />
+      <div className="via-border/30 absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent to-transparent" />
 
       {/* Traveling current — water-like single pulse */}
       <motion.div
@@ -142,18 +145,18 @@ export function ElectricBorderWire({
         <div className="relative -translate-y-1/2">
           <div
             className={cn(
-              "absolute left-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent via-primary/80 to-transparent",
+              "via-primary/80 absolute left-1/2 w-px -translate-x-1/2 bg-gradient-to-b from-transparent to-transparent",
               flowDirection === 1 ? "top-0 h-14" : "bottom-0 h-14 rotate-180",
             )}
           />
           <div
             className={cn(
-              "absolute left-1/2 h-10 w-3 -translate-x-1/2 rounded-full bg-primary/25 blur-md",
+              "bg-primary/25 absolute left-1/2 h-10 w-3 -translate-x-1/2 rounded-full blur-md",
               flowDirection === 1 ? "-top-3" : "-bottom-3",
             )}
           />
           <motion.div
-            className="h-2.5 w-2.5 rounded-full bg-primary"
+            className="bg-primary h-2.5 w-2.5 rounded-full"
             animate={{
               boxShadow: [
                 "0 0 8px 2px color-mix(in oklch, var(--primary) 80%, transparent)",

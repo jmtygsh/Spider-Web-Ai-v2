@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { ApiFailure, ApiSuccess } from "@/server/types/api";
-import { env } from "@/env"
+import { env } from "@/env";
 
 // Purpose:
 // Wraps a successful API response in the standard { ok: true, data } envelope.
@@ -32,8 +32,11 @@ export const unauthorized = (message = "Unauthorized", headers?: HeadersInit) =>
   fail(401, "UNAUTHORIZED", message, headers);
 
 // Purpose: Returns a 400 Bad Request JSON response with a custom error code.
-export const badRequest = (code: string, message: string, headers?: HeadersInit) =>
-  fail(400, code, message, headers);
+export const badRequest = (
+  code: string,
+  message: string,
+  headers?: HeadersInit,
+) => fail(400, code, message, headers);
 
 // Purpose: Returns a 404 Not Found JSON response.
 export const notFound = (message = "Not found", headers?: HeadersInit) =>
@@ -44,11 +47,16 @@ export const payloadTooLarge = (message: string, headers?: HeadersInit) =>
   fail(413, "PAYLOAD_TOO_LARGE", message, headers);
 
 // Purpose: Returns a 500 Internal Server Error JSON response.
-export const serverError = (message = "Internal server error", headers?: HeadersInit) =>
-  fail(500, "INTERNAL", message, headers);
+export const serverError = (
+  message = "Internal server error",
+  headers?: HeadersInit,
+) => fail(500, "INTERNAL", message, headers);
 
-// an special case 
-export const redirectTo = (url: string, headers?: HeadersInit): NextResponse => {
+// an special case
+export const redirectTo = (
+  url: string,
+  headers?: HeadersInit,
+): NextResponse => {
   // Ensure we handle the slash cleanly between APP_URL and the target url
   const targetUrl = new URL(url, env.APP_URL);
   return NextResponse.redirect(targetUrl, { headers });

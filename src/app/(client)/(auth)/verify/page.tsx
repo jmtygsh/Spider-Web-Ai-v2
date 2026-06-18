@@ -57,20 +57,18 @@ function VerifyContent() {
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6 text-center">
-        <p className="text-sm text-muted-foreground">
+        <p className="text-muted-foreground text-sm">
           Please verify your email address to continue setting up your account.
           If you don&apos;t see it, check your spam folder.
         </p>
 
         {message && (
-          <div className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-600 border border-emerald-200">
+          <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-600">
             {message}
           </div>
         )}
 
-        {error && (
-          <p className="text-destructive text-sm">{error}</p>
-        )}
+        {error && <p className="text-destructive text-sm">{error}</p>}
 
         <div className="grid gap-2 text-left">
           <Label htmlFor="email">Email</Label>
@@ -107,16 +105,25 @@ function VerifyContent() {
 // Wrapper page for email verification with branding and layout.
 export default function VerifyPage() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link href="/" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <Link
+          href="/"
+          className="flex items-center gap-2 self-center font-medium"
+        >
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
           Spider Web
         </Link>
         {/* Suspense is required because VerifyContent reads search params. */}
-        <Suspense fallback={<div className="text-center text-sm text-muted-foreground">Loading...</div>}>
+        <Suspense
+          fallback={
+            <div className="text-muted-foreground text-center text-sm">
+              Loading...
+            </div>
+          }
+        >
           <VerifyContent />
         </Suspense>
       </div>

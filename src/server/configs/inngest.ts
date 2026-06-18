@@ -5,5 +5,5 @@ import { Inngest } from "inngest";
 // Runs at module load on the server; used by API routes and Inngest functions.
 // Expected result: configured Inngest instance with app id "spider-web".
 export const inngest = new Inngest({
-    id: "spider-web",
+  id: "spider-web",
 });

@@ -46,10 +46,13 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-muted p-6 md:p-10">
+    <div className="bg-muted flex min-h-svh flex-col items-center justify-center gap-6 p-6 md:p-10">
       <div className="flex w-full max-w-sm flex-col gap-6">
-        <Link href="/" className="flex items-center gap-2 self-center font-medium">
-          <div className="flex h-6 w-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <Link
+          href="/"
+          className="flex items-center gap-2 self-center font-medium"
+        >
+          <div className="bg-primary text-primary-foreground flex h-6 w-6 items-center justify-center rounded-md">
             <GalleryVerticalEnd className="size-4" />
           </div>
           Spider Web
@@ -65,8 +68,9 @@ export default function ForgotPasswordPage() {
             <CardContent>
               {success ? (
                 <div className="flex flex-col gap-4 text-center">
-                  <div className="rounded-md bg-emerald-50 p-3 text-sm text-emerald-600 border border-emerald-200">
-                    If an account exists with this email, you will receive a password reset link shortly.
+                  <div className="rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-600">
+                    If an account exists with this email, you will receive a
+                    password reset link shortly.
                   </div>
                   <Button asChild variant="outline" className="w-full">
                     <Link href="/login">Back to Login</Link>
@@ -76,7 +80,9 @@ export default function ForgotPasswordPage() {
                 <form onSubmit={handleResetPassword}>
                   <div className="grid gap-6">
                     {error && (
-                      <p className="text-destructive text-center text-sm">{error}</p>
+                      <p className="text-destructive text-center text-sm">
+                        {error}
+                      </p>
                     )}
                     <div className="grid gap-2">
                       <Label htmlFor="email">Email</Label>
@@ -90,7 +96,11 @@ export default function ForgotPasswordPage() {
                         disabled={isLoading}
                       />
                     </div>
-                    <Button type="submit" className="w-full" disabled={isLoading}>
+                    <Button
+                      type="submit"
+                      className="w-full"
+                      disabled={isLoading}
+                    >
                       {isLoading ? "Sending link..." : "Send Reset Link"}
                     </Button>
                     <div className="text-center text-sm">

@@ -8,7 +8,7 @@ const MOBILE_BREAKPOINT = 768;
 // Returns true when width < 768px, false otherwise.
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
-    undefined
+    undefined,
   );
 
   React.useEffect(() => {

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { cn } from "@/lib/utils";
 import {
   ActionBarPrimitive,
@@ -34,7 +33,6 @@ import { useShallow } from "zustand/shallow";
 import {
   AudioLines,
   Download,
-  LogIn,
   LogOut,
   Mic,
   MoreHorizontal,
@@ -42,19 +40,10 @@ import {
   Share,
   ThumbsDown,
   ThumbsUp,
-  UserPlus,
   Volume2,
-  LogInIcon, LogOutIcon, MonitorIcon, MoonIcon, SunIcon
 } from "lucide-react";
 import { MarkdownText } from "@/components/markdown-text";
 import { ToolFallback } from "@/components/tool-fallback";
-import { Button } from "@/components/ui/button";
-import { useSession } from "@/hooks/use-session";
-import { authClient } from "@/server/better-auth/client";
-import { Badge } from "@/components/ui/badge";
-import { useTheme } from "next-themes";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-
 
 const assistantRuntimeAdapter: ChatModelAdapter = {
   async run({ messages, abortSignal }) {
@@ -78,10 +67,22 @@ const assistantRuntimeAdapter: ChatModelAdapter = {
 };
 
 const actionQueueItems = [
-  { title: "Reply to CEO", detail: "Inbox follow-up pending", priority: "Urgent" },
-  { title: "Schedule Bob", detail: "Find a slot for next week", priority: "Today" },
+  {
+    title: "Reply to CEO",
+    detail: "Inbox follow-up pending",
+    priority: "Urgent",
+  },
+  {
+    title: "Schedule Bob",
+    detail: "Find a slot for next week",
+    priority: "Today",
+  },
   { title: "Follow-up VC", detail: "Send meeting recap", priority: "Pending" },
-  { title: "3 urgent", detail: "New items waiting for action", priority: "Review" },
+  {
+    title: "3 urgent",
+    detail: "New items waiting for action",
+    priority: "Review",
+  },
 ];
 
 const calendarItems = [
@@ -93,158 +94,74 @@ const calendarItems = [
 
 const ChatPage: FC = () => {
   const runtime = useLocalRuntime(assistantRuntimeAdapter);
-  const { data: session, isPending } = useSession();
-  const canUseApp = !!session?.user;
-  const { setTheme } = useTheme();
-  const authLabel = isPending ? "Checking session..." : canUseApp ? session.user.name ?? session.user.email : "Preview mode";
 
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <div className="min-h-screen bg-[#eef1f4] text-[#0d0d0d] dark:bg-[#0b0c0f] dark:text-[#ececec]">
-        <div className="flex container mx-auto items-center justify-between border-b border-black/5 px-4 py-4 dark:border-white/10">
-          <div>
-
-
-          </div>
-
-
-          <div className="flex items-center gap-2">
-            <span className="hidden rounded-full bg-white px-3 py-1 text-xs font-medium text-[#4b5563] shadow-sm dark:bg-white/10 dark:text-[#d1d5db] sm:inline-flex">
-              {authLabel}
-            </span>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="relative">
-                  <SunIcon className="size-4 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                  <MoonIcon className="absolute size-4 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="mt-3 rounded-none shadow-sm">
-                <DropdownMenuItem onClick={() => setTheme("light")}>
-                  <SunIcon />
-                  Light
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("dark")}>
-                  <MoonIcon />
-                  Dark
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setTheme("system")}>
-                  <MonitorIcon />
-                  System
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {canUseApp ? (
-              <Button
-                variant="outline"
-                className="h-9 rounded-full px-4"
-                onClick={async () => {
-                  await authClient.signOut();
-                }}
-              >
-                <LogOut className="size-4" />
-                Sign out
-              </Button>
-            ) : (
-              <>
-                <Button asChild className="h-9 rounded-full px-4 border border-white/30">
-                  <Link href="/login">
-                    <LogIn className="size-4" />
-                    Sign in
-                  </Link>
-                </Button>
-
-              </>
-            )}
-          </div>
-        </div>
-
-        <div
-          className={cn(
-            "mx-auto flex min-h-[calc(100vh-73px)] px-4",
-            canUseApp
-              ? "container mx-auto flex-col lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]"
-              : "container mx-auto flex-col py-8",
-          )}
-        >
-
+        <div className="container mx-auto flex min-h-[calc(100vh-73px)] flex-col px-4 lg:grid lg:grid-cols-[280px_minmax(0,1fr)_320px]">
           {/* left side  */}
-          {canUseApp && (
-            <aside className="flex flex-col border-l border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
-                Executive Copilot
-              </p>
-              <h1 className="mt-3 text-lg font-semibold">Action Queue</h1>
-              <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                Tasks that need attention from your assistant.
-              </p>
-              <div className="mt-6">
-                {actionQueueItems.map((item) => (
-                  <div key={item.title} className="py-3 transition-colors">
-                    <div className="flex items-start justify-between gap-3">
-                      <div>
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
-                          {item.detail}
-                        </p>
-                      </div>
-                      <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-medium text-[#4b5563] dark:bg-white/10 dark:text-[#d1d5db]">
-                        {item.priority}
-                      </span>
+          <aside className="flex flex-col border-b border-l border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
+            <p className="text-sm font-semibold tracking-[0.24em] text-[#6b7280] uppercase dark:text-[#9ca3af]">
+              Executive Copilot
+            </p>
+            <h1 className="mt-3 text-lg font-semibold">Action Queue</h1>
+            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+              Tasks that need attention from your assistant.
+            </p>
+            <div className="mt-6">
+              {actionQueueItems.map((item) => (
+                <div key={item.title} className="py-3 transition-colors">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                        {item.detail}
+                      </p>
                     </div>
+                    <span className="rounded-full bg-[#f3f4f6] px-2.5 py-1 text-[11px] font-medium text-[#4b5563] dark:bg-white/10 dark:text-[#d1d5db]">
+                      {item.priority}
+                    </span>
                   </div>
-                ))}
-              </div>
-            </aside>
-          )}
+                </div>
+              ))}
+            </div>
+          </aside>
 
-          <main
-            className={cn(
-              "flex min-h-[70vh] min-w-0 flex-col overflow-hidden",
-              canUseApp
-                ? "border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-[#0b0c0f]"
-                : "container mx-auto w-full max-w-4xl justify-center bg-transparent",
-            )}
-          >
-            <div className={cn("min-h-0 flex-1", !canUseApp && "flex items-center")}>
-              <ChatGPT canUseApp={canUseApp} />
+          <main className="flex min-h-[70vh] min-w-0 flex-col overflow-hidden border border-black/5 bg-white shadow-sm dark:border-white/10 dark:bg-[#0b0c0f]">
+            <div className="min-h-0 flex-1">
+              <ChatGPT />
             </div>
           </main>
 
-          {canUseApp && (
-            <aside className="flex flex-col border-r border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
-              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-[#6b7280] dark:text-[#9ca3af]">
-                Calendar
-              </p>
-              <h2 className="t-3 text-lg font-semibold mt-2">Today</h2>
-              <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
-                Upcoming events and scheduling context.
-              </p>
-              <div className="mt-6">
-                {calendarItems.map((item) => (
-                  <div
-                    key={`${item.time}-${item.title}`}
-                    className="px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div className="min-w-20 text-sm font-semibold text-[#111827] dark:text-[#f3f4f6]">
-                        {item.time}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{item.title}</p>
-                        <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
-                          {item.meta}
-                        </p>
-                      </div>
+          <aside className="flex flex-col border-r border-b border-black/5 bg-white p-5 dark:border-white/10 dark:bg-[#0b0c0f]">
+            <p className="text-sm font-semibold tracking-[0.24em] text-[#6b7280] uppercase dark:text-[#9ca3af]">
+              Calendar
+            </p>
+            <h2 className="mt-2 text-lg font-semibold">Today</h2>
+            <p className="mt-2 text-sm text-[#6b7280] dark:text-[#9ca3af]">
+              Upcoming events and scheduling context.
+            </p>
+            <div className="mt-6">
+              {calendarItems.map((item) => (
+                <div
+                  key={`${item.time}-${item.title}`}
+                  className="px-4 py-3 transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.04]"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="min-w-20 text-sm font-semibold text-[#111827] dark:text-[#f3f4f6]">
+                      {item.time}
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="mt-1 text-xs text-[#6b7280] dark:text-[#9ca3af]">
+                        {item.meta}
+                      </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </aside>
-          )}
+                </div>
+              ))}
+            </div>
+          </aside>
         </div>
       </div>
     </AssistantRuntimeProvider>
@@ -253,16 +170,11 @@ const ChatPage: FC = () => {
 
 export default ChatPage;
 
-const ChatGPT: FC<{ canUseApp: boolean }> = ({ canUseApp }) => {
+const ChatGPT: FC = () => {
   return (
-    <ThreadPrimitive.Root
-      className={cn(
-        "flex h-full min-h-0 flex-col items-stretch bg-transparent px-4 text-[#0d0d0d] dark:text-[#ececec]",
-        !canUseApp && "mx-auto w-full max-w-2xl px-6",
-      )}
-    >
+    <ThreadPrimitive.Root className="flex h-full min-h-0 flex-col items-stretch bg-transparent px-4 text-[#0d0d0d] dark:text-[#ececec]">
       <AuiIf condition={(s) => s.thread.isEmpty}>
-        <EmptyState canUseApp={canUseApp} />
+        <EmptyState />
       </AuiIf>
 
       <AuiIf condition={(s) => !s.thread.isEmpty}>
@@ -277,14 +189,9 @@ const ChatGPT: FC<{ canUseApp: boolean }> = ({ canUseApp }) => {
 
           <ThreadPrimitive.ViewportFooter className="sticky bottom-0 mx-auto mt-auto flex w-full max-w-3xl flex-col gap-2 overflow-visible rounded-t-3xl bg-white pb-4 dark:bg-[#111214]">
             <ThreadScrollToBottom />
-            <Composer
-              placeholder={canUseApp ? "Ask anything" : "Sign in to start chatting"}
-              canUseApp={canUseApp}
-            />
+            <Composer placeholder="Ask anything" />
             <p className="text-center text-xs text-[#5d5d5d] dark:text-[#a8a8a8]">
-              {canUseApp
-                ? "SpierWeb can make mistakes. Check important info."
-                : "You can explore the workspace now. Sign in to send prompts and run actions."}
+              SpierWeb can make mistakes. Check important info.
             </p>
           </ThreadPrimitive.ViewportFooter>
         </ThreadPrimitive.Viewport>
@@ -293,47 +200,26 @@ const ChatGPT: FC<{ canUseApp: boolean }> = ({ canUseApp }) => {
   );
 };
 
-const EmptyState: FC<{ canUseApp: boolean }> = ({ canUseApp }) => {
+const EmptyState: FC = () => {
   return (
-    <div
-      className={cn(
-        "flex grow flex-col items-center justify-center px-4 py-12",
-        !canUseApp && "py-0",
-      )}
-    >
-      <div
-        className={cn(
-          "mx-auto flex w-full flex-col items-stretch gap-6",
-          canUseApp ? "max-w-3xl" : "max-w-2xl",
-        )}
-      >
+    <div className="flex grow flex-col items-center justify-center px-4 py-12">
+      <div className="mx-auto flex w-full max-w-3xl flex-col items-stretch gap-6">
         <h1 className="text-center text-2xl font-medium text-[#0d0d0d] sm:text-3xl dark:text-[#ececec]">
           Where should we begin?
         </h1>
         <p className="text-center text-sm text-[#6b7280] dark:text-[#9ca3af]">
-          Ask your assistant to manage inbox, calendar, and follow-ups from one place.
+          Ask your assistant to manage inbox, calendar, and follow-ups from one
+          place.
         </p>
-        <Composer
-          placeholder={canUseApp ? "Ask anything" : "Sign in to start chatting"}
-          canUseApp={canUseApp}
-        />
-
+        <Composer placeholder="Ask anything" />
       </div>
     </div>
   );
 };
 
-const Composer: FC<{ placeholder: string; canUseApp: boolean }> = ({
-  placeholder,
-  canUseApp,
-}) => {
+const Composer: FC<{ placeholder: string }> = ({ placeholder }) => {
   return (
-    <ComposerPrimitive.Root
-      className={cn(
-        "group/composer flex w-full flex-col rounded-[28px] border border-[#e5e5e5] bg-white px-2 py-2 shadow-[0_2px_6px_-2px_rgba(0,0,0,0.05)] focus-within:border-[#d0d0d0] dark:border-transparent dark:bg-[#212121] dark:shadow-none dark:focus-within:border-transparent",
-        !canUseApp && "opacity-80",
-      )}
-    >
+    <ComposerPrimitive.Root className="group/composer flex w-full flex-col rounded-[28px] border border-[#e5e5e5] bg-white px-2 py-2 shadow-[0_2px_6px_-2px_rgba(0,0,0,0.05)] focus-within:border-[#d0d0d0] dark:border-transparent dark:bg-[#212121] dark:shadow-none dark:focus-within:border-transparent">
       <AuiIf condition={(s) => s.composer.attachments.length > 0}>
         <div className="flex flex-row flex-wrap gap-2 px-1 pt-1 pb-2">
           <ComposerPrimitive.Attachments
@@ -346,7 +232,6 @@ const Composer: FC<{ placeholder: string; canUseApp: boolean }> = ({
         <ComposerPrimitive.AddAttachment asChild>
           <button
             type="button"
-            disabled={!canUseApp}
             className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#5d5d5d] transition-colors hover:bg-[#0d0d0d]/5 hover:text-[#0d0d0d] dark:text-[#cdcdcd] dark:hover:bg-white/10 dark:hover:text-white"
             aria-label="Add attachment"
           >
@@ -357,30 +242,18 @@ const Composer: FC<{ placeholder: string; canUseApp: boolean }> = ({
         <ComposerPrimitive.Input
           placeholder={placeholder}
           rows={1}
-          disabled={!canUseApp}
           className="max-h-52 min-h-9 flex-1 resize-none bg-transparent px-2 py-1.5 text-base text-[#0d0d0d] outline-none placeholder:text-[#8e8e8e] dark:text-[#ececec] dark:placeholder:text-[#8e8e8e]"
         />
 
         <div className="flex shrink-0 items-center gap-1">
-          <ComposerPrimaryAction canUseApp={canUseApp} />
+          <ComposerPrimaryAction />
         </div>
       </div>
     </ComposerPrimitive.Root>
   );
 };
 
-const ComposerPrimaryAction: FC<{ canUseApp: boolean }> = ({ canUseApp }) => {
-  if (!canUseApp) {
-    return (
-      <Button asChild className="h-9 rounded-full px-4">
-        <Link href="/login">
-          <LogIn className="size-4" />
-          Sign in
-        </Link>
-      </Button>
-    );
-  }
-
+const ComposerPrimaryAction: FC = () => {
   return (
     <div className="flex items-center gap-1">
       <AuiIf condition={(s) => s.thread.isRunning}>

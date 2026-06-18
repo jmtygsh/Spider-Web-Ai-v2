@@ -20,16 +20,16 @@ import Link from "next/link";
 import { ElectricBorderFrame } from "@/components/ElectricBorderWire";
 import { Button } from "@/components/ui/button";
 
-
-
 // Purpose:
 // Small inline Gmail icon used in hero and feature sections.
 function GmailLogo({ className = "h-6 w-6" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={`${className} fill-primary`} aria-hidden>
-      <path
-        d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 2.18 24 3.434 24 5.457z"
-      />
+    <svg
+      viewBox="0 0 24 24"
+      className={`${className} fill-primary`}
+      aria-hidden
+    >
+      <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 2.18 24 3.434 24 5.457z" />
     </svg>
   );
 }
@@ -39,11 +39,12 @@ function GmailLogo({ className = "h-6 w-6" }: { className?: string }) {
 function OutlookLogo({ className = "h-6 w-6" }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" className={`${className} fill-accent`} aria-hidden>
-      <path
-        d="M24 7.387v9.226c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 16.613V7.387c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 4.11 24 5.364 24 7.387z"
-      />
+      <path d="M24 7.387v9.226c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 16.613V7.387c0-2.023 2.207-3.278 3.967-2.27l8.033 5.022 8.033-5.022C21.793 4.11 24 5.364 24 7.387z" />
       <rect x="0" y="4" width="10" height="16" rx="1" />
-      <path className="fill-background" d="M5 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z" />
+      <path
+        className="fill-background"
+        d="M5 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7z"
+      />
     </svg>
   );
 }
@@ -52,13 +53,35 @@ function OutlookLogo({ className = "h-6 w-6" }: { className?: string }) {
 // Small inline Google Calendar icon used in feature illustrations.
 function GoogleCalendarLogo({ className = "h-6 w-6" }: { className?: string }) {
   return (
-    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden>
+    <svg
+      viewBox="0 0 24 24"
+      className={className}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden
+    >
       {/* Background shadow/border effect mimicking the icon */}
-      <rect x="3" y="4" width="18" height="16" rx="2" className="fill-background stroke-border" strokeWidth="2" />
+      <rect
+        x="3"
+        y="4"
+        width="18"
+        height="16"
+        rx="2"
+        className="fill-background stroke-border"
+        strokeWidth="2"
+      />
       <path d="M3 10H21" className="stroke-border" strokeWidth="2" />
       <rect x="7" y="2" width="2" height="4" rx="1" className="fill-primary" />
       <rect x="15" y="2" width="2" height="4" rx="1" className="fill-primary" />
-      <text x="12" y="18" className="fill-primary" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="sans-serif">
+      <text
+        x="12"
+        y="18"
+        className="fill-primary"
+        fontSize="8"
+        fontWeight="bold"
+        textAnchor="middle"
+        fontFamily="sans-serif"
+      >
         31
       </text>
     </svg>
@@ -69,10 +92,23 @@ function GoogleCalendarLogo({ className = "h-6 w-6" }: { className?: string }) {
 // Subtle grid pattern background for the features bento section.
 function GridBackground() {
   return (
-    <svg className="absolute inset-0 h-full w-full opacity-5" xmlns="http://www.w3.org/2000/svg">
+    <svg
+      className="absolute inset-0 h-full w-full opacity-5"
+      xmlns="http://www.w3.org/2000/svg"
+    >
       <defs>
-        <pattern id="grid-pattern" width="40" height="40" patternUnits="userSpaceOnUse">
-          <path d="M 40 0 L 0 0 0 40" fill="none" stroke="currentColor" strokeWidth="1" />
+        <pattern
+          id="grid-pattern"
+          width="40"
+          height="40"
+          patternUnits="userSpaceOnUse"
+        >
+          <path
+            d="M 40 0 L 0 0 0 40"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1"
+          />
         </pattern>
       </defs>
       <rect width="100%" height="100%" fill="url(#grid-pattern)" />
@@ -80,38 +116,27 @@ function GridBackground() {
   );
 }
 
-
-
 // Purpose:
 // Public marketing landing page for Spider Web.
 // Explains the product, social proof, and links to signup.
 export default function Home() {
   // Short trust bullets shown under the hero headline.
-  const highlights = [
-    "No software to download",
-    "No credit card required",
-  ];
-
-
+  const highlights = ["No software to download", "No credit card required"];
 
   return (
-    <main className="min-h-screen  bg-background">
-
+    <main className="bg-background min-h-screen">
       <ElectricBorderFrame className="container mx-auto px-4" bulbCount={11}>
-
-        <div className="flex flex-col justify-center items-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12 h-screen">
-
-
+        <div className="flex h-screen flex-col items-center justify-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12">
           {/* Left Column */}
           <div className="w-full max-w-xl space-y-8">
             <div className="space-y-5">
-              <h1 className="text-4xl leading-tight font-semibold tracking-tight text-foreground sm:text-5xl lg:text-[3.25rem]">
+              <h1 className="text-foreground text-4xl leading-tight font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
                 Let AI work its magic on your{" "}
-                <span className="bg-linear-to-r from-primary to-accent bg-clip-text text-transparent">
+                <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
                   email & meetings
                 </span>
               </h1>
-              <p className="max-w-lg text-lg leading-relaxed text-muted-foreground">
+              <p className="text-muted-foreground max-w-lg text-lg leading-relaxed">
                 Outsource meeting notes, email writing and management to our
                 secure productivity assistants
               </p>
@@ -120,10 +145,13 @@ export default function Home() {
             <ul className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8">
               {highlights.map((item) => (
                 <li key={item} className="flex items-center gap-3">
-                  <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary">
-                    <Check className="h-3 w-3 text-primary-foreground" strokeWidth={3} />
+                  <span className="bg-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
+                    <Check
+                      className="text-primary-foreground h-3 w-3"
+                      strokeWidth={3}
+                    />
                   </span>
-                  <span className="text-base font-medium text-foreground">
+                  <span className="text-foreground text-base font-medium">
                     {item}
                   </span>
                 </li>
@@ -131,19 +159,19 @@ export default function Home() {
             </ul>
 
             <div className="flex items-center gap-4 pt-2">
-              <span className="text-sm font-medium text-muted-foreground">
+              <span className="text-muted-foreground text-sm font-medium">
                 Works with:
               </span>
               <div className="flex items-center gap-5">
                 <div className="flex items-center gap-2">
                   <OutlookLogo />
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-foreground text-sm font-medium">
                     Outlook
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <GmailLogo />
-                  <span className="text-sm font-medium text-foreground">
+                  <span className="text-foreground text-sm font-medium">
                     Gmail
                   </span>
                 </div>
@@ -152,36 +180,46 @@ export default function Home() {
           </div>
 
           {/* Right Column: Product UI */}
-          <div className="w-full max-w-xl shrink-0 relative overflow-hidden">
+          <div className="relative w-full max-w-xl shrink-0 overflow-hidden">
             {/* Background effect */}
           </div>
         </div>
       </ElectricBorderFrame>
 
-
-
-
       {/* Second Section: Logo Loop */}
-      <section className="w-full border-y border-border/50 bg-muted/5 py-12">
+      <section className="border-border/50 bg-muted/5 w-full border-y py-12">
         <div className="container mx-auto px-4 text-center">
-          <p className="mb-10 text-sm font-medium text-muted-foreground/80">
+          <p className="text-muted-foreground/80 mb-10 text-sm font-medium">
             Trusted by 300,000+ teams around the world
           </p>
           <div className="relative flex w-full overflow-hidden">
             {/* Left/Right Gradient Masks for smooth fade out */}
-            <div className="pointer-events-none absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r from-background to-transparent" />
-            <div className="pointer-events-none absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l from-background to-transparent" />
+            <div className="from-background pointer-events-none absolute top-0 left-0 z-10 h-full w-24 bg-gradient-to-r to-transparent" />
+            <div className="from-background pointer-events-none absolute top-0 right-0 z-10 h-full w-24 bg-gradient-to-l to-transparent" />
 
-            <div className="flex w-max animate-marquee">
+            <div className="animate-marquee flex w-max">
               {/* Render two identical sets of logos for seamless looping */}
               {[...Array(2)].map((_, i) => (
-                <ul key={i} className="flex w-max items-center justify-around gap-16 px-8">
-
-
+                <ul
+                  key={i}
+                  className="flex w-max items-center justify-around gap-16 px-8"
+                >
                   <li className="m-0! before:content-none!">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="125" height="28" fill="none" viewBox="0 0 125 28" className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="125"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 125 28"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
+                    >
                       <g clipPath="url(#replit_inline_svg__a)">
-                        <path fill="#94979E" fillRule="evenodd" d="M1.84.016C.825.016 0 .802 0 1.767V7.6C0 8.567.826 9.35 1.84 9.35h10.419v9.333H1.84c-1.015 0-1.84.784-1.84 1.75v5.833c0 .966.825 1.75 1.84 1.75h8.579c1.016 0 1.839-.785 1.839-1.75v-7.579h10.419c1.016 0 1.839-.785 1.839-1.75V11.1c0-.967-.823-1.75-1.84-1.75H12.263V1.766c0-.966-.824-1.75-1.839-1.75zM117.735 4.2c0-.284-.249-.503-.567-.503h-2.333c-.318 0-.566.236-.566.503v3.232h-3.626c-.318 0-.566.237-.566.505v1.665c0 .285.248.505.566.505h3.626v4.95c0 3.786 1.874 5.538 5.908 5.538h3.288c.319 0 .566-.236.566-.504v-1.666c0-.284-.247-.504-.566-.504h-2.759c-2.194 0-2.971-.826-2.971-2.88v-4.915h6.136c.318-.02.567-.255.567-.524V7.937c0-.285-.249-.505-.567-.505h-6.136zM106.414 7.94c0-.284-.247-.504-.565-.504v.003h-7.128c-.319 0-.567.236-.567.505v1.665c0 .284.248.505.567.505h4.226v7.811H98.72c-.317 0-.566.237-.566.505v1.665c0 .285.248.504.567.504h12.027c.318 0 .566-.236.566-.504v-1.665c0-.285-.248-.506-.566-.506h-4.334zm.141-5.084a.553.553 0 0 0-.565-.506h-3.184c-.318 0-.566.237-.566.506v2.137c0 .285.248.504.566.504h3.184c.318 0 .565-.236.565-.504zM91.874 17.923h3.61c.318 0 .566.218.566.505v1.665c0 .269-.247.504-.566.504H83.722c-.318 0-.566-.217-.566-.504v-1.665c0-.269.248-.506.566-.506h4.689V5.028h-4.176c-.318 0-.565-.218-.565-.505V2.856c0-.269.247-.506.565-.506h7.074c.319 0 .567.219.567.506zM73.534 8.04c.67-.607 1.539-.858 2.741-.858 3.521 0 5.573 2.257 5.588 6.851 0 4.597-2.069 6.851-5.5 6.851-1.183 0-1.98-.286-2.635-.857l-.83-.756-.778.169.301 2.003v3.738c0 .27-.247.504-.566.504h-2.336c-.318 0-.565-.218-.565-.504V7.94c0-.269.247-.504.566-.504h1.591c.267 0 .479.166.549.387l.283.975h.76zm-1.132 7.594c0 1.633.972 2.492 2.723 2.492 2.142 0 3.098-1.28 3.114-4.123 0-2.813-.972-4.093-3.114-4.093-1.768 0-2.723.859-2.723 2.492zm-20.18-1.617c0-4.58 2.388-6.835 6.845-6.835 4.581 0 6.792 2.273 6.26 7.342h-9.675c.141 2.71 1.204 3.872 3.431 3.872 1.435 0 2.495-.472 2.867-1.464a.58.58 0 0 1 .529-.338H64.6c.355 0 .637.303.549.623-.583 2.306-2.778 3.652-6.173 3.652-4.386 0-6.756-2.255-6.756-6.851m6.83-4.46c-1.911 0-2.956.925-3.291 2.912h6.333c-.054-1.885-1.008-2.912-3.042-2.912m-14.525-.775.798-.76c.69-.605 1.731-.84 3.057-.822h1.803c.319 0 .566.217.566.505v1.833c0 .27-.247.506-.566.506H47.14c-1.872 0-2.828.807-2.828 2.355v5.523h4.051c.319 0 .567.218.567.504v1.666c0 .269-.247.504-.567.504H37.346c-.318 0-.566-.217-.566-.504v-1.666c0-.268.247-.504.566-.504h3.502v-7.811h-3.006c-.318 0-.567-.219-.567-.506V7.94c0-.269.248-.504.567-.504h5.094c.267 0 .495.15.549.387l.247.96z" clipRule="evenodd"></path>
+                        <path
+                          fill="#94979E"
+                          fillRule="evenodd"
+                          d="M1.84.016C.825.016 0 .802 0 1.767V7.6C0 8.567.826 9.35 1.84 9.35h10.419v9.333H1.84c-1.015 0-1.84.784-1.84 1.75v5.833c0 .966.825 1.75 1.84 1.75h8.579c1.016 0 1.839-.785 1.839-1.75v-7.579h10.419c1.016 0 1.839-.785 1.839-1.75V11.1c0-.967-.823-1.75-1.84-1.75H12.263V1.766c0-.966-.824-1.75-1.839-1.75zM117.735 4.2c0-.284-.249-.503-.567-.503h-2.333c-.318 0-.566.236-.566.503v3.232h-3.626c-.318 0-.566.237-.566.505v1.665c0 .285.248.505.566.505h3.626v4.95c0 3.786 1.874 5.538 5.908 5.538h3.288c.319 0 .566-.236.566-.504v-1.666c0-.284-.247-.504-.566-.504h-2.759c-2.194 0-2.971-.826-2.971-2.88v-4.915h6.136c.318-.02.567-.255.567-.524V7.937c0-.285-.249-.505-.567-.505h-6.136zM106.414 7.94c0-.284-.247-.504-.565-.504v.003h-7.128c-.319 0-.567.236-.567.505v1.665c0 .284.248.505.567.505h4.226v7.811H98.72c-.317 0-.566.237-.566.505v1.665c0 .285.248.504.567.504h12.027c.318 0 .566-.236.566-.504v-1.665c0-.285-.248-.506-.566-.506h-4.334zm.141-5.084a.553.553 0 0 0-.565-.506h-3.184c-.318 0-.566.237-.566.506v2.137c0 .285.248.504.566.504h3.184c.318 0 .565-.236.565-.504zM91.874 17.923h3.61c.318 0 .566.218.566.505v1.665c0 .269-.247.504-.566.504H83.722c-.318 0-.566-.217-.566-.504v-1.665c0-.269.248-.506.566-.506h4.689V5.028h-4.176c-.318 0-.565-.218-.565-.505V2.856c0-.269.247-.506.565-.506h7.074c.319 0 .567.219.567.506zM73.534 8.04c.67-.607 1.539-.858 2.741-.858 3.521 0 5.573 2.257 5.588 6.851 0 4.597-2.069 6.851-5.5 6.851-1.183 0-1.98-.286-2.635-.857l-.83-.756-.778.169.301 2.003v3.738c0 .27-.247.504-.566.504h-2.336c-.318 0-.565-.218-.565-.504V7.94c0-.269.247-.504.566-.504h1.591c.267 0 .479.166.549.387l.283.975h.76zm-1.132 7.594c0 1.633.972 2.492 2.723 2.492 2.142 0 3.098-1.28 3.114-4.123 0-2.813-.972-4.093-3.114-4.093-1.768 0-2.723.859-2.723 2.492zm-20.18-1.617c0-4.58 2.388-6.835 6.845-6.835 4.581 0 6.792 2.273 6.26 7.342h-9.675c.141 2.71 1.204 3.872 3.431 3.872 1.435 0 2.495-.472 2.867-1.464a.58.58 0 0 1 .529-.338H64.6c.355 0 .637.303.549.623-.583 2.306-2.778 3.652-6.173 3.652-4.386 0-6.756-2.255-6.756-6.851m6.83-4.46c-1.911 0-2.956.925-3.291 2.912h6.333c-.054-1.885-1.008-2.912-3.042-2.912m-14.525-.775.798-.76c.69-.605 1.731-.84 3.057-.822h1.803c.319 0 .566.217.566.505v1.833c0 .27-.247.506-.566.506H47.14c-1.872 0-2.828.807-2.828 2.355v5.523h4.051c.319 0 .567.218.567.504v1.666c0 .269-.247.504-.567.504H37.346c-.318 0-.566-.217-.566-.504v-1.666c0-.268.247-.504.566-.504h3.502v-7.811h-3.006c-.318 0-.567-.219-.567-.506V7.94c0-.269.248-.504.567-.504h5.094c.267 0 .495.15.549.387l.247.96z"
+                          clipRule="evenodd"
+                        ></path>
                       </g>
                       <defs>
                         <clipPath id="replit_inline_svg__a">
@@ -192,14 +230,38 @@ export default function Home() {
                   </li>
 
                   <li className="m-0! before:content-none!">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="135" height="28" fill="none" viewBox="0 0 135 28" className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="135"
+                      height="28"
+                      fill="none"
+                      viewBox="0 0 135 28"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
+                    >
                       <g clipPath="url(#outfront7_inline_svg__a)">
-                        <path fill="#94979E" d="m125.069 5.718-1.759 4.007h-5.098v12.668h-4.008V9.748h-4.342v12.645h-4.052l-6.858-9.907v9.907h-4.053V5.74h4.053l6.858 9.574V5.74h19.259zM85.437 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75-8.84-3.919-8.84-8.75c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.605 0 4.743-2.115 4.743-4.698s-2.116-4.698-4.743-4.698c-2.605 0-4.742 2.116-4.742 4.698s2.137 4.698 4.742 4.698m-8.571 3.629h-4.743l-3.607-5.321h-2.137v5.32h-4.053V9.682H52.82v3.317h7.792l-1.735 4.008H52.93l-.111 5.32h-4.053V5.897L47.164 9.68H41.33v12.646h-4.053V9.68h-4.14v5.388c0 5.054-2.873 7.525-7.393 7.525s-7.28-2.494-7.28-7.414V5.65h4.052v9.442c0 2.449 1.247 3.718 3.273 3.718s3.295-1.203 3.295-3.585V5.673h40.923c2.137 0 3.807.602 4.898 1.692.935.935 1.447 2.227 1.447 3.807v.045c0 2.694-1.47 4.386-3.606 5.165zM72.323 11.46c0-1.29-.868-1.959-2.271-1.959h-3.695v3.92h3.74c1.403 0 2.204-.78 2.204-1.938v-.021zM8.913 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75S.073 18.831.073 14c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.604 0 4.743-2.115 4.743-4.698s-2.138-4.698-4.743-4.698S4.171 11.418 4.171 14s2.115 4.698 4.742 4.698"></path>
-                        <mask id="outfront7_inline_svg__b" width="14" height="18" x="120" y="5" maskUnits="userSpaceOnUse" style={{ maskType: 'luminance' }}>
-                          <path fill="#fff" d="m128.195 5.737-7.258 16.675h5.455l7.258-16.676z"></path>
+                        <path
+                          fill="#94979E"
+                          d="m125.069 5.718-1.759 4.007h-5.098v12.668h-4.008V9.748h-4.342v12.645h-4.052l-6.858-9.907v9.907h-4.053V5.74h4.053l6.858 9.574V5.74h19.259zM85.437 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75-8.84-3.919-8.84-8.75c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.605 0 4.743-2.115 4.743-4.698s-2.116-4.698-4.743-4.698c-2.605 0-4.742 2.116-4.742 4.698s2.137 4.698 4.742 4.698m-8.571 3.629h-4.743l-3.607-5.321h-2.137v5.32h-4.053V9.682H52.82v3.317h7.792l-1.735 4.008H52.93l-.111 5.32h-4.053V5.897L47.164 9.68H41.33v12.646h-4.053V9.68h-4.14v5.388c0 5.054-2.873 7.525-7.393 7.525s-7.28-2.494-7.28-7.414V5.65h4.052v9.442c0 2.449 1.247 3.718 3.273 3.718s3.295-1.203 3.295-3.585V5.673h40.923c2.137 0 3.807.602 4.898 1.692.935.935 1.447 2.227 1.447 3.807v.045c0 2.694-1.47 4.386-3.606 5.165zM72.323 11.46c0-1.29-.868-1.959-2.271-1.959h-3.695v3.92h3.74c1.403 0 2.204-.78 2.204-1.938v-.021zM8.913 5.25c4.876 0 8.84 3.919 8.84 8.75s-3.964 8.75-8.84 8.75S.073 18.831.073 14c0-4.81 3.964-8.75 8.84-8.75m0 13.448c2.604 0 4.743-2.115 4.743-4.698s-2.138-4.698-4.743-4.698S4.171 11.418 4.171 14s2.115 4.698 4.742 4.698"
+                        ></path>
+                        <mask
+                          id="outfront7_inline_svg__b"
+                          width="14"
+                          height="18"
+                          x="120"
+                          y="5"
+                          maskUnits="userSpaceOnUse"
+                          style={{ maskType: "luminance" }}
+                        >
+                          <path
+                            fill="#fff"
+                            d="m128.195 5.737-7.258 16.675h5.455l7.258-16.676z"
+                          ></path>
                         </mask>
                         <g mask="url(#outfront7_inline_svg__b)">
-                          <path fill="#94979E" d="M112.593 14.08 127.289-.615l14.693 14.695-14.693 14.694z"></path>
+                          <path
+                            fill="#94979E"
+                            d="M112.593 14.08 127.289-.615l14.693 14.695-14.693 14.694z"
+                          ></path>
                         </g>
                       </g>
                       <defs>
@@ -217,7 +279,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 182 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <mask
                         id="door-dash_inline_svg__a"
@@ -226,12 +288,15 @@ export default function Home() {
                         x="0"
                         y="3"
                         maskUnits="userSpaceOnUse"
-                        style={{ maskType: 'luminance' }}
+                        style={{ maskType: "luminance" }}
                       >
                         <path fill="#fff" d="M.814 3.5h179.55v21H.814z"></path>
                       </mask>
                       <g mask="url(#door-dash_inline_svg__a)">
-                        <path fill="#94979E" d="M52.9 9.42v9.176h2.287a4.36 4.36 0 0 0 3.11-1.37A4.6 4.6 0 0 0 59.549 14a4.51 4.51 0 0 0-1.236-3.24 4.28 4.28 0 0 0-3.126-1.341zm2.287-2.877c4.262 0 7.485 3.304 7.485 7.457s-3.223 7.476-7.485 7.476h-5.042a.37.37 0 0 1-.363-.37V6.928a.37.37 0 0 1 .363-.372zm18.47 12.372c1.934.006 3.683-1.185 4.427-3.018a5 5 0 0 0-1.024-5.351A4.69 4.69 0 0 0 71.85 9.47c-1.79.756-2.957 2.544-2.961 4.53 0 2.707 2.133 4.902 4.768 4.915m0-12.71c4.486 0 7.914 3.536 7.914 7.795s-3.428 7.795-7.915 7.795-7.885-3.52-7.885-7.795 3.43-7.795 7.886-7.795m18.81 12.709c2.639-.006 4.773-2.205 4.771-4.912-.004-2.709-2.143-4.901-4.78-4.903-2.64 0-4.781 2.192-4.784 4.9a4.98 4.98 0 0 0 1.403 3.476 4.72 4.72 0 0 0 3.39 1.439m-.001-12.71c4.47 0 7.9 3.52 7.9 7.795s-3.444 7.795-7.9 7.795S84.55 18.276 84.55 14s3.43-7.796 7.915-7.796m18.358 3.215H107.6v3.948h3.224a1.87 1.87 0 0 0 1.385-.527 1.96 1.96 0 0 0 .59-1.392 2 2 0 0 0-.56-1.453 1.89 1.89 0 0 0-1.415-.573zm-6.342-2.49a.36.36 0 0 1 .104-.262.38.38 0 0 1 .258-.112h6.069c2.894 0 4.989 2.176 4.989 4.91.022 1.847-.987 3.544-2.597 4.371l2.799 5.08a.373.373 0 0 1-.131.537.36.36 0 0 1-.197.04h-2.457a.36.36 0 0 1-.329-.2l-2.697-5.026h-2.704v4.826a.367.367 0 0 1-.362.372h-2.367a.366.366 0 0 1-.361-.372zm19.548 2.56v9.176h2.286a4.37 4.37 0 0 0 3.11-1.365 4.6 4.6 0 0 0 1.256-3.223 4.52 4.52 0 0 0-1.233-3.245 4.29 4.29 0 0 0-3.132-1.342zm2.286-2.881c4.261 0 7.484 3.307 7.484 7.47 0 4.162-3.223 7.468-7.484 7.468h-5.028a.364.364 0 0 1-.361-.373V7a.37.37 0 0 1 .361-.373zm16.994 3.65-1.769 4.906h3.534zm-2.807 7.68-1.158 3.266a.36.36 0 0 1-.361.257h-2.512a.36.36 0 0 1-.329-.157.38.38 0 0 1-.032-.37l5.427-14.162a.36.36 0 0 1 .361-.246h2.81a.36.36 0 0 1 .363.246l5.425 14.162a.38.38 0 0 1-.176.494.36.36 0 0 1-.186.031h-2.511a.364.364 0 0 1-.361-.256l-1.158-3.267zm12.906-7.361c0-2.346 1.975-4.373 5.093-4.373a6.36 6.36 0 0 1 4.525 1.748.4.4 0 0 1 .109.198.38.38 0 0 1-.109.348l-1.391 1.417a.36.36 0 0 1-.396.081.4.4 0 0 1-.118-.08 3.6 3.6 0 0 0-2.413-.977c-1.247 0-2.17.743-2.17 1.601 0 2.772 7.372 1.172 7.372 6.506-.003 2.704-1.993 4.748-5.513 4.748a7.3 7.3 0 0 1-5.259-2.167.37.37 0 0 1-.117-.273.38.38 0 0 1 .117-.273l1.346-1.382a.37.37 0 0 1 .263-.115.36.36 0 0 1 .262.115 4.6 4.6 0 0 0 3.179 1.33c1.559 0 2.586-.853 2.586-1.923 0-2.773-7.368-1.173-7.368-6.508m23.873-3.689v5.605h-6.241V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.367a.37.37 0 0 0-.258.11.36.36 0 0 0-.103.261v14.16a.37.37 0 0 0 .361.372h2.367a.37.37 0 0 0 .361-.372v-5.693h6.236v5.693a.37.37 0 0 0 .362.372h2.366a.37.37 0 0 0 .361-.372V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.366a.37.37 0 0 0-.357.37M36.498 8.43c-1.643-3.045-4.856-4.94-8.348-4.929H1.722a.91.91 0 0 0-.834.558.89.89 0 0 0 .196.975l5.757 5.716a2.73 2.73 0 0 0 1.922.79h18.631c1.327-.014 2.413 1.04 2.427 2.349s-1.05 2.383-2.379 2.397H14.597a.91.91 0 0 0-.837.554.89.89 0 0 0 .194.979l5.761 5.72a2.73 2.73 0 0 0 1.922.79h5.81c7.558 0 13.273-7.98 9.05-15.902"></path>
+                        <path
+                          fill="#94979E"
+                          d="M52.9 9.42v9.176h2.287a4.36 4.36 0 0 0 3.11-1.37A4.6 4.6 0 0 0 59.549 14a4.51 4.51 0 0 0-1.236-3.24 4.28 4.28 0 0 0-3.126-1.341zm2.287-2.877c4.262 0 7.485 3.304 7.485 7.457s-3.223 7.476-7.485 7.476h-5.042a.37.37 0 0 1-.363-.37V6.928a.37.37 0 0 1 .363-.372zm18.47 12.372c1.934.006 3.683-1.185 4.427-3.018a5 5 0 0 0-1.024-5.351A4.69 4.69 0 0 0 71.85 9.47c-1.79.756-2.957 2.544-2.961 4.53 0 2.707 2.133 4.902 4.768 4.915m0-12.71c4.486 0 7.914 3.536 7.914 7.795s-3.428 7.795-7.915 7.795-7.885-3.52-7.885-7.795 3.43-7.795 7.886-7.795m18.81 12.709c2.639-.006 4.773-2.205 4.771-4.912-.004-2.709-2.143-4.901-4.78-4.903-2.64 0-4.781 2.192-4.784 4.9a4.98 4.98 0 0 0 1.403 3.476 4.72 4.72 0 0 0 3.39 1.439m-.001-12.71c4.47 0 7.9 3.52 7.9 7.795s-3.444 7.795-7.9 7.795S84.55 18.276 84.55 14s3.43-7.796 7.915-7.796m18.358 3.215H107.6v3.948h3.224a1.87 1.87 0 0 0 1.385-.527 1.96 1.96 0 0 0 .59-1.392 2 2 0 0 0-.56-1.453 1.89 1.89 0 0 0-1.415-.573zm-6.342-2.49a.36.36 0 0 1 .104-.262.38.38 0 0 1 .258-.112h6.069c2.894 0 4.989 2.176 4.989 4.91.022 1.847-.987 3.544-2.597 4.371l2.799 5.08a.373.373 0 0 1-.131.537.36.36 0 0 1-.197.04h-2.457a.36.36 0 0 1-.329-.2l-2.697-5.026h-2.704v4.826a.367.367 0 0 1-.362.372h-2.367a.366.366 0 0 1-.361-.372zm19.548 2.56v9.176h2.286a4.37 4.37 0 0 0 3.11-1.365 4.6 4.6 0 0 0 1.256-3.223 4.52 4.52 0 0 0-1.233-3.245 4.29 4.29 0 0 0-3.132-1.342zm2.286-2.881c4.261 0 7.484 3.307 7.484 7.47 0 4.162-3.223 7.468-7.484 7.468h-5.028a.364.364 0 0 1-.361-.373V7a.37.37 0 0 1 .361-.373zm16.994 3.65-1.769 4.906h3.534zm-2.807 7.68-1.158 3.266a.36.36 0 0 1-.361.257h-2.512a.36.36 0 0 1-.329-.157.38.38 0 0 1-.032-.37l5.427-14.162a.36.36 0 0 1 .361-.246h2.81a.36.36 0 0 1 .363.246l5.425 14.162a.38.38 0 0 1-.176.494.36.36 0 0 1-.186.031h-2.511a.364.364 0 0 1-.361-.256l-1.158-3.267zm12.906-7.361c0-2.346 1.975-4.373 5.093-4.373a6.36 6.36 0 0 1 4.525 1.748.4.4 0 0 1 .109.198.38.38 0 0 1-.109.348l-1.391 1.417a.36.36 0 0 1-.396.081.4.4 0 0 1-.118-.08 3.6 3.6 0 0 0-2.413-.977c-1.247 0-2.17.743-2.17 1.601 0 2.772 7.372 1.172 7.372 6.506-.003 2.704-1.993 4.748-5.513 4.748a7.3 7.3 0 0 1-5.259-2.167.37.37 0 0 1-.117-.273.38.38 0 0 1 .117-.273l1.346-1.382a.37.37 0 0 1 .263-.115.36.36 0 0 1 .262.115 4.6 4.6 0 0 0 3.179 1.33c1.559 0 2.586-.853 2.586-1.923 0-2.773-7.368-1.173-7.368-6.508m23.873-3.689v5.605h-6.241V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.367a.37.37 0 0 0-.258.11.36.36 0 0 0-.103.261v14.16a.37.37 0 0 0 .361.372h2.367a.37.37 0 0 0 .361-.372v-5.693h6.236v5.693a.37.37 0 0 0 .362.372h2.366a.37.37 0 0 0 .361-.372V6.91a.36.36 0 0 0-.104-.26.37.37 0 0 0-.257-.111h-2.366a.37.37 0 0 0-.357.37M36.498 8.43c-1.643-3.045-4.856-4.94-8.348-4.929H1.722a.91.91 0 0 0-.834.558.89.89 0 0 0 .196.975l5.757 5.716a2.73 2.73 0 0 0 1.922.79h18.631c1.327-.014 2.413 1.04 2.427 2.349s-1.05 2.383-2.379 2.397H14.597a.91.91 0 0 0-.837.554.89.89 0 0 0 .194.979l5.761 5.72a2.73 2.73 0 0 0 1.922.79h5.81c7.558 0 13.273-7.98 9.05-15.902"
+                        ></path>
                       </g>
                     </svg>
                   </li>
@@ -243,7 +308,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 101 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <g clipPath="url(#bcg_inline_svg__a)">
                         <mask
@@ -281,7 +346,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 28 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <g clipPath="url(#pepsi_inline_svg__a)">
                         <mask
@@ -291,7 +356,7 @@ export default function Home() {
                           x="0"
                           y="0"
                           maskUnits="userSpaceOnUse"
-                          style={{ maskType: 'luminance' }}
+                          style={{ maskType: "luminance" }}
                         >
                           <path fill="#fff" d="M0 0h28v28H0z" />
                         </mask>
@@ -332,7 +397,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 107 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <mask
                         id="retool_inline_svg__a"
@@ -341,7 +406,7 @@ export default function Home() {
                         x="0"
                         y="3"
                         maskUnits="userSpaceOnUse"
-                        style={{ maskType: 'luminance' }}
+                        style={{ maskType: "luminance" }}
                       >
                         <path fill="#fff" d="M.71 3.5h105.001v21h-105z" />
                       </mask>
@@ -353,7 +418,7 @@ export default function Home() {
                           x="0"
                           y="3"
                           maskUnits="userSpaceOnUse"
-                          style={{ maskType: 'luminance' }}
+                          style={{ maskType: "luminance" }}
                         >
                           <path fill="#fff" d="M105.711 3.5h-105v21h105z" />
                         </mask>
@@ -373,7 +438,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 101 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <path
                         fill="#94979E"
@@ -388,7 +453,7 @@ export default function Home() {
                       height="28"
                       fill="none"
                       viewBox="0 0 101 28"
-                      className="w-auto h-7 xl:h-6 lg:h-[22px] md:h-5"
+                      className="h-7 w-auto md:h-5 lg:h-[22px] xl:h-6"
                     >
                       <path
                         fill="#94979E"
@@ -403,96 +468,108 @@ export default function Home() {
         </div>
       </section>
 
-
       {/* Bento Box Features Section */}
-      <section className="container mx-auto relative w-full overflow-hidden bg-background py-24">
+      <section className="bg-background relative container mx-auto w-full overflow-hidden py-24">
         <GridBackground />
         <div className="relative z-10">
           <div className="flex flex-col gap-6">
-
             {/* Top Row */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
               {/* Card 1 */}
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   Save 8+ hours a week with smart email drafting
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Our AI uses advanced models to instantly draft replies, follow-ups, and intros—freeing you from the email grind.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Our AI uses advanced models to instantly draft replies,
+                  follow-ups, and intros—freeing you from the email grind.
                 </p>
-                <div className="absolute -bottom-10 -left-10 h-48 w-48 rounded-full border-[length:var(--radius-xl)] /90" />
-                <div className="absolute bottom-16 left-24 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-center shadow-xl">
+                <div className="/90 absolute -bottom-10 -left-10 h-48 w-48 rounded-full border-[length:var(--radius-xl)]" />
+                <div className="bg-primary absolute bottom-16 left-24 flex h-16 w-16 items-center justify-center rounded-full text-center shadow-xl">
                   <div className="flex flex-col items-center">
-                    <span className="text-micro font-bold leading-tight text-primary-foreground">8h/week</span>
-                    <span className="text-nano font-medium leading-tight text-primary-foreground/80">saved</span>
+                    <span className="text-micro text-primary-foreground leading-tight font-bold">
+                      8h/week
+                    </span>
+                    <span className="text-nano text-primary-foreground/80 leading-tight font-medium">
+                      saved
+                    </span>
                   </div>
                   {/* Badge pointer */}
-                  <div className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-primary" />
+                  <div className="bg-primary absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45" />
                 </div>
               </div>
 
               {/* Card 2 */}
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   Never miss a follow-up again
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  The system detects action items, deadlines, and reminders—and nudges you automatically.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  The system detects action items, deadlines, and reminders—and
+                  nudges you automatically.
                 </p>
                 <div className="absolute bottom-8 left-1/2 flex -translate-x-1/2 items-center justify-center gap-10">
-                  <Image src="/assets/never-miss.png" width={700} height={500} alt="Search on gmail & calendar"
-                    className="w-40" />
+                  <Image
+                    src="/assets/never-miss.png"
+                    width={700}
+                    height={500}
+                    alt="Search on gmail & calendar"
+                    className="w-40"
+                  />
                 </div>
               </div>
 
               {/* Card 3 */}
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   Action items extracted instantly
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Turns messy meeting convos into clear next steps—auto-assigned to the right person in seconds.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Turns messy meeting convos into clear next steps—auto-assigned
+                  to the right person in seconds.
                 </p>
                 <div className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 items-center justify-center gap-4 px-6">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-background shadow-md shrink-0">
+                  <div className="bg-background flex h-16 w-16 shrink-0 items-center justify-center rounded-lg shadow-md">
                     <GoogleCalendarLogo className="h-8 w-8" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground/50 shrink-0" />
-                  <div className="flex flex-col gap-2 rounded-lg bg-primary/10 p-4 shrink-0 w-32">
-                    <div className="h-2 w-full rounded bg-primary/20" />
+                  <ArrowRight className="text-muted-foreground/50 h-5 w-5 shrink-0" />
+                  <div className="bg-primary/10 flex w-32 shrink-0 flex-col gap-2 rounded-lg p-4">
+                    <div className="bg-primary/20 h-2 w-full rounded" />
                     <div className="flex items-center gap-2">
-                      <Check className="h-3 w-3 text-primary" />
-                      <div className="h-1.5 w-16 rounded bg-primary/30" />
+                      <Check className="text-primary h-3 w-3" />
+                      <div className="bg-primary/30 h-1.5 w-16 rounded" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <Check className="h-3 w-3 text-primary" />
-                      <div className="h-1.5 w-12 rounded bg-primary/30" />
+                      <Check className="text-primary h-3 w-3" />
+                      <div className="bg-primary/30 h-1.5 w-12 rounded" />
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   Draft messages instantly with AI
                 </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  Write emails in seconds, fix spelling and grammar automatically, and generate concise summaries without leaving Gmail.
+                <p className="text-muted-foreground text-sm leading-relaxed">
+                  Write emails in seconds, fix spelling and grammar
+                  automatically, and generate concise summaries without leaving
+                  Gmail.
                 </p>
                 <div className="absolute bottom-10 left-1/2 flex w-full -translate-x-1/2 items-center justify-center gap-4 px-6">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-lg bg-background shadow-md shrink-0">
-                    <SpellCheck className="h-8 w-8 text-primary" />
+                  <div className="bg-background flex h-16 w-16 shrink-0 items-center justify-center rounded-lg shadow-md">
+                    <SpellCheck className="text-primary h-8 w-8" />
                   </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground/50 shrink-0" />
-                  <div className="flex flex-col gap-2 rounded-lg  p-4 shrink-0 w-32">
-                    <div className="h-2 w-full rounded bg-primary/20" />
+                  <ArrowRight className="text-muted-foreground/50 h-5 w-5 shrink-0" />
+                  <div className="flex w-32 shrink-0 flex-col gap-2 rounded-lg p-4">
+                    <div className="bg-primary/20 h-2 w-full rounded" />
                     <div className="flex items-center gap-2">
-                      <FileText className="h-3 w-3 text-primary" />
-                      <div className="h-1.5 w-16 rounded bg-primary/30" />
+                      <FileText className="text-primary h-3 w-3" />
+                      <div className="bg-primary/30 h-1.5 w-16 rounded" />
                     </div>
                     <div className="flex items-center gap-2">
-                      <FileText className="h-3 w-3 text-primary" />
-                      <div className="h-1.5 w-12 rounded bg-primary/30" />
+                      <FileText className="text-primary h-3 w-3" />
+                      <div className="bg-primary/30 h-1.5 w-12 rounded" />
                     </div>
                   </div>
                 </div>
@@ -502,56 +579,58 @@ export default function Home() {
             {/* Bottom Row */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
               {/* Card 4 */}
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   Search less, do more: Smart labels & filters
                 </h3>
-                <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                  No more inbox clutter. Automatically tags emails by priority and intent—saving up to 2 hours daily.
+                <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
+                  No more inbox clutter. Automatically tags emails by priority
+                  and intent—saving up to 2 hours daily.
                 </p>
-                <div className="absolute bottom-12 left-8 flex flex-wrap gap-3 max-w-[80%]">
-                  <span className="rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm">
+                <div className="absolute bottom-12 left-8 flex max-w-[80%] flex-wrap gap-3">
+                  <span className="bg-primary text-primary-foreground rounded-full px-5 py-2.5 text-sm font-medium shadow-sm">
                     To respond
                   </span>
-                  <span className="rounded-full bg-secondary px-5 py-2.5 text-sm font-medium text-secondary-foreground shadow-sm">
+                  <span className="bg-secondary text-secondary-foreground rounded-full px-5 py-2.5 text-sm font-medium shadow-sm">
                     FYI
                   </span>
-                  <span className="rounded-full bg-accent px-5 py-2.5 text-sm font-medium text-accent-foreground shadow-sm">
+                  <span className="bg-accent text-accent-foreground rounded-full px-5 py-2.5 text-sm font-medium shadow-sm">
                     Awaiting Reply
                   </span>
-                  <span className="rounded-full bg-primary/80 px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm">
+                  <span className="bg-primary/80 text-primary-foreground rounded-full px-5 py-2.5 text-sm font-medium shadow-sm">
                     Done
                   </span>
                 </div>
               </div>
 
               {/* Card 5 */}
-              <div className="relative flex h-80 flex-col overflow-hidden  border border-border bg-card p-8 shadow-sm">
-                <h3 className="mb-3 text-xl font-semibold text-foreground">
+              <div className="border-border bg-card relative flex h-80 flex-col overflow-hidden border p-8 shadow-sm">
+                <h3 className="text-foreground mb-3 text-xl font-semibold">
                   AI that works where you do—directly in Gmail & Google Calendar
                 </h3>
-                <p className="max-w-md text-sm leading-relaxed text-muted-foreground">
-                  No switching tabs or tools. Integrates natively with your workspace, making your workflow seamless and smarter.
+                <p className="text-muted-foreground max-w-md text-sm leading-relaxed">
+                  No switching tabs or tools. Integrates natively with your
+                  workspace, making your workflow seamless and smarter.
                 </p>
                 <div className="absolute bottom-4 left-1/2 flex w-full -translate-x-1/2 items-center justify-center">
                   <div className="relative h-40 w-full max-w-sm">
                     {/* Orbiting Icons */}
-                    <div className="absolute left-[15%] top-0 flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-md">
+                    <div className="bg-background absolute top-0 left-[15%] flex h-12 w-12 items-center justify-center rounded-full shadow-md">
                       <GmailLogo />
                     </div>
-                    <div className="absolute right-[20%] top-4 flex h-12 w-12 items-center justify-center rounded-full bg-background shadow-md">
+                    <div className="bg-background absolute top-4 right-[20%] flex h-12 w-12 items-center justify-center rounded-full shadow-md">
                       <GoogleCalendarLogo className="h-6 w-6" />
                     </div>
-                    <div className="absolute bottom-4 left-[25%] flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md">
-                      <ListTodo className="h-5 w-5 text-primary" />
+                    <div className="bg-background absolute bottom-4 left-[25%] flex h-10 w-10 items-center justify-center rounded-full shadow-md">
+                      <ListTodo className="text-primary h-5 w-5" />
                     </div>
-                    <div className="absolute bottom-2 right-[25%] flex h-10 w-10 items-center justify-center rounded-full bg-background shadow-md">
-                      <Calendar className="h-5 w-5 text-secondary" />
+                    <div className="bg-background absolute right-[25%] bottom-2 flex h-10 w-10 items-center justify-center rounded-full shadow-md">
+                      <Calendar className="text-secondary h-5 w-5" />
                     </div>
 
                     {/* Center AI Hub */}
-                    <div className="absolute bottom-2 left-1/2 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full bg-primary shadow-xl">
-                      <Sparkles className="h-8 w-8 text-primary-foreground" />
+                    <div className="bg-primary absolute bottom-2 left-1/2 flex h-20 w-20 -translate-x-1/2 items-center justify-center rounded-full shadow-xl">
+                      <Sparkles className="text-primary-foreground h-8 w-8" />
                     </div>
                   </div>
                 </div>
@@ -562,95 +641,115 @@ export default function Home() {
       </section>
 
       {/* How It Works Section */}
-      <section className="relative w-full bg-background border-t border-border/50">
-        <ElectricBorderFrame className="container mx-auto px-4 py-24" bulbCount={8}>
-          <div className="mb-16 text-center max-w-2xl mx-auto">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+      <section className="bg-background border-border/50 relative w-full border-t">
+        <ElectricBorderFrame
+          className="container mx-auto px-4 py-24"
+          bulbCount={8}
+        >
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
               How Spider Web works
             </h2>
-            <p className="mt-4 text-lg text-muted-foreground">
-              Get up and running in minutes. Our AI securely integrates with your existing tools to automate your daily tasks.
+            <p className="text-muted-foreground mt-4 text-lg">
+              Get up and running in minutes. Our AI securely integrates with
+              your existing tools to automate your daily tasks.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-8 md:grid-cols-3 relative">
+          <div className="relative grid grid-cols-1 gap-8 md:grid-cols-3">
             {/* Connecting dashed lines for desktop */}
-            <div className="hidden md:block absolute top-8 left-[16.66%] right-[16.66%] border-t-2 border-dashed border-border/50" />
+            <div className="border-border/50 absolute top-8 right-[16.66%] left-[16.66%] hidden border-t-2 border-dashed md:block" />
 
             {/* Step 1 */}
-            <div className="relative flex flex-col items-center text-center z-10">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-background border  text-primary shadow-sm">
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="bg-background text-primary mb-6 flex h-16 w-16 items-center justify-center rounded-lg border shadow-sm">
                 <span className="text-xl font-bold">1</span>
               </div>
-              <h3 className="mb-3 text-xl font-semibold text-foreground">Connect your tools</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                Securely link your Gmail and Google Calendar with one click. We use enterprise-grade encryption to keep your data safe.
+              <h3 className="text-foreground mb-3 text-xl font-semibold">
+                Connect your tools
+              </h3>
+              <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
+                Securely link your Gmail and Google Calendar with one click. We
+                use enterprise-grade encryption to keep your data safe.
               </p>
             </div>
 
             {/* Step 2 */}
-            <div className="relative flex flex-col items-center text-center z-10">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-background border-2  text-primary shadow-sm">
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="bg-background text-primary mb-6 flex h-16 w-16 items-center justify-center rounded-lg border-2 shadow-sm">
                 <span className="text-xl font-bold">2</span>
               </div>
-              <h3 className="mb-3 text-xl font-semibold text-foreground">AI learns your style</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                Our models analyze your past communications to understand your tone, priorities, and typical workflows.
+              <h3 className="text-foreground mb-3 text-xl font-semibold">
+                AI learns your style
+              </h3>
+              <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
+                Our models analyze your past communications to understand your
+                tone, priorities, and typical workflows.
               </p>
             </div>
 
             {/* Step 3 */}
-            <div className="relative flex flex-col items-center text-center z-10">
-              <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-md">
+            <div className="relative z-10 flex flex-col items-center text-center">
+              <div className="bg-primary text-primary-foreground mb-6 flex h-16 w-16 items-center justify-center rounded-lg shadow-md">
                 <span className="text-xl font-bold">3</span>
               </div>
-              <h3 className="mb-3 text-xl font-semibold text-foreground">Automate the rest</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
-                Enjoy auto-drafted replies, smart categorization, and automatic action-item extraction from your meetings.
+              <h3 className="text-foreground mb-3 text-xl font-semibold">
+                Automate the rest
+              </h3>
+              <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
+                Enjoy auto-drafted replies, smart categorization, and automatic
+                action-item extraction from your meetings.
               </p>
             </div>
           </div>
         </ElectricBorderFrame>
       </section>
 
-
-
       {/* Testimonials Section */}
-      <section className="relative w-full py-24 border-t border-border/50">
+      <section className="border-border/50 relative w-full border-t py-24">
         <GridBackground />
 
         <div className="container mx-auto px-4">
-
           <div className="mb-16 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
               Loved by teams worldwide
             </h2>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {[
               {
-                quote: "Spider Web has completely transformed how I handle my mornings. What used to take 2 hours of email triaging now takes 15 minutes.",
+                quote:
+                  "Spider Web has completely transformed how I handle my mornings. What used to take 2 hours of email triaging now takes 15 minutes.",
                 author: "Sarah Jenkins",
-                role: "Product Manager at TechFlow"
+                role: "Product Manager at TechFlow",
               },
               {
-                quote: "The automated meeting action items are flawlessly accurate. It's like having a dedicated chief of staff in every calendar invite.",
+                quote:
+                  "The automated meeting action items are flawlessly accurate. It's like having a dedicated chief of staff in every calendar invite.",
                 author: "Marcus Chen",
-                role: "Engineering Lead"
+                role: "Engineering Lead",
               },
               {
-                quote: "I was skeptical about AI writing my emails, but it learned my tone within days. I literally can't imagine working without it now.",
+                quote:
+                  "I was skeptical about AI writing my emails, but it learned my tone within days. I literally can't imagine working without it now.",
                 author: "Elena Rodriguez",
-                role: "Founder & CEO"
-              }
+                role: "Founder & CEO",
+              },
             ].map((testimonial, i) => (
-              <div key={i} className="flex flex-col justify-between  border border-border p-6 shadow-sm">
-                <p className="mb-6 text-muted-foreground leading-relaxed">
+              <div
+                key={i}
+                className="border-border flex flex-col justify-between border p-6 shadow-sm"
+              >
+                <p className="text-muted-foreground mb-6 leading-relaxed">
                   &quot;{testimonial.quote}&quot;
                 </p>
                 <div>
-                  <p className="font-semibold text-foreground">{testimonial.author}</p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  <p className="text-foreground font-semibold">
+                    {testimonial.author}
+                  </p>
+                  <p className="text-muted-foreground text-sm">
+                    {testimonial.role}
+                  </p>
                 </div>
               </div>
             ))}
@@ -659,26 +758,33 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative w-full border-t border-border/50 bg-muted/10 py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-background to-transparent" />
-        <div className="container relative mx-auto px-4 text-center z-10">
+      <section className="border-border/50 bg-muted/10 relative w-full overflow-hidden border-t py-24">
+        <div className="from-background absolute inset-0 bg-gradient-to-b to-transparent" />
+        <div className="relative z-10 container mx-auto px-4 text-center">
           <div className="mx-auto max-w-2xl space-y-8">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="text-foreground text-3xl font-bold tracking-tight sm:text-4xl">
               Ready to put your inbox on autopilot?
             </h2>
-            <p className="text-lg leading-relaxed text-muted-foreground">
-              Join thousands of professionals who have reclaimed their time.
-              No credit card required. Setup takes less than 2 minutes.
+            <p className="text-muted-foreground text-lg leading-relaxed">
+              Join thousands of professionals who have reclaimed their time. No
+              credit card required. Setup takes less than 2 minutes.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link href="/signup">
-                <Button size="lg" className="w-full sm:w-auto h-12 px-8 text-base">
+                <Button
+                  size="lg"
+                  className="h-12 w-full px-8 text-base sm:w-auto"
+                >
                   Get Started for Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto h-12 px-8 text-base bg-background">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="bg-background h-12 w-full px-8 text-base sm:w-auto"
+                >
                   View Pricing
                 </Button>
               </Link>
@@ -688,69 +794,190 @@ export default function Home() {
       </section>
 
       {/* Footer Section */}
-      <footer className="border-t border-border/50 bg-background py-12">
+      <footer className="border-border/50 bg-background border-t py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 gap-8 md:grid-cols-4 lg:grid-cols-5">
             <div className="md:col-span-2">
-              <Link href="/" className="flex items-center gap-2 mb-4">
+              <Link href="/" className="mb-4 flex items-center gap-2">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                   <circle cx="12" cy="12" r="2" fill="#ec4899" />
-                  <line x1="12" y1="3" x2="12" y2="21" stroke="#ec4899" strokeWidth="1.5" />
-                  <line x1="3" y1="12" x2="21" y2="12" stroke="currentColor" strokeWidth="1.5" />
-                  <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" strokeWidth="1.5" />
+                  <line
+                    x1="12"
+                    y1="3"
+                    x2="12"
+                    y2="21"
+                    stroke="#ec4899"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1="3"
+                    y1="12"
+                    x2="21"
+                    y2="12"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
+                  <line
+                    x1="5"
+                    y1="5"
+                    x2="19"
+                    y2="19"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                  />
                 </svg>
-                <span className="text-xl font-bold tracking-tight">Spider Web</span>
+                <span className="text-xl font-bold tracking-tight">
+                  Spider Web
+                </span>
               </Link>
-              <p className="text-sm text-muted-foreground max-w-xs">
-                The intelligent assistant that manages your email and meetings so you can focus on what matters.
+              <p className="text-muted-foreground max-w-xs text-sm">
+                The intelligent assistant that manages your email and meetings
+                so you can focus on what matters.
               </p>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Product</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><Link href="/features" className="hover:text-foreground transition-colors">Features</Link></li>
-                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
-                <li><Link href="/security" className="hover:text-foreground transition-colors">Security</Link></li>
-                <li><Link href="/changelog" className="hover:text-foreground transition-colors">Changelog</Link></li>
+              <h4 className="text-foreground mb-4 font-semibold">Product</h4>
+              <ul className="text-muted-foreground space-y-3 text-sm">
+                <li>
+                  <Link
+                    href="/features"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/pricing"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/security"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Security
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/changelog"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Changelog
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Company</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><Link href="/about" className="hover:text-foreground transition-colors">About</Link></li>
-                <li><Link href="/blog" className="hover:text-foreground transition-colors">Blog</Link></li>
-                <li><Link href="/careers" className="hover:text-foreground transition-colors">Careers</Link></li>
-                <li><Link href="/contact" className="hover:text-foreground transition-colors">Contact</Link></li>
+              <h4 className="text-foreground mb-4 font-semibold">Company</h4>
+              <ul className="text-muted-foreground space-y-3 text-sm">
+                <li>
+                  <Link
+                    href="/about"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/blog"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Blog
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/careers"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/contact"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-4 text-foreground">Legal</h4>
-              <ul className="space-y-3 text-sm text-muted-foreground">
-                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link></li>
+              <h4 className="text-foreground mb-4 font-semibold">Legal</h4>
+              <ul className="text-muted-foreground space-y-3 text-sm">
+                <li>
+                  <Link
+                    href="/privacy"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Privacy Policy
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/terms"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/cookies"
+                    className="hover:text-foreground transition-colors"
+                  >
+                    Cookie Policy
+                  </Link>
+                </li>
               </ul>
             </div>
           </div>
 
-          <div className="mt-12 pt-8 border-t border-border/50 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-muted-foreground">
+          <div className="border-border/50 mt-12 flex flex-col items-center justify-between gap-4 border-t pt-8 md:flex-row">
+            <p className="text-muted-foreground text-sm">
               © {new Date().getFullYear()} Spider Web. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
-              <Link href="https://twitter.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="https://twitter.com"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <span className="sr-only">Twitter</span>
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
                   <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
                 </svg>
               </Link>
-              <Link href="https://github.com" className="text-muted-foreground hover:text-foreground transition-colors">
+              <Link
+                href="https://github.com"
+                className="text-muted-foreground hover:text-foreground transition-colors"
+              >
                 <span className="sr-only">GitHub</span>
-                <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
+                <svg
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                    clipRule="evenodd"
+                  />
                 </svg>
               </Link>
             </div>

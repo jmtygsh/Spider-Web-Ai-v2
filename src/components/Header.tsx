@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 
-import { LogInIcon, LogOutIcon, MonitorIcon, MoonIcon, SunIcon } from "lucide-react";
+import {
+  LogInIcon,
+  LogOutIcon,
+  MonitorIcon,
+  MoonIcon,
+  SunIcon,
+} from "lucide-react";
 import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
@@ -31,8 +37,7 @@ export function Header() {
       <div className="relative container mx-auto flex h-16 items-center justify-between px-4">
         {/* Left: Brand */}
         <div className="flex items-center gap-2">
-          <Link href="/" className="flex items-baseline gap-1 cursor-pointer">
-
+          <Link href="/" className="flex cursor-pointer items-baseline gap-1">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
               <circle cx="12" cy="12" r="2" fill="#ec4899" />
 
@@ -70,8 +75,6 @@ export function Header() {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-4">
-
-
           <Link
             href="/pricing"
             className="text-foreground hover:text-foreground/80 hidden text-sm font-medium transition-colors sm:block"
@@ -94,7 +97,10 @@ export function Header() {
                 <span className="sr-only">Toggle theme</span>
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="mt-3 rounded-none shadow-sm">
+            <DropdownMenuContent
+              align="end"
+              className="mt-3 rounded-none shadow-sm"
+            >
               <DropdownMenuItem onClick={() => setTheme("light")}>
                 <SunIcon />
                 Light
@@ -133,9 +139,8 @@ export function Header() {
               </DropdownMenuContent>
             </DropdownMenu>
           ) : (
-
             <Link href="/dashboard" className="cursor-pointer">
-              <Button className="h-9 px-6 font-medium shadow-none cursor-pointer">
+              <Button className="h-9 cursor-pointer px-6 font-medium shadow-none">
                 <LogInIcon />
                 Get Started
               </Button>

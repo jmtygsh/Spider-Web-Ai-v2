@@ -27,7 +27,8 @@ function jsonError(status: number, error: string) {
 
 async function getSessionForRequest(request: Request) {
   const tenantCtx = await getCorsairTenant();
-  if (!tenantCtx) return { error: jsonError(401, "Unauthorized"), session: null };
+  if (!tenantCtx)
+    return { error: jsonError(401, "Unauthorized"), session: null };
 
   const sessionId = request.headers.get("mcp-session-id");
   if (!sessionId) {
