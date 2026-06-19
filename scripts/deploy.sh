@@ -7,8 +7,7 @@ cd "$ROOT_DIR"
 echo "==> Deploying from ${ROOT_DIR}"
 
 echo "==> git pull"
-git fetch origin main
-git reset --hard origin/main
+git pull origin main
 
 echo "==> pnpm install"
 if command -v corepack >/dev/null 2>&1; then

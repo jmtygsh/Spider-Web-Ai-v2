@@ -27,4 +27,5 @@ jobs:
           script: |
             set -euo pipefail
             cd "${{ secrets.DEPLOY_PATH }}"
+            git pull origin main
             bash scripts/deploy.sh
