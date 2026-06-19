@@ -16,6 +16,9 @@ fi
 pnpm install --frozen-lockfile
 
 echo "==> pnpm run build"
+export LOW_MEMORY_BUILD=1
+export NEXT_TELEMETRY_DISABLED=1
+export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=3072}"
 pnpm run build
 
 echo "==> pm2 restart all"
