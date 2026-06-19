@@ -9,10 +9,18 @@ import {
   WelcomeEmailTemplate,
 } from "@/components/mail-templates/email-template";
 import { env } from "@/env";
+import { captureException } from "@/server/observability/sentry";
 
 const resend = new Resend(env.RESEND_API_KEY);
+
+function formatFromAddress(email: string) {
+  return email.includes("<") ? email : `Spider Web <${email}>`;
+}
+
 // Default sender when RESEND_FROM_EMAIL is not configured.
-const defaultFrom = env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev";
+const defaultFrom = formatFromAddress(
+  env.RESEND_FROM_EMAIL ?? "onboarding@resend.dev",
+);
 
 type SendEmailInput = {
   to: string | string[];
@@ -33,6 +41,12 @@ async function sendEmail({ to, subject, react }: SendEmailInput) {
   });
 
   if (error) {
+    captureException(new Error(error.message), {
+      provider: "resend",
+      to,
+      subject,
+      from: defaultFrom,
+    });
     throw new Error(error.message);
   }
 

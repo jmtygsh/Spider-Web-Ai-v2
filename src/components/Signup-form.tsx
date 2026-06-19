@@ -45,6 +45,7 @@ export function SignUpForm({
       name,
       email,
       password,
+      callbackURL: `${window.location.origin}/dashboard`,
     });
 
     if (signUpError) {

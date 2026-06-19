@@ -53,7 +53,8 @@ function VerifyContent() {
       <CardHeader className="text-center">
         <CardTitle className="text-xl">Check your email</CardTitle>
         <CardDescription>
-          We&apos;ve sent a verification link to your inbox.
+          If this is a new account, check your inbox for a verification link.
+          Already signed up before? Use resend below.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-6 text-center">

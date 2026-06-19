@@ -2,12 +2,15 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { env } from "@/env";
+import { dispatchAuthEmail } from "@/server/better-auth/dispatch-auth-email";
 import {
   sendPasswordChangedConfirmationEmail,
   sendPasswordResetLinkEmail,
   sendVerificationLinkEmail,
 } from "@/server/configs/resend";
 import { db } from "@/server/db";
+
+const verificationCallbackURL = `${env.APP_URL}/dashboard`;
 
 // Purpose:
 // Server-side Better Auth instance — sign-up, sessions, OAuth, and email flows.
@@ -23,20 +26,44 @@ export const auth = betterAuth({
     enabled: true,
     requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      // Fire-and-forget transactional email via Resend.
-      void sendPasswordResetLinkEmail(user.email, url, user.name);
+      dispatchAuthEmail(
+        sendPasswordResetLinkEmail(user.email, url, user.name),
+        { flow: "password-reset", email: user.email },
+      );
+    },
+    onExistingUserSignUp: async ({ user }, request) => {
+      // With requireEmailVerification, duplicate sign-ups return success but do not
+      // create a new user. Re-send verification for existing unverified accounts.
+      if (user.emailVerified) {
+        return;
+      }
+
+      await auth.api.sendVerificationEmail({
+        body: {
+          email: user.email,
+          callbackURL: verificationCallbackURL,
+        },
+        headers: request?.headers,
+      });
     },
     onPasswordReset: async ({ user }) => {
-      void sendPasswordChangedConfirmationEmail(user.email, user.name);
+      dispatchAuthEmail(
+        sendPasswordChangedConfirmationEmail(user.email, user.name),
+        { flow: "password-changed", email: user.email },
+      );
       console.log(`Password for user ${user.email} has been reset.`);
     },
     revokeSessionsOnPasswordReset: true,
   },
   emailVerification: {
     sendOnSignUp: true,
+    sendOnSignIn: true,
     autoSignInAfterVerification: true,
     sendVerificationEmail: async ({ user, url }) => {
-      void sendVerificationLinkEmail(user.email, url, user.name);
+      dispatchAuthEmail(
+        sendVerificationLinkEmail(user.email, url, user.name),
+        { flow: "verification", email: user.email },
+      );
     },
     expiresIn: 3600,
   },

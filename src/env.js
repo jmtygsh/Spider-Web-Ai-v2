@@ -35,7 +35,10 @@ export const env = createEnv({
         : z.string().trim().min(1).optional(),
     CORSAIR_WEBHOOK_SHARED_SECRET: z.string().trim().min(1).optional(),
     RESEND_API_KEY: z.string(),
-    RESEND_FROM_EMAIL: z.string().optional(),
+    RESEND_FROM_EMAIL:
+      process.env.NODE_ENV === "production"
+        ? z.string().email()
+        : z.string().email().optional(),
     // Full Pub/Sub topic for Gmail push, e.g. projects/my-app/topics/gmail-push
     GOOGLE_PUBSUB_TOPIC_ID: z.string().optional(),
     TAVILY_API_KEY: z.string().optional(),
