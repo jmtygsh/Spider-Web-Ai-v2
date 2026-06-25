@@ -55,6 +55,18 @@ export async function callCorsairPluginApi(input: {
   return action(input.payload ?? {});
 }
 
+function isGmailThreadResource(
+  record: Record<string, unknown>,
+): record is GmailThreadResource {
+  return typeof record.id === "string";
+}
+
+function isCalendarEventResource(
+  record: Record<string, unknown>,
+): record is CalendarEventResource {
+  return typeof record.id === "string";
+}
+
 export async function getGmailThreadResource(
   accountId: string,
   threadId: string,
@@ -71,11 +83,11 @@ export async function getGmailThreadResource(
   });
 
   const record = asRecord(result);
-  if (!record || typeof record.id !== "string") {
+  if (!record || !isGmailThreadResource(record)) {
     return null;
   }
 
-  return record as GmailThreadResource;
+  return record;
 }
 
 export async function listGmailThreadResources(input: {
@@ -122,16 +134,16 @@ export async function getCalendarEventResource(input: {
     action: "get",
     payload: {
       id: input.meetingId,
-      calendarId: input.calendarId?.trim() || "primary",
+      calendarId: input.calendarId?.trim() ?? "primary",
     },
   });
 
   const record = asRecord(result);
-  if (!record || typeof record.id !== "string") {
+  if (!record || !isCalendarEventResource(record)) {
     return null;
   }
 
-  return record as CalendarEventResource;
+  return record;
 }
 
 export async function listCalendarEventResources(input: {
@@ -158,7 +170,8 @@ export async function listCalendarEventResources(input: {
   const items = Array.isArray(result?.items) ? result.items : [];
   return items
     .map((item) => asRecord(item))
-    .filter((item): item is CalendarEventResource => !!item && typeof item.id === "string");
+    .filter((item): item is Record<string, unknown> => item !== null)
+    .filter(isCalendarEventResource);
 }
 
 const legacyExecutionOperations: Record<
@@ -218,7 +231,7 @@ export async function callCorsairExecutionOperation(input: {
     }
   }
 
-  const dotted = input.operation.match(/^([^.]+)\.(.+)$/);
+  const dotted = /^([^.]+)\.(.+)$/.exec(input.operation);
   if (
     (input.plugin === "gmail" || input.plugin === "googlecalendar") &&
     dotted
