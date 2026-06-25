@@ -15,13 +15,14 @@ if command -v corepack >/dev/null 2>&1; then
 fi
 pnpm install --frozen-lockfile
 
+echo "==> pm2 stop all"
+pm2 stop all
+
 echo "==> pnpm run build"
-export LOW_MEMORY_BUILD=1
 export NEXT_TELEMETRY_DISABLED=1
-export NODE_OPTIONS="${NODE_OPTIONS:---max-old-space-size=3072}"
 pnpm run build
 
-echo "==> pm2 restart all"
-pm2 restart all
+echo "==> pm2 start all"
+pm2 start all
 
 echo "==> Deploy complete"
