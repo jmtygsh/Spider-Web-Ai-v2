@@ -7,7 +7,10 @@ import { resetThreadAiScan } from "@/features/inbox-triage/logic/mark-thread-ai-
 import { runAiThreadTriage } from "@/features/inbox-triage/logic/run-ai-thread-triage";
 import { runBatchTriage } from "@/features/inbox-triage/logic/run-batch-triage";
 import { embedThreadProjection } from "@/features/rag";
-import { createWorkspaceCorsairClient } from "@/features/integration-access";
+import {
+  getCalendarEventResource,
+  getGmailThreadResource,
+} from "@/features/integration-access/logic/call-corsair-plugin-api";
 import {
   linkOpenActions,
   linkPersonToThreadsAndMeetings,
@@ -62,19 +65,11 @@ import type {
 } from "@/features/workflow/types/workflow";
 import { inngest } from "@/server/configs/inngest";
 
-type CorsairDynamicClient = Record<string, unknown>;
-
 type WorkflowEventPayload = {
   id: string;
   name: string;
   data: Record<string, unknown>;
 };
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : null;
-}
 
 function getSignalString(
   signal: Record<string, unknown>,
@@ -125,124 +120,11 @@ function inferMeetingIdFromSignal(signal: Record<string, unknown>): string | nul
   }
 }
 
-function extractThreadResource(result: unknown): GmailThreadResource | null {
-  const record = asRecord(result);
-  if (!record) return null;
-
-  if (typeof record.id === "string" && Array.isArray(record.messages)) {
-    return record;
-  }
-
-  if (Array.isArray(record.threads) && record.threads.length > 0) {
-    return extractThreadResource(record.threads[0]);
-  }
-
-  for (const key of ["thread", "data", "result"]) {
-    const nested = extractThreadResource(record[key]);
-    if (nested) return nested;
-  }
-
-  return null;
-}
-
-function extractMeetingResource(result: unknown): CalendarEventResource | null {
-  const record = asRecord(result);
-  if (!record) return null;
-
-  if (
-    typeof record.id === "string" &&
-    ("start" in record || "summary" in record || "updated" in record)
-  ) {
-    return record;
-  }
-
-  if (Array.isArray(record.events) && record.events.length > 0) {
-    return extractMeetingResource(record.events[0]);
-  }
-
-  for (const key of ["event", "meeting", "data", "result"]) {
-    const nested = extractMeetingResource(record[key]);
-    if (nested) return nested;
-  }
-
-  return null;
-}
-
-async function callCorsairReadOperation(input: {
-  accountId: string;
-  plugin: "gmail" | "googlecalendar";
-  operationCandidates: string[];
-  payloadCandidates: Record<string, unknown>[];
-}): Promise<unknown> {
-  const client = (await createWorkspaceCorsairClient({
-    accountId: input.accountId,
-  })) as unknown as CorsairDynamicClient;
-  const pluginSurface = asRecord(client[input.plugin]);
-  const actions = asRecord(pluginSurface?.actions);
-  const execute = client.execute;
-  let lastError: unknown = null;
-
-  for (const operation of input.operationCandidates) {
-    for (const payload of input.payloadCandidates) {
-      const direct = pluginSurface?.[operation];
-      if (typeof direct === "function") {
-        try {
-          return await (
-            direct as (payload: Record<string, unknown>) => Promise<unknown>
-          )(payload);
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      const action = actions?.[operation];
-      if (typeof action === "function") {
-        try {
-          return await (
-            action as (payload: Record<string, unknown>) => Promise<unknown>
-          )(payload);
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      if (typeof execute === "function") {
-        try {
-          return await (
-            execute as (payload: Record<string, unknown>) => Promise<unknown>
-          )({
-            plugin: input.plugin,
-            operation,
-            input: payload,
-          });
-        } catch (error) {
-          lastError = error;
-        }
-      }
-    }
-  }
-
-  if (lastError instanceof Error) {
-    throw lastError;
-  }
-
-  throw new Error(
-    `No compatible ${input.plugin} read operation was available for workflow refresh.`,
-  );
-}
-
 async function fetchLatestThreadResource(
   accountId: string,
   threadId: string,
 ): Promise<GmailThreadResource | null> {
-  const result = await callCorsairReadOperation({
-    accountId,
-    plugin: "gmail",
-    operationCandidates: ["getThread", "findThread"],
-    payloadCandidates: [{ threadId }, { id: threadId }],
-  });
-
-  return extractThreadResource(result);
+  return getGmailThreadResource(accountId, threadId);
 }
 
 async function fetchLatestMeetingResource(input: {
@@ -250,18 +132,11 @@ async function fetchLatestMeetingResource(input: {
   meetingId: string;
   calendarId: string | null;
 }): Promise<CalendarEventResource | null> {
-  const payloads = [
-    { eventId: input.meetingId, calendarId: input.calendarId ?? "primary" },
-    { id: input.meetingId, calendarId: input.calendarId ?? "primary" },
-  ];
-  const result = await callCorsairReadOperation({
+  return getCalendarEventResource({
     accountId: input.accountId,
-    plugin: "googlecalendar",
-    operationCandidates: ["getEvent", "getCalendarEvent", "findEvent"],
-    payloadCandidates: payloads,
+    meetingId: input.meetingId,
+    calendarId: input.calendarId,
   });
-
-  return extractMeetingResource(result);
 }
 
 function buildOpenActionInputs(

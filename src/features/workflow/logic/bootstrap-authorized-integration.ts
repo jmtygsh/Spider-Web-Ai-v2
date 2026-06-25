@@ -1,13 +1,14 @@
 import { and, eq } from "drizzle-orm";
 import { type ConnectPluginId } from "@/constants/plugins";
 import { INTEGRATION_AUTHORIZED_EVENT } from "@/features/integration-access/config/plugin-authorization";
-import { createWorkspaceCorsairClient } from "@/features/integration-access";
+import {
+  listCalendarEventResources,
+  listGmailThreadResources,
+} from "@/features/integration-access";
 import {
   syncMeetingProjection,
   syncMessageProjection,
   syncThreadProjection,
-  type CalendarEventResource,
-  type GmailThreadResource,
 } from "@/features/projection-sync";
 import {
   WORKFLOW_MEETING_REFRESH_EVENT,
@@ -30,19 +31,11 @@ type BootstrapAuthorizedIntegrationEventData = {
   capabilityStatus: "authorized" | "sync_requested";
 };
 
-type CorsairDynamicClient = Record<string, unknown>;
-
 type WorkflowEventPayload = {
   id: string;
   name: string;
   data: Record<string, unknown>;
 };
-
-function asRecord(value: unknown): Record<string, unknown> | null {
-  return typeof value === "object" && value !== null
-    ? (value as Record<string, unknown>)
-    : null;
-}
 
 function uniqueStrings(values: Array<string | null | undefined>) {
   return Array.from(
@@ -79,134 +72,12 @@ async function loadConnectedAccount(input: {
     .then((rows) => rows[0] ?? null);
 }
 
-async function callCorsairReadOperation(input: {
-  accountId: string;
-  plugin: ConnectPluginId;
-  operationCandidates: string[];
-  payloadCandidates: Record<string, unknown>[];
-}): Promise<unknown> {
-  const client = (await createWorkspaceCorsairClient({
-    accountId: input.accountId,
-  })) as unknown as CorsairDynamicClient;
-  const pluginSurface = asRecord(client[input.plugin]);
-  const actions = asRecord(pluginSurface?.actions);
-  const execute = client.execute;
-  let lastError: unknown = null;
-
-  for (const operation of input.operationCandidates) {
-    for (const payload of input.payloadCandidates) {
-      const direct = pluginSurface?.[operation];
-      if (typeof direct === "function") {
-        try {
-          return await (
-            direct as (input: Record<string, unknown>) => Promise<unknown>
-          )(payload);
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      const action = actions?.[operation];
-      if (typeof action === "function") {
-        try {
-          return await (
-            action as (input: Record<string, unknown>) => Promise<unknown>
-          )(payload);
-        } catch (error) {
-          lastError = error;
-        }
-      }
-
-      if (typeof execute === "function") {
-        try {
-          return await (
-            execute as (input: Record<string, unknown>) => Promise<unknown>
-          )({
-            plugin: input.plugin,
-            operation,
-            input: payload,
-          });
-        } catch (error) {
-          lastError = error;
-        }
-      }
-    }
-  }
-
-  if (lastError instanceof Error) {
-    throw lastError;
-  }
-
-  throw new Error(
-    `No compatible ${input.plugin} bootstrap operation was available.`,
-  );
-}
-
-function extractThreadResources(result: unknown): GmailThreadResource[] {
-  const record = asRecord(result);
-  if (!record) return [];
-
-  if (typeof record.id === "string" && Array.isArray(record.messages)) {
-    return [record];
-  }
-
-  if (Array.isArray(record.threads)) {
-    return record.threads.flatMap((thread) => extractThreadResources(thread));
-  }
-
-  for (const key of ["data", "result", "thread"]) {
-    const nested = extractThreadResources(record[key]);
-    if (nested.length > 0) {
-      return nested;
-    }
-  }
-
-  return [];
-}
-
-function extractMeetingResources(result: unknown): CalendarEventResource[] {
-  const record = asRecord(result);
-  if (!record) return [];
-
-  if (
-    typeof record.id === "string" &&
-    ("start" in record || "summary" in record || "updated" in record)
-  ) {
-    return [record];
-  }
-
-  if (Array.isArray(record.events)) {
-    return record.events.flatMap((meeting) => extractMeetingResources(meeting));
-  }
-
-  if (Array.isArray(record.items)) {
-    return record.items.flatMap((meeting) => extractMeetingResources(meeting));
-  }
-
-  for (const key of ["data", "result", "event"]) {
-    const nested = extractMeetingResources(record[key]);
-    if (nested.length > 0) {
-      return nested;
-    }
-  }
-
-  return [];
-}
-
 async function bootstrapGmailThreads(accountId: string) {
-  const result = await callCorsairReadOperation({
+  const threads = await listGmailThreadResources({
     accountId,
-    plugin: "gmail",
-    operationCandidates: ["listThreads", "findThreads", "searchThreads"],
-    payloadCandidates: [
-      { maxResults: 20 },
-      { limit: 20 },
-      { maxResults: 20, q: "newer_than:30d" },
-      { limit: 20, q: "newer_than:30d" },
-    ],
+    maxResults: 20,
+    query: "newer_than:30d",
   });
-
-  const threads = extractThreadResources(result);
   const threadIds: string[] = [];
 
   for (const thread of threads) {
@@ -228,22 +99,12 @@ async function bootstrapGmailThreads(accountId: string) {
 }
 
 async function bootstrapCalendarMeetings(accountId: string) {
-  const result = await callCorsairReadOperation({
+  const meetings = await listCalendarEventResources({
     accountId,
-    plugin: "googlecalendar",
-    operationCandidates: ["listEvents", "findEvents", "getEvents"],
-    payloadCandidates: [
-      { calendarId: "primary", maxResults: 20, singleEvents: true },
-      {
-        calendarId: "primary",
-        maxResults: 20,
-        singleEvents: true,
-        timeMin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
-      },
-    ],
+    calendarId: "primary",
+    maxResults: 20,
+    timeMin: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
   });
-
-  const meetings = extractMeetingResources(result);
   const meetingIds: string[] = [];
 
   for (const meeting of meetings) {

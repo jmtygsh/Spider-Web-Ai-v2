@@ -30,6 +30,10 @@ function jsonError(status: number, error: string) {
 }
 
 function validateRequestOrigin(request: Request) {
+  if (process.env.NODE_ENV === "development") {
+    return null;
+  }
+
   const origin = request.headers.get("origin");
   if (!origin) {
     return null;

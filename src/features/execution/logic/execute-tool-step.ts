@@ -1,4 +1,4 @@
-import { createWorkspaceCorsairClient } from "@/features/integration-access";
+import { callCorsairExecutionOperation } from "@/features/integration-access";
 import { loadMeetingProjection } from "@/features/meeting-prep/logic/meeting-prep-store";
 import { refreshMeetingPrepOnChange } from "@/features/meeting-prep";
 import type {
@@ -6,53 +6,11 @@ import type {
   ToolStepResult,
 } from "@/features/execution/types/execution";
 
-type CorsairDynamicClient = Record<string, unknown>;
-
 function toRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value === "object" && value !== null) {
     return value as Record<string, unknown>;
   }
   return value === undefined ? null : { value };
-}
-
-async function callCorsairOperation(input: {
-  accountId: string;
-  plugin: string;
-  operation: string;
-  payload: Record<string, unknown>;
-}) {
-  const client = (await createWorkspaceCorsairClient({
-    accountId: input.accountId,
-  })) as unknown as CorsairDynamicClient;
-  const pluginSurface = client[input.plugin] as Record<string, unknown> | undefined;
-
-  const directOperation = pluginSurface?.[input.operation];
-  if (typeof directOperation === "function") {
-    return await (directOperation as (payload: Record<string, unknown>) => Promise<unknown>)(
-      input.payload,
-    );
-  }
-
-  const actions = pluginSurface?.actions as Record<string, unknown> | undefined;
-  const actionOperation = actions?.[input.operation];
-  if (typeof actionOperation === "function") {
-    return await (actionOperation as (payload: Record<string, unknown>) => Promise<unknown>)(
-      input.payload,
-    );
-  }
-
-  const execute = client.execute;
-  if (typeof execute === "function") {
-    return await (execute as (payload: Record<string, unknown>) => Promise<unknown>)({
-      plugin: input.plugin,
-      operation: input.operation,
-      input: input.payload,
-    });
-  }
-
-  throw new Error(
-    `Corsair operation ${input.plugin}.${input.operation} is not available on the current client surface.`,
-  );
 }
 
 export async function executeToolStep(
@@ -107,7 +65,7 @@ export async function executeToolStep(
       };
     }
 
-    const output = await callCorsairOperation({
+    const output = await callCorsairExecutionOperation({
       accountId: input.accountId,
       plugin: input.step.plugin,
       operation: input.step.operation,

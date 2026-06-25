@@ -12,6 +12,12 @@ import { db } from "@/server/db";
 
 const verificationCallbackURL = `${env.APP_URL}/dashboard`;
 
+function isLocalDevOrigin(origin: string) {
+  return /^https?:\/\/(localhost|127\.0\.0\.1|0\.0\.0\.0|192\.168\.\d{1,3}\.\d{1,3})(:\d+)?$/i.test(
+    origin,
+  );
+}
+
 // Purpose:
 // Server-side Better Auth instance — sign-up, sessions, OAuth, and email flows.
 // Runs on auth API routes and server code that validates sessions.
@@ -22,6 +28,20 @@ export const auth = betterAuth({
     provider: "pg", // or "pg" or "mysql"
   }),
   baseURL: env.APP_URL,
+  ...(env.NODE_ENV === "development" && {
+    trustedOrigins: async (request?: Request) => {
+      const origin = request?.headers.get("origin");
+      if (origin && isLocalDevOrigin(origin)) {
+        return [origin, env.APP_URL];
+      }
+
+      return [
+        env.APP_URL,
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+      ];
+    },
+  }),
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: true,
