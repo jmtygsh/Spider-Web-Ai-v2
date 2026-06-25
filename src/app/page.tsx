@@ -118,78 +118,35 @@ function GridBackground() {
 
 
 export default function Home() {
-  // Short trust bullets shown under the hero headline.
-  const highlights = ["No software to download", "No credit card required"];
+
 
   return (
     <main className="bg-background min-h-screen">
 
       <ElectricBorderFrame className="container mx-auto px-4" bulbCount={4}>
-        <div className="flex h-screen flex-col items-center justify-center gap-16 lg:flex-row lg:items-center lg:justify-between lg:gap-12"
-
-        >
-          {/* Left Column */}
-          <div className="w-full max-w-xl space-y-8">
+        <div className="flex h-screen flex-col items-center justify-center">
+          <div className="mx-auto w-full max-w-3xl space-y-8 text-center">
             <div className="space-y-5">
-              <h1 className="text-foreground text-4xl leading-tight font-semibold tracking-tight sm:text-5xl lg:text-[3.25rem]">
-                Let AI work its magic on your{" "}
-                <span className="from-primary to-accent bg-linear-to-r bg-clip-text text-transparent">
-                  email & meetings
+              <h1 className="text-foreground text-3xl leading-tight font-semibold tracking-tight sm:text-6xl">
+                <span className="text-7xl">Let ai save your time,</span>
+                <span className="relative inline-block pb-1">
+                  <span className="from-primary">
+                    Email & Meetings
+                  </span>
+                  <span
+                    aria-hidden
+                    className="from-primary to-accent absolute inset-x-0 bottom-0 h-0.5 bg-linear-to-r"
+                  />
                 </span>
               </h1>
-              <p className="text-muted-foreground max-w-lg text-lg leading-relaxed">
+              <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed">
                 Outsource meeting notes, email writing and management to our
                 secure productivity assistants
               </p>
             </div>
 
-            <ul className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-x-8">
-              {highlights.map((item) => (
-                <li key={item} className="flex items-center gap-3">
-                  <span className="bg-primary flex h-5 w-5 shrink-0 items-center justify-center rounded-full">
-                    <Check
-                      className="text-primary-foreground h-3 w-3"
-                      strokeWidth={3}
-                    />
-                  </span>
-                  <span className="text-foreground text-base font-medium">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
 
-            <div className="flex items-center gap-4 pt-2">
-              <span className="text-muted-foreground text-sm font-medium">
-                Works with:
-              </span>
-              <div className="flex items-center gap-5">
-                <div className="flex items-center gap-2">
-                  <OutlookLogo />
-                  <span className="text-foreground text-sm font-medium">
-                    Outlook
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Image
-                    src="/assets/never-miss.png"
-                    width={200}
-                    height={100}
-                    alt="Search on gmail & calendar"
-                    className="w-10"
-                  />
-                  <span className="text-foreground text-sm font-medium">
-                    Gmail
-                  </span>
-                </div>
 
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Product UI */}
-          <div className="relative w-full max-w-xl shrink-0 overflow-hidden">
-            {/* Background effect */}
           </div>
         </div>
       </ElectricBorderFrame>
